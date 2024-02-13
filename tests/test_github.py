@@ -1,7 +1,7 @@
 import pytest
 
 from pyspark.sql import SparkSession
-from pyspark_datasources.github import GithubPullRequestSource
+from pyspark_datasources.github import GithubDataSource
 
 
 @pytest.fixture
@@ -11,7 +11,7 @@ def spark():
 
 
 def test_github_datasource(spark):
-    spark.dataSource.register(GithubPullRequestSource)
+    spark.dataSource.register(GithubDataSource)
     df = spark.read.format("github").load("apache/spark")
     prs = df.collect()
     assert len(prs) > 0

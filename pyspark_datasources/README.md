@@ -4,7 +4,7 @@
 This repo uses [Poetry](https://python-poetry.org/docs/#installation).
 
 ```
-poetry init
+poetry install
 ```
 
 ### Install PySpark from the latest Spark master:
