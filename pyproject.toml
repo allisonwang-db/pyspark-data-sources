@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "pyspark-data-sources"
+version = "0.1.0"
+description = "Custom PySpark Data Sources"
+authors = ["allisonwang-db <allison.wang@databricks.com>"]
+license = "Apache License 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.31.0"
+pandas = "^2.2.0"
+pyarrow = "^15.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+grpcio = "^1.60.1"
+grpcio-status = "^1.60.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
