@@ -2,6 +2,7 @@ import pytest
 
 from pyspark.sql import SparkSession
 from pyspark_datasources.github import GithubDataSource
+from pyspark_datasources.fake import FakeDataSource
 
 
 @pytest.fixture
@@ -15,3 +16,11 @@ def test_github_datasource(spark):
     df = spark.read.format("github").load("apache/spark")
     prs = df.collect()
     assert len(prs) > 0
+
+
+def test_fake_datasource(spark):
+    spark.dataSource.register(FakeDataSource)
+    df = spark.read.format("fake").load()
+    df.show()
+    assert df.count() == 3
+    assert len(df.columns) == 4

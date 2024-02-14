@@ -5,7 +5,7 @@
 This repository showcases custom Spark data sources built using the new [**Python Data Source API**](https://issues.apache.org/jira/browse/SPARK-44076) for the upcoming Apache Spark 4.0 release.
 For an in-depth understanding of the API, please refer to the [API source code](https://github.com/apache/spark/blob/master/python/pyspark/sql/datasource.py).
 
-## Setup
+## Installation
 ```
 pip install pyspark-data-sources
 ```
@@ -14,15 +14,28 @@ pip install pyspark-data-sources
 
 > **Note**: Currently the following code only works with Apache Spark `master` branch.
 
+### Github Data Source
 ```python
 from pyspark_datasources.github import GithubDataSource
 
 # Register the data source
 spark.dataSource.register(GithubDataSource)
 
-df = spark.read.format("github").load("apache/spark")
-df.show()
+spark.read.format("github").load("apache/spark").show()
 ```
+
+### Fake Data Source
+
+> Requires the [`Faker`](https://github.com/joke2k/faker) library. You can install it manually or use `pip install pyspark-data-sources[faker]`
+
+```python
+from pyspark_datasources.fake import FakeDataSource
+
+spark.dataSource.register(FakeDataSource)
+
+spark.read.format("fake").load().show()
+```
+
 
 ## Contributing
 We welcome and appreciate any contributions to enhance and expand the custom data sources. If you're interested in contributing:

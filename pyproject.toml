@@ -12,6 +12,10 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.31.0"
+faker = {version = "^23.1.0", optional = true}
+
+[tool.poetry.extras]
+faker = ["faker"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
