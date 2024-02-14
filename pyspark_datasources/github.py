@@ -5,6 +5,33 @@ from pyspark.sql.datasource import DataSource, DataSourceReader
 
 
 class GithubDataSource(DataSource):
+    """
+    A DataSource for reading pull requests data from Github.
+
+    Name: `github`
+
+    Schema: `id int, title string, author string, created_at string, updated_at string`
+
+    Examples
+    --------
+    Register the data source.
+
+    >>> from pyspark_datasources.github import GithubDataSource
+    >>> spark.dataSource.register(GithubDataSource)
+
+    Load pull requests data from a public Github repository.
+
+    >>> spark.read.format("github").load("apache/spark").show()
+    +---+--------------------+--------+--------------------+--------------------+
+    | id|               title|  author|          created_at|          updated_at|
+    +---+--------------------+--------+--------------------+--------------------+
+    |  1|Initial commit      |  matei |2014-02-03T18:47:...|2014-02-03T18:47:...|
+    ...
+
+    Load pull requests data from a private Github repository.
+
+    >>> spark.read.format("github").option("token", "your-token").load("owner/repo").show()
+    """
 
     @classmethod
     def name(self):

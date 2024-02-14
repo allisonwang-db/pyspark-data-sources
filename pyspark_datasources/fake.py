@@ -9,10 +9,8 @@ class FakeDataSource(DataSource):
     This data source allows specifying a schema with field names that correspond to `faker`
     providers to generate random data for testing and development purposes.
 
-    The default schema is "name string, date string, zipcode string, state string", and the
-    default number of rows is 3. Both can be customized by users.
-
-    See https://faker.readthedocs.io/en/master/ for more details.
+    The default schema is `name string, date string, zipcode string, state string`, and the
+    default number of rows is `3`. Both can be customized by users.
 
     Examples
     --------
@@ -68,7 +66,6 @@ class FakeDataSource(DataSource):
         return "fake"
 
     def schema(self):
-        """Default schema of the fake datasource. This can be specified by users."""
         return "name string, date string, zipcode string, state string"
 
     def reader(self, schema: StructType):

@@ -13,6 +13,7 @@ packages = [
 python = "^3.9"
 requests = "^2.31.0"
 faker = {version = "^23.1.0", optional = true}
+mkdocstrings = {extras = ["python"], version = "^0.24.0"}
 
 [tool.poetry.extras]
 faker = ["faker"]
@@ -23,6 +24,7 @@ grpcio = "^1.60.1"
 grpcio-status = "^1.60.1"
 pandas = "^2.2.0"
 pyarrow = "^15.0.0"
+mkdocs-material = "^9.5.9"
 
 [build-system]
 requires = ["poetry-core"]

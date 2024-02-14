@@ -14,7 +14,6 @@ pip install pyspark-data-sources
 
 > **Note**: Currently the following code only works with Apache Spark `master` branch.
 
-### Github Data Source
 ```python
 from pyspark_datasources.github import GithubDataSource
 
@@ -23,19 +22,6 @@ spark.dataSource.register(GithubDataSource)
 
 spark.read.format("github").load("apache/spark").show()
 ```
-
-### Fake Data Source
-
-> Requires the [`Faker`](https://github.com/joke2k/faker) library. You can install it manually or use `pip install pyspark-data-sources[faker]`
-
-```python
-from pyspark_datasources.fake import FakeDataSource
-
-spark.dataSource.register(FakeDataSource)
-
-spark.read.format("fake").load().show()
-```
-
 
 ## Contributing
 We welcome and appreciate any contributions to enhance and expand the custom data sources. If you're interested in contributing:
