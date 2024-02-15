@@ -16,7 +16,7 @@ class GithubDataSource(DataSource):
     --------
     Register the data source.
 
-    >>> from pyspark_datasources.github import GithubDataSource
+    >>> from pyspark_datasources import GithubDataSource
     >>> spark.dataSource.register(GithubDataSource)
 
     Load pull requests data from a public Github repository.
@@ -26,7 +26,8 @@ class GithubDataSource(DataSource):
     | id|               title|  author|          created_at|          updated_at|
     +---+--------------------+--------+--------------------+--------------------+
     |  1|Initial commit      |  matei |2014-02-03T18:47:...|2014-02-03T18:47:...|
-    ...
+    |...|                 ...|     ...|                 ...|                 ...|
+    +---+--------------------+--------+--------------------+--------------------+
 
     Load pull requests data from a private Github repository.
 

@@ -12,11 +12,19 @@ class FakeDataSource(DataSource):
     The default schema is `name string, date string, zipcode string, state string`, and the
     default number of rows is `3`. Both can be customized by users.
 
+    Name: `fake`
+
+    Notes
+    -----
+    - The fake data source relies on the `faker` library. Make sure it is installed and accessible.
+    - Only string type fields are supported, and each field name must correspond to a method name in
+      the `faker` library.
+
     Examples
     --------
     Register the data source.
 
-    >>> from pyspark_datasources.fake import FakeDataSource
+    >>> from pyspark_datasources import FakeDataSource
     >>> spark.dataSource.register(FakeDataSource)
 
     Use the fake datasource with the default schema and default number of rows:
@@ -53,12 +61,6 @@ class FakeDataSource(DataSource):
     |  Caitlin Reed|1983-06-22|  89813|Pennsylvania|
     | Douglas James|2007-01-18|  46226|     Alabama|
     +--------------+----------+-------+------------+
-
-    Notes
-    -----
-    The fake data source relies on the `faker` library. Make sure it is installed and accessible
-    in your environment to use this data source. Only string type fields are supported, and each
-    field name must correspond to a method name in the `faker` library.
     """
 
     @classmethod

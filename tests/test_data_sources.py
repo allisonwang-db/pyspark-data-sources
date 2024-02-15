@@ -1,8 +1,7 @@
 import pytest
 
 from pyspark.sql import SparkSession
-from pyspark_datasources.github import GithubDataSource
-from pyspark_datasources.fake import FakeDataSource
+from pyspark_datasources import *
 
 
 @pytest.fixture
