@@ -29,7 +29,7 @@ def test_restapi_datasource_with_params(spark):
     df = (
         spark.read.format("restapi")
         .option("method", "GET")
-        .option("params", { "page": 2 })
+        .option("params.page", "2")
         .load("reqres.in/api/users")
     )
     assert df.count() > 0
@@ -40,7 +40,9 @@ def test_restapi_datasource_basic_auth(spark):
     df = (
         spark.read.format("restapi")
         .option("method", "GET")
-        .option("auth", {"type": "BASIC", "client-id": "test", "client-secret": "test"})
+        .option("auth.type", "BASIC")
+        .option("auth.client-id", "test")
+        .option("auth.client-secret", "test")
         .load("httpbin.org/basic-auth/test/test")
     )
     assert df.count() > 0
@@ -51,7 +53,7 @@ def test_restapi_datasource_bearer(spark):
     df = (
         spark.read.format("restapi")
         .option("method", "GET")
-        .option("headers", {"Authorization": "Bearer token123"})
+        .option("headers.Authorization", "Bearer token123")
         .load("httpbin.org/bearer")
     )
     assert df.count() > 0
