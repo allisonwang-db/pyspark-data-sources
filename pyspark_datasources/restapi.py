@@ -14,6 +14,75 @@ from pyspark.sql.datasource import DataSource, DataSourceReader
 
 
 class RestapiDataSource(DataSource):
+    """
+    A custom DataSource implementation for reading data from a REST API.
+
+    Attributes:
+        options (dict): The options dictionary passed to the constructor. Supported options:
+            - protocol: The protocol to use for the request. Defaults to "https".
+            - headers: The headers to include in the request. Defaults to {}.
+            - auth: The authentication information to include in the request. Defaults to {"type": "NO_AUTH"}.
+            - params: The parameters to include in the request. Defaults to {}.
+            - data: The data to include in the request. Defaults to "".
+            - json_data: The JSON data to include in the request. Defaults to {}.
+            - method: The method to use for the request. Defaults to "GET".
+            - options: HTTPX client options to use for the request. Defaults to {}.
+
+    Methods:
+        name(): Returns the name of the data source.
+        schema(): Returns the schema of the data source.
+        reader(schema): Returns a DataSourceReader object for reading data.
+
+    Example usage:
+        Read a DataFrame using a GET request and sending parameters to an open API:
+        ```
+        spark.dataSource.register(RestapiDataSource)
+        df = (
+            spark.read.format("restapi")
+            .option("method", "GET")
+            .option("params.page", "2")
+            .load("reqres.in/api/users")
+        )
+        ```
+
+        Read a DataFrame using a POST request and sending JSON data:
+        ```
+        spark.dataSource.register(RestapiDataSource)
+        df = (
+            spark.read.format("restapi")
+            .option("method", "POST")
+            .option("json_data.key_a", "value_a")
+            .option("json_data.key_b.nested_key", "value_b")
+            .load("httpbin.org/post")
+        )
+        ```
+
+        Read a DataFrame using a GET request and sending credentials:
+        ```
+        spark.dataSource.register(RestapiDataSource)
+        df = (
+            spark.read.format("restapi")
+            .option("method", "GET")
+            .option("auth.type", "BASIC")
+            .option("auth.client-id", "test")
+            .option("auth.client-secret", "test")
+            .load("httpbin.org/basic-auth/test/test")
+        )
+        ```
+
+        Read a DataFrame using a GET request and sending a bearer token to authorize the request:
+        ```
+        spark.dataSource.register(RestapiDataSource)
+        df = (
+            spark.read.format("restapi")
+            .option("method", "GET")
+            .option("headers.Authorization", "Bearer token123")
+            .load("httpbin.org/bearer")
+        )
+        ```
+
+    Note: This class assumes that the REST API returns data in JSON format.
+    """
     def __init__(self, options):
         super().__init__(options)
         if "path" not in options or not options["path"]:
@@ -31,32 +100,34 @@ class RestapiDataSource(DataSource):
 
 class RestapiRequestReader(DataSourceReader):
     def __init__(self, options: dict):
-        self.protocol = str(options.get("protocol", "https")).strip()
+        parsed_options = self._parse_options(options)
+
+        self.protocol = str(parsed_options.get("protocol", "https")).strip()
         _ = self.valid_method(self.protocol)
 
-        _ = validators.url(options.get("path"))
+        _ = validators.url(parsed_options.get("path"))
         self.url = f"{self.protocol}://{options.get('path')}"
 
-        self.headers = self._get_dict_option("headers", options) or {}
+        self.headers = parsed_options.get("headers", {})
 
-        self.auth = self._get_dict_option("auth", options) or { "type": "NO_AUTH" }
+        self.auth = parsed_options.get("auth", { "type": "NO_AUTH" })
         self.auth["type"] = str(self.auth.get("type")).strip().upper()
         _ = self.valid_auth(self.auth)
 
-        self.params = self._get_dict_option("params", options) or {}
+        self.params = parsed_options.get("params", {})
 
-        self.data = str(options.get("data", "")).strip()
+        self.data = str(parsed_options.get("data", "")).strip()
         _ = self.valid_data(self.data)
 
-        self.json_data = self._get_dict_option("json_data", options) or {}
+        self.json_data = parsed_options.get("json_data", {})
         _ = self.valid_json_data(self.json_data)
 
-        self.method = str(options.get("method", "GET")).strip().upper()
+        self.method = str(parsed_options.get("method", "GET")).strip().upper()
         _ = self.valid_method(self.method)
 
         # For options, see: https://www.python-httpx.org/api
         # Advanced use, they have the potential to overwrite the other exposed options
-        self.options = self._get_dict_option("options", options) or {}
+        self.options = parsed_options.get("options", {})
 
     def read(self, partition):
         for row in self._batch_request():
@@ -72,36 +143,46 @@ class RestapiRequestReader(DataSourceReader):
                 result=row
             )
 
-    def _get_dict_option(self, key: str, options: dict) -> dict:
-        """Get a dictionary option from the options. Spark automatically transforms them to string.
+    def _parse_options(self, flat_dict):
+        """
+        Parse the flat dictionary into a nested dictionary structure.
 
         Parameters
         ----------
-        key : str
-            Option key, as passed to `spark.read.option(key, value)`
-        options : dict
-            Options dictionary
-
-        Raises
-        ------
-            TypeError
-                Option value is expected to be of either type str or dict
+        flat_dict : dict
+            The input flat dictionary, with nested keys separated by periods.
 
         Returns
         -------
         dict
-            Dictionary containing requested option
+            The nested dictionary structure.
         """
-        option_value = options.get(key)
+        def safe_eval(value):
+            lowercase_value = str(value).lower()
+            if lowercase_value == "none":
+                return None
+            if lowercase_value == "true":
+                return True
+            if lowercase_value == "false":
+                return False
 
-        if isinstance(option_value, str):
-            return literal_eval(option_value)
+            try:
+                return literal_eval(value)
+            except (ValueError, SyntaxError):
+                return value
 
-        if not isinstance(option_value, dict):
-            msg = f"Expected {key} to be either str or dict. Got {type(option_value)}"
-            raise TypeError(msg)
+        def insert_into_nested_dict(nested_dict, keys, value):
+            for key in keys[:-1]:
+                if key not in nested_dict:
+                    nested_dict[key] = {}
+                nested_dict = nested_dict[key]
+            nested_dict[keys[-1]] = safe_eval(value)
 
-        return option_value
+        nested_dict = {}
+        for flat_key, value in flat_dict.items():
+            keys = flat_key.split('.')
+            insert_into_nested_dict(nested_dict, keys, value)
+        return nested_dict
 
     @validators.validator
     def valid_protocol(value):
