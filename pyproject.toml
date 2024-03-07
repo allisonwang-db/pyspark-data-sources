@@ -5,16 +5,17 @@ description = "Custom Spark data sources for reading and writing data in Apache 
 authors = ["allisonwang-db <allison.wang@databricks.com>"]
 license = "Apache License 2.0"
 readme = "README.md"
-packages = [
-    { include = "pyspark_datasources" },
-]
+packages = [{ include = "pyspark_datasources" }]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-requests = "^2.31.0"
-faker = {version = "^23.1.0", optional = true}
-mkdocstrings = {extras = ["python"], version = "^0.24.0"}
-datasets = {version = "^2.17.0", optional = true}
+requests = "^2.28.1"
+faker = { version = "^23.1.0", optional = true }
+mkdocstrings = { extras = ["python"], version = "^0.24.0" }
+datasets = { version = "^2.17.0", optional = true }
+validators = "^0.22.0"
+httpx = "^0.27.0"
+authlib = "^1.3.0"
 
 [tool.poetry.extras]
 faker = ["faker"]
