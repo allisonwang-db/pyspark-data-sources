@@ -56,3 +56,15 @@ def test_restapi_datasource_bearer(spark):
     )
     assert df.count() > 0
     assert len(df.columns) == 9
+
+def test_restapi_datasource_post(spark):
+    spark.dataSource.register(RestapiDataSource)
+    df = (
+        spark.read.format("restapi")
+        .option("method", "POST")
+        .option("json_data.key_a", "value_a")
+        .option("json_data.key_b.nested_key", "value_b")
+        .load("httpbin.org/post")
+    )
+    assert df.count() > 0
+    assert len(df.columns) == 9
