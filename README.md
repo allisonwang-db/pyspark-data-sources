@@ -4,15 +4,24 @@
 
 This repository showcases custom Spark data sources built using the new [**Python Data Source API**](https://issues.apache.org/jira/browse/SPARK-44076) for the upcoming Apache Spark 4.0 release.
 For an in-depth understanding of the API, please refer to the [API source code](https://github.com/apache/spark/blob/master/python/pyspark/sql/datasource.py).
+Note this repo is **demo only** and please be aware that it is not intended for production use.
+Contributions and feedback are welcome to help improve the examples.
+
 
 ## Installation
 ```
-pip install pyspark-data-sources
+pip install pyspark-data-sources[all]
 ```
 
 ## Usage
 
-> **Note**: Currently the following code only works with Apache Spark `master` branch.
+Install the pyspark 4.0 preview version: https://pypi.org/project/pyspark/4.0.0.dev1/
+
+```
+pip install pyspark==4.0.0.dev1
+```
+
+Try the data sources!
 
 ```python
 from pyspark_datasources.github import GithubDataSource
@@ -23,6 +32,8 @@ spark.dataSource.register(GithubDataSource)
 spark.read.format("github").load("apache/spark").show()
 ```
 
+See more here: https://allisonwang-db.github.io/pyspark-data-sources/.
+
 ## Contributing
 We welcome and appreciate any contributions to enhance and expand the custom data sources. If you're interested in contributing:
 
@@ -31,3 +42,10 @@ We welcome and appreciate any contributions to enhance and expand the custom dat
 - **Report Bugs**: Found something that doesn't work as expected? Let us know by opening an issue.
 
 **Need help or have questions?** Don't hesitate to open a new issue, and we'll do our best to assist you.
+
+## Development
+
+### Build docs
+```
+mkdocs serve
+```

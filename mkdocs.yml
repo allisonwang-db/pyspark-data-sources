@@ -21,6 +21,7 @@ nav:
     - datasources/github.md
     - datasources/fake.md
     - datasources/huggingface.md
+    - datasources/stock.md
 
 markdown_extensions:
   - pymdownx.highlight:
