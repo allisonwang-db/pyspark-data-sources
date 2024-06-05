@@ -18,8 +18,10 @@ pip install pyspark-data-sources[all]
 Install the pyspark 4.0 preview version: https://pypi.org/project/pyspark/4.0.0.dev1/
 
 ```
-pip install pyspark==4.0.0.dev1
+pip install "pyspark[connect]==4.0.0.dev1"
 ```
+
+Or use Databricks Runtime 15.2 or above.
 
 Try the data sources!
 

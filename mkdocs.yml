@@ -22,6 +22,7 @@ nav:
     - datasources/fake.md
     - datasources/huggingface.md
     - datasources/stock.md
+    - datasources/simplejson.md
 
 markdown_extensions:
   - pymdownx.highlight:
