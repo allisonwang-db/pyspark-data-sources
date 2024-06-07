@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://allisonwang-db.github.io/pyspark-data-sources/datasources/github/">
+        <link rel="canonical" href="https://allisonwang-db.github.io/pyspark-data-sources/datasources/stock/">
       
       
-        <link rel="prev" href="../..">
+        <link rel="prev" href="../huggingface/">
       
       
-        <link rel="next" href="../fake/">
+        <link rel="next" href="../simplejson/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>GithubDataSource - PySpark Data Sources</title>
+        <title>StockDataSource - PySpark Data Sources</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#githubdatasource" class="md-skip">
+        <a href="#stockdatasource" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              GithubDataSource
+              StockDataSource
             
           </span>
         </div>
@@ -273,30 +273,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    GithubDataSource
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../github/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -305,35 +285,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#pyspark_datasources.github.GithubDataSource" class="md-nav__link">
-    <span class="md-ellipsis">
-      GithubDataSource
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -385,10 +336,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../stock/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    StockDataSource
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -397,6 +368,35 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyspark_datasources.stock.StockDataSource" class="md-nav__link">
+    <span class="md-ellipsis">
+      StockDataSource
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -457,9 +457,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pyspark_datasources.github.GithubDataSource" class="md-nav__link">
+  <a href="#pyspark_datasources.stock.StockDataSource" class="md-nav__link">
     <span class="md-ellipsis">
-      GithubDataSource
+      StockDataSource
     </span>
   </a>
   
@@ -483,47 +483,41 @@
   
 
 
-<h1 id="githubdatasource">GithubDataSource</h1>
+<h1 id="stockdatasource">StockDataSource</h1>
 
 
 <div class="doc doc-object doc-class">
 
 
 
-<a id="pyspark_datasources.github.GithubDataSource"></a>
+<a id="pyspark_datasources.stock.StockDataSource"></a>
   <div class="doc doc-contents first">
           <p class="doc doc-class-bases">
             Bases: <code><span title="pyspark.sql.datasource.DataSource">DataSource</span></code></p>
 
   
-      <p>A DataSource for reading pull requests data from Github.</p>
-<p>Name: <code>github</code></p>
-<p>Schema: <code>id int, title string, author string, created_at string, updated_at string</code></p>
+      <p>A data source for reading stock data using the Alpha Vantage API.</p>
 
 
 
 <p><strong>Examples:</strong></p>
-    <p>Register the data source.</p>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyspark_datasources</span> <span class="kn">import</span> <span class="n">GithubDataSource</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">spark</span><span class="o">.</span><span class="n">dataSource</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">GithubDataSource</span><span class="p">)</span>
-</code></pre></div>
-    <p>Load pull requests data from a public Github repository.</p>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;github&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;apache/spark&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">+---+--------------------+--------+--------------------+--------------------+</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">| id|               title|  author|          created_at|          updated_at|</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">+---+--------------------+--------+--------------------+--------------------+</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="go">|  1|Initial commit      |  matei |2014-02-03T18:47:...|2014-02-03T18:47:...|</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">|...|                 ...|     ...|                 ...|                 ...|</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">+---+--------------------+--------+--------------------+--------------------+</span>
-</code></pre></div>
-    <p>Load pull requests data from a private Github repository.</p>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;github&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;your-token&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;owner/repo&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <p>Load the daily stock data for SPY:</p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;stock&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span> <span class="s2">&quot;your-key&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;SPY&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">+----------+------+------+------+------+--------+------+</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">|      date|  open|  high|   low| close|  volume|symbol|</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="go">+----------+------+------+------+------+--------+------+</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">|2024-06-04|526.46|529.15|524.96|528.39|33898396|   SPY|</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">|2024-06-03|529.02|529.31| 522.6| 527.8|46835702|   SPY|</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">|2024-05-31|523.59| 527.5|518.36|527.37|90785755|   SPY|</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">|2024-05-30|524.52| 525.2|521.33|522.61|46468510|   SPY|</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">|2024-05-29|525.68|527.31|525.37| 526.1|45190323|   SPY|</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="go">+----------+------+------+------+------+--------+------+</span>
 </code></pre></div>
 
             <details class="quote">
-              <summary>Source code in <code>pyspark_datasources/github.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+              <summary>Source code in <code>pyspark_datasources/stock.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
 <span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-0-10">10</a></span>
 <span class="normal"><a href="#__codelineno-0-11">11</a></span>
@@ -555,50 +549,39 @@
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
 <span class="normal"><a href="#__codelineno-0-38">38</a></span>
 <span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="k">class</span> <span class="nc">GithubDataSource</span><span class="p">(</span><span class="n">DataSource</span><span class="p">):</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="sd">    A DataSource for reading pull requests data from Github.</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    Name: `github`</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    Schema: `id int, title string, author string, created_at string, updated_at string`</span>
+<span class="normal"><a href="#__codelineno-0-40">40</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="k">class</span> <span class="nc">StockDataSource</span><span class="p">(</span><span class="n">DataSource</span><span class="p">):</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">    A data source for reading stock data using the Alpha Vantage API.</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    Examples</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    --------</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Examples</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    --------</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    Register the data source.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    &gt;&gt;&gt; from pyspark_datasources import GithubDataSource</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    &gt;&gt;&gt; spark.dataSource.register(GithubDataSource)</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    Load pull requests data from a public Github repository.</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    &gt;&gt;&gt; spark.read.format(&quot;github&quot;).load(&quot;apache/spark&quot;).show()</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    +---+--------------------+--------+--------------------+--------------------+</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    | id|               title|  author|          created_at|          updated_at|</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    +---+--------------------+--------+--------------------+--------------------+</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    |  1|Initial commit      |  matei |2014-02-03T18:47:...|2014-02-03T18:47:...|</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    |...|                 ...|     ...|                 ...|                 ...|</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    +---+--------------------+--------+--------------------+--------------------+</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    Load pull requests data from a private Github repository.</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    &gt;&gt;&gt; spark.read.format(&quot;github&quot;).option(&quot;token&quot;, &quot;your-token&quot;).load(&quot;owner/repo&quot;).show()</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="nd">@classmethod</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="k">return</span> <span class="s2">&quot;github&quot;</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>        <span class="k">return</span> <span class="s2">&quot;id int, title string, author string, created_at string, updated_at string&quot;</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>    <span class="k">def</span> <span class="nf">reader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>        <span class="k">return</span> <span class="n">GithubPullRequestReader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Load the daily stock data for SPY:</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    &gt;&gt;&gt; df = spark.read.format(&quot;stock&quot;).option(&quot;api_key&quot;, &quot;your-key&quot;).load(&quot;SPY&quot;)</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    &gt;&gt;&gt; df.show(n=5)</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    +----------+------+------+------+------+--------+------+</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    |      date|  open|  high|   low| close|  volume|symbol|</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">    +----------+------+------+------+------+--------+------+</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    |2024-06-04|526.46|529.15|524.96|528.39|33898396|   SPY|</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    |2024-06-03|529.02|529.31| 522.6| 527.8|46835702|   SPY|</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    |2024-05-31|523.59| 527.5|518.36|527.37|90785755|   SPY|</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    |2024-05-30|524.52| 525.2|521.33|522.61|46468510|   SPY|</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    |2024-05-29|525.68|527.31|525.37| 526.1|45190323|   SPY|</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    +----------+------+------+------+------+--------+------+</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="nd">@classmethod</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>        <span class="k">return</span> <span class="s2">&quot;stock&quot;</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>        <span class="k">return</span> <span class="p">(</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>            <span class="s2">&quot;date string, open double, high double, &quot;</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>            <span class="s2">&quot;low double, close double, volume long, symbol string&quot;</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>        <span class="p">)</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="k">def</span> <span class="nf">reader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>        <span class="k">return</span> <span class="n">StockDataReader</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
 

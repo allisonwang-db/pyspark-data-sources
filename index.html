@@ -395,6 +395,48 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="datasources/stock/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StockDataSource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="datasources/simplejson/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SimpleJsonDataSource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -478,19 +520,16 @@
 <h2 id="installation">Installation</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pyspark-data-sources
 </code></pre></div>
-<p>If you want to install one of the extra dependencies, for example <code>datasets</code>, use</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pyspark-data-sources<span class="o">[</span>datasets<span class="o">]</span>
-</code></pre></div>
 <p>If you want to install all extra dependencies, use:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pyspark-data-sources<span class="o">[</span>all<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pyspark-data-sources<span class="o">[</span>all<span class="o">]</span>
 </code></pre></div>
 <h2 id="usage">Usage</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">pyspark_datasources</span> <span class="kn">import</span> <span class="n">GithubDataSource</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Register the data source</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">spark</span><span class="o">.</span><span class="n">dataSource</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">GithubDataSource</span><span class="p">)</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;github&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;apache/spark&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">pyspark_datasources</span> <span class="kn">import</span> <span class="n">GithubDataSource</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Register the data source</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">spark</span><span class="o">.</span><span class="n">dataSource</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">GithubDataSource</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;github&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;apache/spark&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="data-sources">Data Sources</h2>
 <table>
@@ -520,6 +559,18 @@
 <td><code>huggingface</code></td>
 <td>Read datasets from the HuggingFace Hub</td>
 <td><code>datasets</code></td>
+</tr>
+<tr>
+<td><a href="datasources/stock/">StockDataSource</a></td>
+<td><code>stock</code></td>
+<td>Read stock data from Alpha Vantage</td>
+<td>None</td>
+</tr>
+<tr>
+<td><a href="datasources/simplejson/">SimpleJsonDataSource</a></td>
+<td><code>simplejson</code></td>
+<td>Read JSON data from a file</td>
+<td><code>databricks-sdk</code></td>
 </tr>
 </tbody>
 </table>
