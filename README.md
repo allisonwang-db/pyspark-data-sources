@@ -47,6 +47,10 @@ We welcome and appreciate any contributions to enhance and expand the custom dat
 
 ## Development
 
+```
+poetry shell
+```
+
 ### Build docs
 ```
 mkdocs serve

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyspark-data-sources"
-version = "0.1.2"
+version = "0.1.5"
 description = "Custom Spark data sources for reading and writing data in Apache Spark, using the Python Data Source API"
 authors = ["allisonwang-db <allison.wang@databricks.com>"]
 license = "Apache License 2.0"
