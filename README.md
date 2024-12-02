@@ -15,13 +15,13 @@ pip install pyspark-data-sources[all]
 
 ## Usage
 
-Install the pyspark 4.0 preview version: https://pypi.org/project/pyspark/4.0.0.dev1/
+Install the pyspark 4.0 [preview version](https://pypi.org/project/pyspark/4.0.0.dev2/)
 
 ```
-pip install "pyspark[connect]==4.0.0.dev1"
+pip install "pyspark[connect]==4.0.0.dev2"
 ```
 
-Or use Databricks Runtime 15.2 or above.
+Or use Databricks Runtime 15.4 LTS or above.
 
 Try the data sources!
 
@@ -48,6 +48,7 @@ We welcome and appreciate any contributions to enhance and expand the custom dat
 ## Development
 
 ```
+poetry install
 poetry shell
 ```
 

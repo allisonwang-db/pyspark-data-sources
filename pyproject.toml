@@ -21,6 +21,7 @@ databricks-sdk = {version = "^0.28.0", optional = true}
 faker = ["faker"]
 datasets = ["datasets"]
 databricks = ["databricks-sdk"]
+lance = ["pylance"]
 all = ["faker", "datasets", "databricks"]
 
 [tool.poetry.group.dev.dependencies]
