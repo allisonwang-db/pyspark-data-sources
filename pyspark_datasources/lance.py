@@ -2,7 +2,7 @@ import lance
 import pyarrow as pa
 
 from dataclasses import dataclass
-from typing import Iterator
+from typing import Iterator, List
 from pyspark.sql.datasource import DataSource, DataSourceArrowWriter, WriterCommitMessage
 from pyspark.sql.pandas.types import to_arrow_schema
 
@@ -22,7 +22,7 @@ class LanceSink(DataSource):
 
     Create a Spark dataframe with 2 partitions:
 
-    >>> df = spark.range(0, 3, 1, 2)
+    >>> df = spark.createDataFrame([(1, "a"), (2, "b"), (3, "c")], schema="id int, value string")
 
     Save the dataframe in lance format:
 
@@ -58,7 +58,7 @@ class LanceSink(DataSource):
 
 @dataclass
 class LanceCommitMessage(WriterCommitMessage):
-    fragment: lance.FragmentMetadata
+    fragments: List[lance.FragmentMetadata]
 
 
 class LanceWriter(DataSourceArrowWriter):
@@ -78,18 +78,12 @@ class LanceWriter(DataSourceArrowWriter):
             return None
 
     def write(self, iterator: Iterator[pa.RecordBatch]):
-        from pyspark import TaskContext
-
-        context = TaskContext.get()
-        assert context is not None, "Unable to get TaskContext"
-        task_id = context.taskAttemptId()
-
         reader = pa.RecordBatchReader.from_batches(self.arrow_schema, iterator)
-        fragment = lance.LanceFragment.create(self.uri, reader, fragment_id=task_id, schema=self.arrow_schema)
-        return LanceCommitMessage(fragment=fragment)
+        fragments = lance.fragment.write_fragments(reader, self.uri, schema=self.arrow_schema)
+        return LanceCommitMessage(fragments=fragments)
 
     def commit(self, messages):
-        fragments = [msg.fragment for msg in messages]
+        fragments = [fragment for msg in messages for fragment in msg.fragments ]
         if self.read_version:
             # This means the dataset already exists.
             op = lance.LanceOperation.Append(fragments)
