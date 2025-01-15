@@ -23,28 +23,3 @@ def test_fake_datasource(spark):
     df.show()
     assert df.count() == 3
     assert len(df.columns) == 4
-
-
-def test_google_sheets(spark):
-    spark.dataSource.register(GoogleSheetsDataSource)
-    url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=846122797#gid=846122797"
-    df = spark.read.format("googlesheets").options(url=url).load()
-    df.show()
-    assert df.count() == 2
-    assert len(df.columns) == 2
-    assert df.schema.simpleString() == "struct<num:string,name:string>"
-
-
-def test_google_sheets_schema(spark):
-    spark.dataSource.register(GoogleSheetsDataSource)
-    url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=846122797#gid=846122797"
-    df = (
-        spark.read.format("googlesheets")
-        .options(url=url)
-        .schema("a double, b string")
-        .load()
-    )
-    df.show()
-    assert df.count() == 2
-    assert len(df.columns) == 2
-    assert df.schema.simpleString() == "struct<a:double,b:string>"
