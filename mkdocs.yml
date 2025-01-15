@@ -23,6 +23,7 @@ nav:
     - datasources/huggingface.md
     - datasources/stock.md
     - datasources/simplejson.md
+    - datasources/googlesheets.md
 
 markdown_extensions:
   - pymdownx.highlight:

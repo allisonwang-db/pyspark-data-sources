@@ -67,7 +67,7 @@ class GoogleSheetsDataSource(DataSource):
 
     Name: `googlesheets`
 
-    Schema: The first row of the sheet defines the column names. By default, all columns are treated as strings.
+    Schema: By default, all columns are treated as strings and the header row defines the column names.
 
     Examples
     --------
@@ -76,10 +76,20 @@ class GoogleSheetsDataSource(DataSource):
     >>> from pyspark_datasources import GoogleSheetsDataSource
     >>> spark.dataSource.register(GoogleSheetsDataSource)
 
-    Load data from a public Google Sheets document.
+    Load data from a public Google Sheets document using url.
 
     >>> url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=0#gid=0"
     >>> spark.read.format("googlesheets").options(url=url)
+    +-------+----------+-----------+--------------------+
+    |country|  latitude|  longitude|                name|
+    +-------+----------+-----------+--------------------+
+    |     AD| 42.546245|   1.601554|             Andorra|
+    |    ...|       ...|        ...|                 ...|
+    +-------+----------+-----------+--------------------+
+
+    Load data using `spreadsheet_id` and optional `sheet_id`.
+
+    >>> spark.read.format("googlesheets").options(spreadsheet_id="10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0", sheet_id="0")
     +-------+----------+-----------+--------------------+
     |country|  latitude|  longitude|                name|
     +-------+----------+-----------+--------------------+
@@ -96,11 +106,6 @@ class GoogleSheetsDataSource(DataSource):
     | AD| 42.546245|   1.601554|             Andorra|
     |...|       ...|        ...|                 ...|
     +---+----------+-----------+--------------------+
-
-    Options:
-    - 'url': The URL of the Google Sheets document.
-    - 'spreadsheet_id': The ID of the Google Sheets document.
-    - 'sheet_id': The ID of the worksheet within the document.
     """
 
     @classmethod
