@@ -67,7 +67,7 @@ class GoogleSheetsDataSource(DataSource):
 
     Name: `googlesheets`
 
-    Schema: The first row of the sheet defines the column names. All columns are treated as strings.
+    Schema: The first row of the sheet defines the column names. By default, all columns are treated as strings.
 
     Examples
     --------
@@ -78,13 +78,24 @@ class GoogleSheetsDataSource(DataSource):
 
     Load data from a public Google Sheets document.
 
-    >>> spark.read.format("googlesheets").options(url="https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=0#gid=0")
+    >>> url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=0#gid=0"
+    >>> spark.read.format("googlesheets").options(url=url)
     +-------+----------+-----------+--------------------+
     |country|  latitude|  longitude|                name|
     +-------+----------+-----------+--------------------+
     |     AD| 42.546245|   1.601554|             Andorra|
     |    ...|       ...|        ...|                 ...|
     +-------+----------+-----------+--------------------+
+
+    Specify custom schema.
+
+    >>> spark.read.format("googlesheets").options(url=url).schema("id string, lat double, long double, name string")
+    +---+----------+-----------+--------------------+
+    | id|       lat|       long|                name|
+    +---+----------+-----------+--------------------+
+    | AD| 42.546245|   1.601554|             Andorra|
+    |...|       ...|        ...|                 ...|
+    +---+----------+-----------+--------------------+
 
     Options:
     - 'url': The URL of the Google Sheets document.
@@ -97,8 +108,6 @@ class GoogleSheetsDataSource(DataSource):
         return "googlesheets"
 
     def __init__(self, options: Dict[str, str]):
-        import pandas as pd
-
         if "url" in options:
             self.sheet = Sheet.from_url(options["url"])
         elif "spreadsheet_id" in options:
@@ -109,13 +118,12 @@ class GoogleSheetsDataSource(DataSource):
             )
 
         # Infer schema from the first row
-        df = pd.read_csv(self.sheet.get_query_url("select * limit 0"))
-        self.inferred_schema = StructType(
-            [StructField(col, StringType()) for col in df.columns]
-        )
 
     def schema(self) -> StructType:
-        return self.inferred_schema
+        import pandas as pd
+
+        df = pd.read_csv(self.sheet.get_query_url("select * limit 0"))
+        return StructType([StructField(col, StringType()) for col in df.columns])
 
     def reader(self, schema: StructType) -> DataSourceReader:
         return GoogleSheetsReader(self.sheet, schema)
@@ -129,11 +137,18 @@ class GoogleSheetsReader(DataSourceReader):
     def read(self, partition):
         from urllib.request import urlopen
 
-        import pyarrow as pa
         from pyarrow import csv
+        from pyspark.sql.pandas.types import to_arrow_type
 
         convert_options = csv.ConvertOptions(
-            column_types={name: pa.string() for name in self.schema.fieldNames()}
+            column_types={
+                field.name: to_arrow_type(field.dataType) for field in self.schema
+            },
+        )
+        read_options = csv.ReadOptions(
+            column_names=self.schema.fieldNames(), skip_rows=1
         )
         with urlopen(self.sheet.get_query_url()) as file:
-            yield from csv.read_csv(file, convert_options=convert_options).to_batches()
+            yield from csv.read_csv(
+                file, read_options=read_options, convert_options=convert_options
+            ).to_batches()
