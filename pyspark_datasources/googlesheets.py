@@ -63,7 +63,7 @@ class Sheet:
 
 class GoogleSheetsDataSource(DataSource):
     """
-    A DataSource for reading table from Google Sheets.
+    A DataSource for reading table from public Google Sheets.
 
     Name: `googlesheets`
 
@@ -117,11 +117,10 @@ class GoogleSheetsDataSource(DataSource):
                 "You must specify a URL or spreadsheet_id in `.options()`."
             )
 
-        # Infer schema from the first row
-
     def schema(self) -> StructType:
         import pandas as pd
 
+        # Read schema from the first row of the sheet
         df = pd.read_csv(self.sheet.get_query_url("select * limit 0"))
         return StructType([StructField(col, StringType()) for col in df.columns])
 
@@ -140,13 +139,15 @@ class GoogleSheetsReader(DataSourceReader):
         from pyarrow import csv
         from pyspark.sql.pandas.types import to_arrow_type
 
+        # Specify column types based on the schema
         convert_options = csv.ConvertOptions(
             column_types={
                 field.name: to_arrow_type(field.dataType) for field in self.schema
             },
         )
         read_options = csv.ReadOptions(
-            column_names=self.schema.fieldNames(), skip_rows=1
+            column_names=self.schema.fieldNames(),  # Rename columns
+            skip_rows=1,  # Skip the header row
         )
         with urlopen(self.sheet.get_query_url()) as file:
             yield from csv.read_csv(
