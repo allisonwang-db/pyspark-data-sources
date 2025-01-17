@@ -1,5 +1,5 @@
 import pytest
-from pyspark.errors.exceptions.captured import AnalysisException
+from pyspark.errors.exceptions.captured import AnalysisException, PythonException
 
 from pyspark_datasources import GoogleSheetsDataSource
 
@@ -58,3 +58,26 @@ def test_custom_schema(spark):
     assert df.count() == 2
     assert len(df.columns) == 2
     assert df.schema.simpleString() == "struct<a:double,b:string>"
+
+
+def test_custom_schema_mismatch_count(spark):
+    spark.dataSource.register(GoogleSheetsDataSource)
+    url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=846122797#gid=846122797"
+    df = spark.read.format("googlesheets").options(url=url).schema("a double").load()
+    with pytest.raises(PythonException) as excinfo:
+        df.show()
+    assert "CSV parse error" in str(excinfo.value)
+
+
+def test_custom_schema_mismatch_type(spark):
+    spark.dataSource.register(GoogleSheetsDataSource)
+    url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=846122797#gid=846122797"
+    df = (
+        spark.read.format("googlesheets")
+        .options(url=url)
+        .schema("a double, b double")
+        .load()
+    )
+    with pytest.raises(PythonException) as excinfo:
+        df.show()
+    assert "CSV conversion error" in str(excinfo.value)
