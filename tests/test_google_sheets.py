@@ -1,13 +1,18 @@
 import pytest
 from pyspark.errors.exceptions.captured import AnalysisException, PythonException
+from pyspark.sql import SparkSession
 
 from pyspark_datasources import GoogleSheetsDataSource
 
-from .test_data_sources import spark
+
+@pytest.fixture(scope="module")
+def spark():
+    spark = SparkSession.builder.getOrCreate()
+    spark.dataSource.register(GoogleSheetsDataSource)
+    yield spark
 
 
 def test_url(spark):
-    spark.dataSource.register(GoogleSheetsDataSource)
     url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=846122797#gid=846122797"
     df = spark.read.format("googlesheets").options(url=url).load()
     df.show()
@@ -17,11 +22,8 @@ def test_url(spark):
 
 
 def test_spreadsheet_id(spark):
-    spark.dataSource.register(GoogleSheetsDataSource)
-    df = (
-        spark.read.format("googlesheets")
-        .options(spreadsheet_id="10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0")
-        .load()
+    df = spark.read.format("googlesheets").load(
+        "10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0"
     )
     df.show()
     assert df.count() == 2
@@ -29,14 +31,12 @@ def test_spreadsheet_id(spark):
 
 
 def test_missing_options(spark):
-    spark.dataSource.register(GoogleSheetsDataSource)
     with pytest.raises(AnalysisException) as excinfo:
         spark.read.format("googlesheets").load()
     assert "ValueError" in str(excinfo.value)
 
 
 def test_mutual_exclusive_options(spark):
-    spark.dataSource.register(GoogleSheetsDataSource)
     with pytest.raises(AnalysisException) as excinfo:
         spark.read.format("googlesheets").options(
             url="a",
@@ -46,7 +46,6 @@ def test_mutual_exclusive_options(spark):
 
 
 def test_custom_schema(spark):
-    spark.dataSource.register(GoogleSheetsDataSource)
     url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=846122797#gid=846122797"
     df = (
         spark.read.format("googlesheets")
@@ -61,7 +60,6 @@ def test_custom_schema(spark):
 
 
 def test_custom_schema_mismatch_count(spark):
-    spark.dataSource.register(GoogleSheetsDataSource)
     url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=846122797#gid=846122797"
     df = spark.read.format("googlesheets").options(url=url).schema("a double").load()
     with pytest.raises(PythonException) as excinfo:
@@ -69,15 +67,37 @@ def test_custom_schema_mismatch_count(spark):
     assert "CSV parse error" in str(excinfo.value)
 
 
-def test_custom_schema_mismatch_type(spark):
-    spark.dataSource.register(GoogleSheetsDataSource)
-    url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=846122797#gid=846122797"
+def test_unnamed_column(spark):
+    url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=1579451727#gid=1579451727"
+    df = spark.read.format("googlesheets").options(url=url).load()
+    df.show()
+    assert df.count() == 1
+    assert df.columns == ["Unnamed: 0", "1", "Unnamed: 2"]
+
+
+def test_duplicate_column(spark):
+    url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=1875209731#gid=1875209731"
+    df = spark.read.format("googlesheets").options(url=url).load()
+    df.show()
+    assert df.count() == 1
+    assert df.columns == ["a", "a.1"]
+
+
+def test_no_header_row(spark):
+    url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=1579451727#gid=1579451727"
     df = (
         spark.read.format("googlesheets")
-        .options(url=url)
-        .schema("a double, b double")
+        .schema("a int, b int, c int")
+        .options(url=url, has_header="false")
         .load()
     )
-    with pytest.raises(PythonException) as excinfo:
-        df.show()
-    assert "CSV conversion error" in str(excinfo.value)
+    df.show()
+    assert df.count() == 2
+    assert len(df.columns) == 3
+
+
+def test_empty(spark):
+    url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=2123944555#gid=2123944555"
+    with pytest.raises(AnalysisException) as excinfo:
+        spark.read.format("googlesheets").options(url=url).load()
+    assert "EmptyDataError" in str(excinfo.value)
