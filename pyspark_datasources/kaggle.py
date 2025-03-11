@@ -17,8 +17,8 @@ class KaggleDataSource(DataSource):
 
     Options
     -------
-    - `handle`: The dataset handle on Kaggle, in the form of {owner_slug}/{dataset_slug}
-        or {owner_slug}/{dataset_slug}/versions/{version_number}
+    - `handle`: The dataset handle on Kaggle, in the form of `{owner_slug}/{dataset_slug}`
+        or `{owner_slug}/{dataset_slug}/versions/{version_number}`
     - `path`: The path to a file within the dataset.
     - `username`: The Kaggle username for authentication.
     - `key`: The Kaggle API key for authentication.
