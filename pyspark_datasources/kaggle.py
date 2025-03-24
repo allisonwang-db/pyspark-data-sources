@@ -1,3 +1,4 @@
+import tempfile
 from functools import cached_property
 from typing import Iterator
 
@@ -65,8 +66,6 @@ class KaggleDataSource(DataSource):
         import ast
         import os
 
-        import kagglehub
-
         handle = self.options.pop("handle")
         path = self.options.pop("path")
         username = self.options.pop("username", None)
@@ -80,13 +79,19 @@ class KaggleDataSource(DataSource):
             os.environ["KAGGLE_KEY"] = key
 
         kwargs = {k: ast.literal_eval(v) for k, v in self.options.items()}
-        df = kagglehub.dataset_load(
-            kagglehub.KaggleDatasetAdapter.PANDAS,
-            handle,
-            path,
-            **kwargs,
-        )
-        return pa.Table.from_pandas(df)
+
+        # Cache in a temporary directory to avoid writing to ~ which may be read-only
+        with tempfile.TemporaryDirectory() as tmpdir:
+            os.environ["KAGGLEHUB_CACHE"] = tmpdir
+            import kagglehub
+
+            df = kagglehub.dataset_load(
+                kagglehub.KaggleDatasetAdapter.PANDAS,
+                handle,
+                path,
+                **kwargs,
+            )
+            return pa.Table.from_pandas(df)
 
     def schema(self) -> StructType:
         return from_arrow_schema(self._data.schema)
