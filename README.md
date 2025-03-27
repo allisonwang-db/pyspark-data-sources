@@ -14,14 +14,14 @@ pip install pyspark-data-sources[all]
 ```
 
 ## Usage
-
-Install the pyspark 4.0 [preview version](https://pypi.org/project/pyspark/4.0.0.dev2/)
+Make sure you use pyspark 4.0. You can install pyspark 4.0 [preview version](https://pypi.org/project/pyspark/4.0.0.dev2/)
 
 ```
 pip install "pyspark[connect]==4.0.0.dev2"
 ```
 
-Or use Databricks Runtime 15.4 LTS or above.
+Or use [Databricks Runtime 15.4 LTS](https://docs.databricks.com/aws/en/release-notes/runtime/15.4lts) or above versions, or [Databricks Serverless](https://docs.databricks.com/aws/en/compute/serverless/).
+
 
 Try the data sources!
 
@@ -51,6 +51,13 @@ We welcome and appreciate any contributions to enhance and expand the custom dat
 poetry install
 poetry shell
 ```
+
+### Install PySpark from the latest Spark master
+- Clone the Apache Spark repo: `git clone git@github.com:apache/spark.git`
+- Build Spark: `build/sbt clean package`
+- Build PySpark: `cd python/packaging/classic && python setup.py sdist`
+- Install PySpark: `poetry run pip install <path-to-spark-repo>/python/dist/pyspark-4.1.0.dev0.tar.gz`
+
 
 ### Build docs
 ```
