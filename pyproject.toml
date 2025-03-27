@@ -25,7 +25,7 @@ datasets = ["datasets"]
 databricks = ["databricks-sdk"]
 kaggle = ["kagglehub"]
 lance = ["pylance"]
-all = ["faker", "datasets", "databricks", "kaggle"]
+all = ["faker", "datasets", "databricks-sdk", "kagglehub"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
