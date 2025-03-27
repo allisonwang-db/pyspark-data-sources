@@ -1,11 +1,13 @@
 import tempfile
 from functools import cached_property
-from typing import Iterator
+from typing import TYPE_CHECKING, Iterator
 
-import pyarrow as pa
 from pyspark.sql.datasource import DataSource, DataSourceReader
 from pyspark.sql.pandas.types import from_arrow_schema
 from pyspark.sql.types import StructType
+
+if TYPE_CHECKING:
+    import pyarrow as pa
 
 
 class KaggleDataSource(DataSource):
@@ -62,9 +64,11 @@ class KaggleDataSource(DataSource):
         return "kaggle"
 
     @cached_property
-    def _data(self) -> pa.Table:
+    def _data(self) -> "pa.Table":
         import ast
         import os
+
+        import pyarrow as pa
 
         handle = self.options.pop("handle")
         path = self.options.pop("path")
@@ -104,5 +108,5 @@ class KaggleDataReader(DataSourceReader):
     def __init__(self, source: KaggleDataSource):
         self.source = source
 
-    def read(self, partition) -> Iterator[pa.RecordBatch]:
+    def read(self, partition) -> Iterator["pa.RecordBatch"]:
         yield from self.source._data.to_batches()
