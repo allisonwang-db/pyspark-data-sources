@@ -2227,5 +2227,5 @@ lance = []
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.9"
-content-hash = "748fab1b6b6b7276909086e95e76139170d32865fa4dba5c728f910356b21dcf"
+python-versions = ">=3.9,<=3.12"
+content-hash = "32d6fca8c7a9332cb9e52ddf2a78ec319c1a6eda838031b9c752430ce0c30f39"

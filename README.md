@@ -48,7 +48,7 @@ We welcome and appreciate any contributions to enhance and expand the custom dat
 ## Development
 
 ```
-poetry install
+poetry install --all-extras
 poetry shell
 ```
 
