@@ -4,3 +4,4 @@ from .googlesheets import GoogleSheetsDataSource
 from .huggingface import HuggingFaceDatasets
 from .simplejson import SimpleJsonDataSource
 from .stock import StockDataSource
+from .pokemon import PokemonDataSource
