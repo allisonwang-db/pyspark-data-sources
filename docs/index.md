@@ -36,3 +36,4 @@ spark.read.format("github").load("apache/spark").show()
 | [StockDataSource](./datasources/stock.md)               | `stock`        | Read stock data from Alpha Vantage            | None             |
 | [SimpleJsonDataSource](./datasources/simplejson.md)     | `simplejson`   | Read JSON data from a file                    | `databricks-sdk` |
 | [GoogleSheetsDataSource](./datasources/googlesheets.md) | `googlesheets` | Read table from public Google Sheets document | None             |
+| [PokemonDataSource](./datasources/pokemon.md)           | `pokemon`      | Read Pokemon data from the PokeAPI            | None             |
