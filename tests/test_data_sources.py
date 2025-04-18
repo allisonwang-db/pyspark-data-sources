@@ -23,3 +23,11 @@ def test_fake_datasource(spark):
     df.show()
     assert df.count() == 3
     assert len(df.columns) == 4
+
+
+def test_kaggle_datasource(spark):
+    spark.dataSource.register(KaggleDataSource)
+    df = spark.read.format("kaggle").options(handle="yasserh/titanic-dataset").load("Titanic-Dataset.csv")
+    df.show()
+    assert df.count() == 891
+    assert len(df.columns) == 12
