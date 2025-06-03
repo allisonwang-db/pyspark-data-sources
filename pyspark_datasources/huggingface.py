@@ -4,7 +4,7 @@ from pyspark.sql.types import StructType, StructField, StringType
 
 class HuggingFaceDatasets(DataSource):
     """
-    A DataSource for reading HuggingFace Datasets in Spark.
+    An example data source for reading HuggingFace Datasets in Spark.
 
     This data source allows reading public datasets from the HuggingFace Hub directly into Spark
     DataFrames. The schema is automatically inferred from the dataset features. The split can be
@@ -14,6 +14,7 @@ class HuggingFaceDatasets(DataSource):
 
     Notes:
     -----
+    - Please use the official HuggingFace Datasets API: https://github.com/huggingface/pyspark_huggingface.
     - The HuggingFace `datasets` library is required to use this data source. Make sure it is installed.
     - If the schema is automatically inferred, it will use string type for all fields.
     - Currently it can only be used with public datasets. Private or gated ones are not supported.
