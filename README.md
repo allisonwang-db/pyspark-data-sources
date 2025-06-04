@@ -1,10 +1,10 @@
-# pyspark-data-sources
+# PySpark Data Sources
 
 [![pypi](https://img.shields.io/pypi/v/pyspark-data-sources.svg?color=blue)](https://pypi.org/project/pyspark-data-sources/)
 
 This repository showcases custom Spark data sources built using the new [**Python Data Source API**](https://spark.apache.org/docs/4.0.0/api/python/tutorial/sql/python_data_source.html) introduced in Apache Spark 4.0.
 For an in-depth understanding of the API, please refer to the [API source code](https://github.com/apache/spark/blob/master/python/pyspark/sql/datasource.py).
-Note this repo is **demo only** and please be aware that it is not intended for production use.
+Note this repo is demo only and please be aware that it is not intended for production use.
 Contributions and feedback are welcome to help improve the examples.
 
 
@@ -30,16 +30,21 @@ from pyspark_datasources.fake import FakeDataSource
 spark.dataSource.register(FakeDataSource)
 
 spark.read.format("fake").load().show()
+
+# For streaming data generation
+spark.readStream.format("fake").load().writeStream.format("console").start()
 ```
 
 ## Example Data Sources
 
-| Data Source | Short Name | Description | Dependencies |
-|-------------|------------|-------------|--------------|
-| [GithubDataSource](pyspark_datasources/github.py) | `github` | Read pull requests from a Github repository | None |
-| [FakeDataSource](pyspark_datasources/fake.py) | `fake` | Generate fake data using the `Faker` library | None |
-| [StockDataSource](pyspark_datasources/stock.py) | `stock` | Read stock data from Alpha Vantage | None |
-| [SimpleJsonDataSource](pyspark_datasources/simplejson.py) | `simplejson` | Read JSON data from a file | `databricks-sdk` |
+| Data Source                                                             | Short Name     | Description                                   | Dependencies          |
+|-------------------------------------------------------------------------|----------------|-----------------------------------------------|-----------------------|
+| [GithubDataSource](pyspark_datasources/github.py)                      | `github`       | Read pull requests from a Github repository  | None                  |
+| [FakeDataSource](pyspark_datasources/fake.py)                          | `fake`         | Generate fake data using the `Faker` library | `faker`               |
+| [StockDataSource](pyspark_datasources/stock.py)                        | `stock`        | Read stock data from Alpha Vantage           | None                  |
+| [GoogleSheetsDataSource](pyspark_datasources/googlesheets.py)          | `googlesheets` | Read table from public Google Sheets        | None                  |
+| [KaggleDataSource](pyspark_datasources/kaggle.py)                      | `kaggle`       | Read datasets from Kaggle                    | `kagglehub`, `pandas` |
+| [SimpleJsonDataSource](pyspark_datasources/simplejson.py)              | `simplejson`   | Write JSON data to Databricks DBFS                 | `databricks-sdk`      |
 
 See more here: https://allisonwang-db.github.io/pyspark-data-sources/.
 
@@ -47,9 +52,9 @@ See more here: https://allisonwang-db.github.io/pyspark-data-sources/.
 
 For production use, consider these official data source implementations built with the Python Data Source API:
 
-| Data Source | Repository | Description | Features |
-|-------------|------------|-------------|----------|
-| **HuggingFace Datasets** | [@huggingface/pyspark_huggingface](https://github.com/huggingface/pyspark_huggingface) | Production-ready Spark Data Source for 🤗 Hugging Face Datasets | • Stream datasets as Spark DataFrames<br>• Select subsets/splits with filters<br>• Authentication support<br>• Save DataFrames to Hugging Face<br> |
+| Data Source              | Repository                                                                                    | Description                                              | Features                                                                                                                                   |
+|--------------------------|-----------------------------------------------------------------------------------------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| **HuggingFace Datasets** | [@huggingface/pyspark_huggingface](https://github.com/huggingface/pyspark_huggingface)       | Production-ready Spark Data Source for 🤗 Hugging Face Datasets | • Stream datasets as Spark DataFrames<br>• Select subsets/splits with filters<br>• Authentication support<br>• Save DataFrames to Hugging Face<br> |
 
 ## Contributing
 We welcome and appreciate any contributions to enhance and expand the custom data sources.:
@@ -62,8 +67,8 @@ We welcome and appreciate any contributions to enhance and expand the custom dat
 ## Development
 ### Environment Setup
 ```
-poetry install --all-extras
-poetry shell
+poetry install
+poetry env activate
 ```
 
 ### Build Docs

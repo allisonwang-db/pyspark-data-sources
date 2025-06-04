@@ -17,12 +17,15 @@ pip install pyspark-data-sources[all]
 ## Usage
 
 ```python
-from pyspark_datasources import GithubDataSource
+from pyspark_datasources.fake import FakeDataSource
 
 # Register the data source
-spark.dataSource.register(GithubDataSource)
+spark.dataSource.register(FakeDataSource)
 
-spark.read.format("github").load("apache/spark").show()
+spark.read.format("fake").load().show()
+
+# For streaming data generation
+spark.readStream.format("fake").load().writeStream.format("console").start()
 ```
 
 
@@ -34,6 +37,6 @@ spark.read.format("github").load("apache/spark").show()
 | [FakeDataSource](./datasources/fake.md)                 | `fake`         | Generate fake data using the `Faker` library  | `faker`               |
 | [HuggingFaceDatasets](./datasources/huggingface.md)     | `huggingface`  | Read datasets from the HuggingFace Hub        | `datasets`            |
 | [StockDataSource](./datasources/stock.md)               | `stock`        | Read stock data from Alpha Vantage            | None                  |
-| [SimpleJsonDataSource](./datasources/simplejson.md)     | `simplejson`   | Read JSON data from a file                    | `databricks-sdk`      |
+| [SimpleJsonDataSource](./datasources/simplejson.md)     | `simplejson`   | Write JSON data to Databricks DBFS            | `databricks-sdk`      |
 | [GoogleSheetsDataSource](./datasources/googlesheets.md) | `googlesheets` | Read table from public Google Sheets document | None                  |
 | [KaggleDataSource](./datasources/kaggle.md)             | `kaggle`       | Read datasets from Kaggle                     | `kagglehub`, `pandas` |
