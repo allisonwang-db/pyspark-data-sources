@@ -45,6 +45,7 @@ spark.readStream.format("fake").load().writeStream.format("console").start()
 | [GoogleSheetsDataSource](pyspark_datasources/googlesheets.py)          | `googlesheets` | Read table from public Google Sheets        | None                  |
 | [KaggleDataSource](pyspark_datasources/kaggle.py)                      | `kaggle`       | Read datasets from Kaggle                    | `kagglehub`, `pandas` |
 | [SimpleJsonDataSource](pyspark_datasources/simplejson.py)              | `simplejson`   | Write JSON data to Databricks DBFS                 | `databricks-sdk`      |
+| [OpenSkyDataSource](pyspark_datasources/opensky.py)                 | `opensky`      | Read from OpenSky Network.                   | None.                  |
 
 See more here: https://allisonwang-db.github.io/pyspark-data-sources/.
 
