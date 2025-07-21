@@ -14,7 +14,7 @@ Features:
 Usage Example (Academic/Research):
     # Basic usage with region NORTH_AMERICA
     df = spark.readStream.format("opensky").load()
-    
+
     # With specific region and authentication
     df = spark.readStream.format("opensky") \
         .option("region", "EUROPE") \
@@ -37,7 +37,7 @@ Data Attribution:
     When using this data in research or publications, please cite:
     "The OpenSky Network, https://opensky-network.org"
 
-Author: Frank Munz, Databricks  - Example Only, No Warranty
+Author: Frank Munz, Databricks - Example Only, No Warranty
 Purpose: Educational Example / Academic Research Tool
 Version: 1.0
 Last Updated: July-2025
@@ -56,13 +56,11 @@ Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic and Matth
 "Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research".
 In Proceedings of the 13th IEEE/ACM International Symposium on Information Processing in Sensor Networks (IPSN), pages 83-94, April 2014.
 
-
 DISCLAIMER & LIABILITY:
 This code is provided "AS IS" for educational purposes only. The author and Databricks make no warranties, express or implied, and disclaim all liability for any damages, losses, or issues arising from the use of this code. Users assume full responsibility for compliance with all applicable terms of service, laws, and regulations. Use at your own risk.
 
 For commercial use, contact OpenSky Network directly.
 ================================================================================
-
 
 """
 
@@ -106,7 +104,7 @@ class RateLimitError(OpenSkyAPIError):
     pass
 
 class OpenSkyStreamReader(SimpleDataSourceStreamReader):
-    
+
     DEFAULT_REGION = "NORTH_AMERICA"
     MIN_REQUEST_INTERVAL = 5.0  # seconds between requests
     ANONYMOUS_RATE_LIMIT = 100  # calls per day
@@ -114,26 +112,26 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
     MAX_RETRIES = 3
     RETRY_BACKOFF = 2
     RETRY_STATUS_CODES = [429, 500, 502, 503, 504]
-    
+
     def __init__(self, schema: StructType, options: Dict[str, str]):
         super().__init__()
         self.schema = schema
         self.options = options
         self.session = self._create_session()
         self.last_request_time = 0
-        
+
         region_name = options.get('region', self.DEFAULT_REGION).upper()
         try:
             self.bbox = Region[region_name].value
         except KeyError:
             print(f"Invalid region '{region_name}'. Defaulting to {self.DEFAULT_REGION}.")
             self.bbox = Region[self.DEFAULT_REGION].value
-        
+
         self.client_id = options.get('client_id')
         self.client_secret = options.get('client_secret')
         self.access_token = None
         self.token_expires_at = 0
-        
+
         if self.client_id and self.client_secret:
             self._get_access_token()  # OAuth2 authentication
             self.rate_limit = self.AUTHENTICATED_RATE_LIMIT
@@ -145,23 +143,23 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
         current_time = time.time()
         if self.access_token and current_time < self.token_expires_at:
             return  # Token still valid
-            
+
         token_url = "https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token"
         data = {
             "grant_type": "client_credentials",
             "client_id": self.client_id,
             "client_secret": self.client_secret
         }
-        
+
         try:
             response = requests.post(token_url, data=data, timeout=10)
             response.raise_for_status()
             token_data = response.json()
-            
+
             self.access_token = token_data["access_token"]
             expires_in = token_data.get("expires_in", 1800)
             self.token_expires_at = current_time + expires_in - 300
-            
+
         except requests.exceptions.RequestException as e:
             raise OpenSkyAPIError(f"Failed to get access token: {str(e)}")
 
@@ -185,31 +183,31 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
         """Ensure e MIN_REQUEST_INTERVAL seconds between requests"""
         current_time = time.time()
         time_since_last_request = current_time - self.last_request_time
-        
+
         if time_since_last_request < self.MIN_REQUEST_INTERVAL:
             sleep_time = self.MIN_REQUEST_INTERVAL - time_since_last_request
             time.sleep(sleep_time)
-        
+
         self.last_request_time = time.time()
 
     def _fetch_states(self) -> requests.Response:
         """Fetch states from OpenSky API with error handling"""
         self._handle_rate_limit()
-        
+
         if self.client_id and self.client_secret:
             self._get_access_token()
-        
+
         params = {
             'lamin': self.bbox.lamin,
             'lamax': self.bbox.lamax,
             'lomin': self.bbox.lomin,
             'lomax': self.bbox.lomax
         }
-        
+
         headers = {}
         if self.access_token:
             headers['Authorization'] = f'Bearer {self.access_token}'
-        
+
         try:
             response = self.session.get(
                 "https://opensky-network.org/api/states/all",
@@ -217,13 +215,13 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
                 headers=headers,
                 timeout=10
             )
-            
+
             if response.status_code == 429:
                 raise RateLimitError("API rate limit exceeded")
             response.raise_for_status()
-            
+
             return response
-            
+
         except requests.exceptions.RequestException as e:
             error_msg = f"API request failed: {str(e)}"
             if isinstance(e, requests.exceptions.Timeout):
@@ -236,7 +234,7 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
         """Validate state data"""
         if not state or len(state) < 17:
             return False
-        
+
         return (state[0] is not None and  # icao24
                 state[5] is not None and  # longitude
                 state[6] is not None)     # latitude
@@ -282,24 +280,24 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
     def readBetweenOffsets(self, start: Dict[str, int], end: Dict[str, int]) -> Iterator[Tuple]:
         data, _ = self.read(start)
         return iter(data)
-        
+
     def read(self, start: Dict[str, int]) -> Tuple[List[Tuple], Dict[str, int]]:
         """Read states with error handling and backoff"""
         try:
             response = self._fetch_states()
             data = response.json()
-            
+
             valid_states = [
                 self.parse_state(s, data['time'])
                 for s in data.get('states', [])
                 if self.valid_state(s)
             ]
-            
+
             return (
                 valid_states,
                 {'last_fetch': data.get('time', int(time.time()))}
             )
-            
+
         except OpenSkyAPIError as e:
             print(f"OpenSky API Error: {str(e)}")
             return ([], start)
@@ -307,14 +305,135 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
             print(f"Unexpected error: {str(e)}")
             return ([], start)
 
+
 class OpenSkyDataSource(DataSource):
+    """
+    Apache Spark DataSource for streaming real-time aircraft tracking data from OpenSky Network.
+
+    This data source provides access to live aircraft position, velocity, and flight data
+    from the OpenSky Network's REST API (https://opensky-network.org/). The OpenSky Network
+    is a community-based receiver network that collects air traffic surveillance data using
+    ADS-B transponders and makes it available as open data for research and educational purposes.
+
+    The data source supports streaming aircraft state vectors including position coordinates,
+    altitude, velocity, heading, call signs, and various flight status information for aircraft
+    within configurable geographic regions.
+
+    Parameters
+    ----------
+    options : Dict[str, str], optional
+        Configuration options for the data source. Supported options:
+
+        region : str, default "NORTH_AMERICA"
+            Geographic region to collect data from. Valid options:
+            - "EUROPE": European airspace (35°N-72°N, 25°W-45°E)
+            - "NORTH_AMERICA": North American airspace (7°N-72°N, 168°W-60°W)
+            - "SOUTH_AMERICA": South American airspace (56°S-15°N, 90°W-30°W)
+            - "ASIA": Asian airspace (10°S-82°N, 45°E-180°E)
+            - "AUSTRALIA": Australian airspace (50°S-10°S, 110°E-180°E)
+            - "AFRICA": African airspace (35°S-37°N, 20°W-52°E)
+            - "GLOBAL": Worldwide coverage (90°S-90°N, 180°W-180°E)
+
+        client_id : str, optional
+            OAuth2 client ID for authenticated access. Increases rate limit from
+            100 to 4000 API calls per day. Requires corresponding client_secret.
+
+        client_secret : str, optional
+            OAuth2 client secret for authenticated access. Must be provided when
+            client_id is specified.
+
+    Examples
+    --------
+    Basic usage with default North America region:
+
+    >>> df = spark.readStream.format("opensky").load()
+    >>> query = df.writeStream.format("console").start()
+
+    Specify a different region:
+
+    >>> df = spark.readStream.format("opensky") \\
+    ...     .option("region", "EUROPE") \\
+    ...     .load()
+
+    Authenticated access for higher rate limits:
+
+    >>> df = spark.readStream.format("opensky") \\
+    ...     .option("region", "ASIA") \\
+    ...     .option("client_id", "your_research_client_id") \\
+    ...     .option("client_secret", "your_research_client_secret") \\
+    ...     .load()
+
+    Process aircraft data with filtering:
+
+    >>> df = spark.readStream.format("opensky").load()
+    >>> commercial_flights = df.filter(df.callsign.isNotNull() & (df.geo_altitude > 10000))
+    >>> query = commercial_flights.writeStream.format("delta").option("path", "/tmp/flights").start()
+
+    Schema
+    ------
+    The returned DataFrame contains the following columns:
+
+    - time_ingest (TimestampType): When the data was ingested
+    - icao24 (StringType): Unique ICAO 24-bit address of the aircraft
+    - callsign (StringType): Flight number or aircraft call sign
+    - origin_country (StringType): Country where aircraft is registered
+    - time_position (TimestampType): Last position update timestamp
+    - last_contact (TimestampType): Last time aircraft was seen
+    - longitude (DoubleType): Aircraft longitude in decimal degrees
+    - latitude (DoubleType): Aircraft latitude in decimal degrees
+    - geo_altitude (DoubleType): Aircraft altitude above sea level in meters
+    - on_ground (BooleanType): Whether aircraft is on ground
+    - velocity (DoubleType): Ground speed in m/s
+    - true_track (DoubleType): Track angle in degrees (0° = north)
+    - vertical_rate (DoubleType): Climb/descent rate in m/s
+    - sensors (ArrayType[IntegerType]): Sensor IDs that detected aircraft
+    - baro_altitude (DoubleType): Barometric altitude in meters
+    - squawk (StringType): Transponder squawk code
+    - spi (BooleanType): Special Position Identification flag
+    - category (IntegerType): Aircraft category (0-15)
+
+    Rate Limits
+    -----------
+    - Anonymous access: 100 API calls per day
+    - Authenticated access: 4000 API calls per day (research accounts)
+    - Data contributors: 8000 API calls per day
+    - Minimum 5-second interval between requests
+
+    Raises
+    ------
+    ValueError
+        If client_id is provided without client_secret, or if an invalid region is specified.
+
+    Notes
+    -----
+    - This data source is intended for academic research and educational purposes only
+    - Commercial use requires explicit permission from OpenSky Network
+    - Users must comply with OpenSky Network Terms of Use
+    - All timestamps are in UTC timezone
+    - Data may have gaps due to receiver coverage limitations
+    - API rate limits are enforced automatically with exponential backoff
+
+    References
+    ----------
+    OpenSky Network: https://opensky-network.org/
+    API Documentation: https://opensky-network.org/apidoc/
+    Terms of Use: https://opensky-network.org/about/terms-of-use
+
+    Citation
+    --------
+    When using this data in research, please cite:
+    Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic and Matthias Wilhelm.
+    "Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research".
+    In Proceedings of the 13th IEEE/ACM International Symposium on Information Processing
+    in Sensor Networks (IPSN), pages 83-94, April 2014.
+    """
     def __init__(self, options: Dict[str, str] = None):
         super().__init__(options or {})
         self.options = options or {}
-        
+
         if 'client_id' in self.options and not self.options.get('client_secret'):
             raise ValueError("client_secret must be provided when client_id is set")
-        
+
         if 'region' in self.options and self.options['region'].upper() not in Region.__members__:
             raise ValueError(f"Invalid region. Must be one of: {', '.join(Region.__members__.keys())}")
 
@@ -346,5 +465,3 @@ class OpenSkyDataSource(DataSource):
 
     def simpleStreamReader(self, schema: StructType) -> OpenSkyStreamReader:
         return OpenSkyStreamReader(schema, self.options)
-
-spark.dataSource.register(OpenSkyDataSource)
