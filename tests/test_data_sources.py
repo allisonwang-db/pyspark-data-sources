@@ -183,9 +183,11 @@ def test_jsonplaceholder_posts():
      assert posts_df.count() > 0 # Ensure we have some posts
 
 
-def test_jsonplaceholder_users():
+def test_jsonplaceholder_referential_integrity():
     from pyspark_datasources.jsonplaceholder import JSONPlaceholderDataSource
     spark.dataSource.register(JSONPlaceholderDataSource)
     users_df = spark.read.format("jsonplaceholder").option("endpoint", "users").load()
     assert users_df.count() > 0 # Ensure we have some users
-
+    posts_df = spark.read.format("jsonplaceholder").option("endpoint", "posts").load()
+    posts_with_authors = posts_df.join(users_df, posts_df.userId == users_df.id)
+    assert posts_with_authors.count() > 0  # Ensure join is valid and we have posts with authors

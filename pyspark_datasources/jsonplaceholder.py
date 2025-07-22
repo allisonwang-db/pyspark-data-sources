@@ -1,5 +1,3 @@
-# pyspark_datasources/jsonplaceholder.py
-
 from typing import Dict, Any, List, Iterator
 import requests
 from pyspark.sql.datasource import DataSource, DataSourceReader, InputPartition
@@ -45,6 +43,29 @@ class JSONPlaceholderDataSource(DataSource):
     Read specific item:
 
     >>> spark.read.format("jsonplaceholder").option("endpoint", "posts").option("id", "1").load().show()
+
+    Referential Integrity
+    -------------------
+    The data source supports joining related datasets:
+
+    1. Posts and Users relationship:
+        posts.userId = users.id
+        >>> posts_df = spark.read.format("jsonplaceholder").option("endpoint", "posts").load()
+        >>> users_df = spark.read.format("jsonplaceholder").option("endpoint", "users").load()
+        >>> posts_with_authors = posts_df.join(users_df, posts_df.userId == users_df.id)
+
+    2. Posts and Comments relationship:
+        comments.postId = posts.id
+        >>> comments_df = spark.read.format("jsonplaceholder").option("endpoint", "comments").load()
+        >>> posts_with_comments = posts_df.join(comments_df, posts_df.id == comments_df.postId)
+
+    3. Users, Albums and Photos relationship:
+        albums.userId = users.id
+        photos.albumId = albums.id
+        >>> albums_df = spark.read.format("jsonplaceholder").option("endpoint", "albums").load()
+        >>> photos_df = spark.read.format("jsonplaceholder").option("endpoint", "photos").load()
+        >>> user_albums = users_df.join(albums_df, users_df.id == albums_df.userId)
+        >>> user_photos = user_albums.join(photos_df, albums_df.id == photos_df.albumId)
     """
 
     @classmethod
