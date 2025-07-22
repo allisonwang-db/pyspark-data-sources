@@ -72,7 +72,6 @@ def test_opensky_datasource_stream(spark):
     assert len(result.columns) == 18  # Check schema has expected number of fields
     assert result.count() > 0  # Verify we got some data
 
-
 def test_salesforce_datasource_registration(spark):
     """Test that Salesforce DataSource can be registered and validates required options."""
     spark.dataSource.register(SalesforceDataSource)
@@ -176,3 +175,17 @@ def test_arrow_datasource_multiple_files(spark):
         rows = df.collect()
         names = {row["name"] for row in rows}
         assert names == {"Alice", "Bob", "Charlie", "Diana"}
+
+def test_jsonplaceholder_posts():
+     from pyspark_datasources.jsonplaceholder import JSONPlaceholderDataSource
+     spark.dataSource.register(JSONPlaceholderDataSource)
+     posts_df = spark.read.format("jsonplaceholder").option("endpoint", "posts").load()
+     assert posts_df.count() > 0 # Ensure we have some posts
+
+
+def test_jsonplaceholder_users():
+    from pyspark_datasources.jsonplaceholder import JSONPlaceholderDataSource
+    spark.dataSource.register(JSONPlaceholderDataSource)
+    users_df = spark.read.format("jsonplaceholder").option("endpoint", "users").load()
+    assert users_df.count() > 0 # Ensure we have some users
+

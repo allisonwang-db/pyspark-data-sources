@@ -41,3 +41,4 @@ spark.readStream.format("fake").load().writeStream.format("console").start()
 | [SalesforceDataSource](./datasources/salesforce.md)     | `pyspark.datasource.salesforce`   | Write streaming data to Salesforce objects    |`simple-salesforce`    |
 | [GoogleSheetsDataSource](./datasources/googlesheets.md) | `googlesheets` | Read table from public Google Sheets document | None                  |
 | [KaggleDataSource](./datasources/kaggle.md)             | `kaggle`       | Read datasets from Kaggle                     | `kagglehub`, `pandas` |
+| [JSONPlaceHolder](./datasources/jsonplaceholder.md)     | `jsonplaceholder` | Read JSON data for testing and prototyping | None                  |
