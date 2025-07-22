@@ -33,6 +33,7 @@ grpcio = "^1.60.1"
 grpcio-status = "^1.60.1"
 pandas = "^2.2.0"
 mkdocs-material = "^9.5.40"
+pyspark = "4.0.0"
 
 [build-system]
 requires = ["poetry-core"]
