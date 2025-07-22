@@ -1,4 +1,6 @@
 from typing import List
+from datetime import datetime, timedelta
+import random
 
 from pyspark.sql.datasource import (
     DataSource,
@@ -6,7 +8,7 @@ from pyspark.sql.datasource import (
     DataSourceStreamReader,
     InputPartition,
 )
-from pyspark.sql.types import StringType, StructType
+from pyspark.sql.types import StringType, StructType, TimestampType
 
 
 def _validate_faker_schema(schema):
@@ -19,18 +21,26 @@ def _validate_faker_schema(schema):
     fake = Faker()
     for field in schema.fields:
         try:
-            getattr(fake, field.name)()
+            if field.dataType == StringType():
+                getattr(fake, field.name)()
+            elif field.dataType == TimestampType():
+                continue
         except AttributeError:
             raise Exception(
                 f"Unable to find a method called `{field.name}` in faker. "
                 f"Please check Faker's documentation to see supported methods."
             )
-        if field.dataType != StringType():
+        if field.dataType not in (StringType(), TimestampType()):
             raise Exception(
-                f"Field `{field.name}` is not a StringType. "
+                f"Field `{field.name}` is not a StringType or TimestampType(). "
                 f"Only StringType is supported in the fake datasource."
             )
 
+class GenerateDateTime:
+
+    @classmethod
+    def randomDate(cls):
+        return datetime.utcnow() + timedelta(days = random.randint(-365, 0), hours = random.randint(-23, 0), minutes = random.randint(-59, 0), seconds = random.randint(-59, 0), milliseconds = random.randint(-999, 0))
 
 class FakeDataSource(DataSource):
     """
@@ -140,7 +150,7 @@ class FakeDataSourceReader(DataSourceReader):
         for _ in range(num_rows):
             row = []
             for field in self.schema.fields:
-                value = getattr(fake, field.name)()
+                value = getattr(fake, field.name)() if field.dataType == StringType() else getattr(GenerateDateTime, 'randomDate')()
                 row.append(value)
             yield tuple(row)
 
