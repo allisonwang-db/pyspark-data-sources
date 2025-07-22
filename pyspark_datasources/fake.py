@@ -39,7 +39,7 @@ def _validate_faker_schema(schema):
 class GenerateDateTime:
 
     @classmethod
-    def randomDate(cls):
+    def random_datetime(cls):
         return datetime.utcnow() + timedelta(days = random.randint(-365, 0), hours = random.randint(-23, 0), minutes = random.randint(-59, 0), seconds = random.randint(-59, 0), microseconds = random.randint(-999000, 0))
 
 class FakeDataSource(DataSource):
@@ -150,7 +150,7 @@ class FakeDataSourceReader(DataSourceReader):
         for _ in range(num_rows):
             row = []
             for field in self.schema.fields:
-                value = getattr(fake, field.name)() if field.dataType == StringType() else getattr(GenerateDateTime, 'randomDate')()
+                value = getattr(fake, field.name)() if field.dataType == StringType() else getattr(GenerateDateTime, 'random_datetime')()
                 row.append(value)
             yield tuple(row)
 
