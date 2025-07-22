@@ -39,7 +39,7 @@ def _validate_faker_schema(schema):
 class GenerateDateTime:
 
     @classmethod
-    def random_datetime(cls):
+    def random_datetime(cls) -> datetime:
         return datetime.utcnow() + timedelta(days = random.randint(-365, 0), hours = random.randint(-23, 0), minutes = random.randint(-59, 0), seconds = random.randint(-59, 0), microseconds = random.randint(-999000, 0))
 
 class FakeDataSource(DataSource):
