@@ -18,6 +18,7 @@ mkdocstrings = {extras = ["python"], version = "^0.28.0"}
 datasets = {version = "^2.17.0", optional = true}
 databricks-sdk = {version = "^0.28.0", optional = true}
 kagglehub = {extras = ["pandas-datasets"], version = "^0.3.10", optional = true}
+pylance = {version = "^0.31.0", optional = true}
 
 [tool.poetry.extras]
 faker = ["faker"]
@@ -25,7 +26,7 @@ datasets = ["datasets"]
 databricks = ["databricks-sdk"]
 kaggle = ["kagglehub"]
 lance = ["pylance"]
-all = ["faker", "datasets", "databricks-sdk", "kagglehub"]
+all = ["faker", "datasets", "databricks-sdk", "kagglehub", "pylance"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
@@ -33,7 +34,7 @@ grpcio = "^1.60.1"
 grpcio-status = "^1.60.1"
 pandas = "^2.2.0"
 mkdocs-material = "^9.5.40"
-pyspark = "4.0.0"
+pyspark = ">=4.0.0,<4.1.0"
 
 [build-system]
 requires = ["poetry-core"]
