@@ -33,14 +33,14 @@ def _validate_faker_schema(schema):
         if field.dataType not in (StringType(), TimestampType()):
             raise Exception(
                 f"Field `{field.name}` is not a StringType or TimestampType(). "
-                f"Only StringType is supported in the fake datasource."
+                f"Only StringType and TimestampType are supported in the fake datasource."
             )
 
 class GenerateDateTime:
 
     @classmethod
     def randomDate(cls):
-        return datetime.utcnow() + timedelta(days = random.randint(-365, 0), hours = random.randint(-23, 0), minutes = random.randint(-59, 0), seconds = random.randint(-59, 0), milliseconds = random.randint(-999, 0))
+        return datetime.utcnow() + timedelta(days = random.randint(-365, 0), hours = random.randint(-23, 0), minutes = random.randint(-59, 0), seconds = random.randint(-59, 0), microseconds = random.randint(-999000, 0))
 
 class FakeDataSource(DataSource):
     """
