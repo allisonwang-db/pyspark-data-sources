@@ -29,6 +29,7 @@ all = ["faker", "datasets", "databricks-sdk", "kagglehub"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
+pytest-cov = "^4.0.0"
 grpcio = "^1.60.1"
 grpcio-status = "^1.60.1"
 pandas = "^2.2.0"
