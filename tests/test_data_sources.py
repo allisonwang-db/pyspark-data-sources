@@ -2,7 +2,7 @@ import pytest
 
 from pyspark.sql import SparkSession
 from pyspark_datasources import *
-from pyspark.sql.types import *
+from pyspark.sql.types import TimestampType
 
 @pytest.fixture
 def spark():

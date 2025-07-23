@@ -150,7 +150,7 @@ class FakeDataSourceReader(DataSourceReader):
         for _ in range(num_rows):
             row = []
             for field in self.schema.fields:
-                value = getattr(fake, field.name)() if field.dataType == StringType() else getattr(GenerateDateTime, 'random_datetime')()
+                value = getattr(fake, field.name)() if field.dataType == StringType() else GenerateDateTime.random_datetime()
                 row.append(value)
             yield tuple(row)
 
@@ -179,6 +179,6 @@ class FakeDataSourceStreamReader(DataSourceStreamReader):
         for _ in range(partition.value):
             row = []
             for field in self.schema.fields:
-                value = getattr(fake, field.name)() if field.dataType == StringType() else getattr(GenerateDateTime, 'random_datetime')()
+                value = getattr(fake, field.name)() if field.dataType == StringType() else GenerateDateTime.random_datetime()
                 row.append(value)
             yield tuple(row)
