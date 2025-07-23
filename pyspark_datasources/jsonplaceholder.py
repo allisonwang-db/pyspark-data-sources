@@ -1,5 +1,6 @@
 from typing import Dict, Any, List, Iterator
 import requests
+import logging
 from pyspark.sql.datasource import DataSource, DataSourceReader, InputPartition
 from pyspark.sql.types import StructType
 from pyspark.sql import Row
@@ -76,26 +77,22 @@ class JSONPlaceholderDataSource(DataSource):
         self.options = options or {}
 
     def schema(self) -> str:
-        endpoint = self.options.get("endpoint", "posts")
+        """ Returns the schema for the selected endpoint."""
+        schemas = {
+            "posts": "userId INT, id INT, title STRING, body STRING",
+            "users": ("id INT, name STRING, username STRING, email STRING, phone STRING, "
+                      "website STRING, address_street STRING, address_suite STRING, "
+                      "address_city STRING, address_zipcode STRING, address_geo_lat STRING, "
+                      "address_geo_lng STRING, company_name STRING, company_catchPhrase STRING, "
+                      "company_bs STRING"),
+            "todos": "userId INT, id INT, title STRING, completed BOOLEAN",
+            "comments": "postId INT, id INT, name STRING, email STRING, body STRING",
+            "albums": "userId INT, id INT, title STRING",
+            "photos": "albumId INT, id INT, title STRING, url STRING, thumbnailUrl STRING"
+        }
 
-        if endpoint == "posts":
-            return "userId INT, id INT, title STRING, body STRING"
-        elif endpoint == "users":
-            return ("id INT, name STRING, username STRING, email STRING, phone STRING, "
-                    "website STRING, address_street STRING, address_suite STRING, "
-                    "address_city STRING, address_zipcode STRING, address_geo_lat STRING, "
-                    "address_geo_lng STRING, company_name STRING, company_catchPhrase STRING, "
-                    "company_bs STRING")
-        elif endpoint == "todos":
-            return "userId INT, id INT, title STRING, completed BOOLEAN"
-        elif endpoint == "comments":
-            return "postId INT, id INT, name STRING, email STRING, body STRING"
-        elif endpoint == "albums":
-            return "userId INT, id INT, title STRING"
-        elif endpoint == "photos":
-            return "albumId INT, id INT, title STRING, url STRING, thumbnailUrl STRING"
-        else:
-            return "userId INT, id INT, title STRING, body STRING"
+        endpoint = self.options.get("endpoint", "posts")
+        return schemas.get(endpoint, schemas["posts"])
 
     def reader(self, schema: StructType) -> DataSourceReader:
         return JSONPlaceholderReader(self.options)
@@ -136,20 +133,22 @@ class JSONPlaceholderReader(DataSourceReader):
             elif not isinstance(data, list):
                 data = []
 
-            processed_data = []
-            for item in data:
-                processed_item = self._process_item(item)
-                processed_data.append(processed_item)
+            return iter([self._process_item(item) for item in data])
 
-            return iter(processed_data)
-
-        except Exception:
+        except requests.RequestException as e:
+            logging.warning(f"Failed to fetch data from {url}: {e}")
+            return iter([])
+        except ValueError as e:
+            logging.warning(f"Failed to parse JSON from {url}: {e}")
+            return iter([])
+        except Exception as e:
+            logging.error(f"Unexpected error while reading data: {e}")
             return iter([])
 
     def _process_item(self, item: Dict[str, Any]) -> Row:
         """Process individual items based on endpoint type"""
 
-        if self.endpoint == "posts":
+        def _process_posts(item):
             return Row(
                 userId=item.get("userId"),
                 id=item.get("id"),
@@ -157,7 +156,7 @@ class JSONPlaceholderReader(DataSourceReader):
                 body=item.get("body", "")
             )
 
-        elif self.endpoint == "users":
+        def _process_users(item):
             address = item.get("address", {})
             geo = address.get("geo", {})
             company = item.get("company", {})
@@ -180,7 +179,7 @@ class JSONPlaceholderReader(DataSourceReader):
                 company_bs=company.get("bs", "")
             )
 
-        elif self.endpoint == "todos":
+        def _process_todos(item):
             return Row(
                 userId=item.get("userId"),
                 id=item.get("id"),
@@ -188,7 +187,7 @@ class JSONPlaceholderReader(DataSourceReader):
                 completed=item.get("completed", False)
             )
 
-        elif self.endpoint == "comments":
+        def _process_comments(item):
             return Row(
                 postId=item.get("postId"),
                 id=item.get("id"),
@@ -197,14 +196,14 @@ class JSONPlaceholderReader(DataSourceReader):
                 body=item.get("body", "")
             )
 
-        elif self.endpoint == "albums":
+        def _process_albums(item):
             return Row(
                 userId=item.get("userId"),
                 id=item.get("id"),
                 title=item.get("title", "")
             )
 
-        elif self.endpoint == "photos":
+        def _process_photos(item):
             return Row(
                 albumId=item.get("albumId"),
                 id=item.get("id"),
@@ -213,10 +212,14 @@ class JSONPlaceholderReader(DataSourceReader):
                 thumbnailUrl=item.get("thumbnailUrl", "")
             )
 
-        else:
-            return Row(
-                userId=item.get("userId"),
-                id=item.get("id"),
-                title=item.get("title", ""),
-                body=item.get("body", "")
-            )
+        processors = {
+            "posts": _process_posts,
+            "users": _process_users,
+            "todos": _process_todos,
+            "comments": _process_comments,
+            "albums": _process_albums,
+            "photos": _process_photos
+        }
+
+        processor = processors.get(self.endpoint, _process_posts)
+        return processor(item)

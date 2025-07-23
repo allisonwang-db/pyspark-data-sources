@@ -177,14 +177,12 @@ def test_arrow_datasource_multiple_files(spark):
         assert names == {"Alice", "Bob", "Charlie", "Diana"}
 
 def test_jsonplaceholder_posts():
-     from pyspark_datasources.jsonplaceholder import JSONPlaceholderDataSource
      spark.dataSource.register(JSONPlaceholderDataSource)
      posts_df = spark.read.format("jsonplaceholder").option("endpoint", "posts").load()
      assert posts_df.count() > 0 # Ensure we have some posts
 
 
 def test_jsonplaceholder_referential_integrity():
-    from pyspark_datasources.jsonplaceholder import JSONPlaceholderDataSource
     spark.dataSource.register(JSONPlaceholderDataSource)
     users_df = spark.read.format("jsonplaceholder").option("endpoint", "users").load()
     assert users_df.count() > 0 # Ensure we have some users
