@@ -2,7 +2,7 @@ import pytest
 
 from pyspark.sql import SparkSession
 from pyspark_datasources import *
-
+from pyspark.sql.types import *
 
 @pytest.fixture
 def spark():
@@ -30,14 +30,20 @@ def test_fake_datasource_stream(spark):
     )
     spark.sql("SELECT * FROM result").show()
     assert spark.sql("SELECT * FROM result").count() == 3
+    df = spark.table("result")
+    df_datatypes = [d.dataType for d in df.schema.fields]
+    assert len(df.columns) == 5
+    assert TimestampType() in df_datatypes
 
 
 def test_fake_datasource(spark):
     spark.dataSource.register(FakeDataSource)
     df = spark.read.format("fake").load()
+    df_datatypes = [d.dataType for d in df.schema.fields]
     df.show()
     assert df.count() == 3
-    assert len(df.columns) == 4
+    assert len(df.columns) == 5
+    assert TimestampType() in df_datatypes
 
 
 def test_kaggle_datasource(spark):

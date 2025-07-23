@@ -124,7 +124,7 @@ class FakeDataSource(DataSource):
         return "fake"
 
     def schema(self):
-        return "name string, date string, zipcode string, state string"
+        return "name string, date string, zipcode string, state string, creationDate timestamp"
 
     def reader(self, schema: StructType) -> "FakeDataSourceReader":
         _validate_faker_schema(schema)
@@ -179,6 +179,6 @@ class FakeDataSourceStreamReader(DataSourceStreamReader):
         for _ in range(partition.value):
             row = []
             for field in self.schema.fields:
-                value = getattr(fake, field.name)()
+                value = getattr(fake, field.name)() if field.dataType == StringType() else getattr(GenerateDateTime, 'random_datetime')()
                 row.append(value)
             yield tuple(row)
