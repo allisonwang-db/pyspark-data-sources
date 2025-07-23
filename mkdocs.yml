@@ -25,6 +25,7 @@ nav:
     - datasources/simplejson.md
     - datasources/googlesheets.md
     - datasources/kaggle.md
+    - datasources/jsonplaceholder.md
 
 markdown_extensions:
   - pymdownx.highlight:

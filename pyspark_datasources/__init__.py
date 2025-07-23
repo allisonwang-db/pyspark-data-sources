@@ -6,3 +6,4 @@ from .kaggle import KaggleDataSource
 from .opensky import OpenSkyDataSource
 from .simplejson import SimpleJsonDataSource
 from .stock import StockDataSource
+from .jsonplaceholder import JSONPlaceholderDataSource
