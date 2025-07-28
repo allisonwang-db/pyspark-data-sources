@@ -38,5 +38,6 @@ spark.readStream.format("fake").load().writeStream.format("console").start()
 | [HuggingFaceDatasets](./datasources/huggingface.md)     | `huggingface`  | Read datasets from the HuggingFace Hub        | `datasets`            |
 | [StockDataSource](./datasources/stock.md)               | `stock`        | Read stock data from Alpha Vantage            | None                  |
 | [SimpleJsonDataSource](./datasources/simplejson.md)     | `simplejson`   | Write JSON data to Databricks DBFS            | `databricks-sdk`      |
+| [SalesforceDataSource](./datasources/salesforce.md)     | `salesforce`   | Write streaming data to Salesforce objects    | None                  |
 | [GoogleSheetsDataSource](./datasources/googlesheets.md) | `googlesheets` | Read table from public Google Sheets document | None                  |
 | [KaggleDataSource](./datasources/kaggle.md)             | `kaggle`       | Read datasets from Kaggle                     | `kagglehub`, `pandas` |
