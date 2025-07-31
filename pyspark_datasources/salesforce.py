@@ -17,20 +17,23 @@ class SalesforceCommitMessage(WriterCommitMessage):
 
 class SalesforceDataSource(DataSource):
     """
-    A Salesforce streaming data source for PySpark to write data to Salesforce objects.
+    A Salesforce streaming sink for PySpark to write data to Salesforce objects.
 
-    This data source enables writing streaming data from Spark to Salesforce using the
+    This data sink enables writing streaming data from Spark to Salesforce using the
     Salesforce REST API. It supports common Salesforce objects like Account, Contact,
     Opportunity, and custom objects.
+
+    Note: This is a write-only sink, not a full bidirectional data source.
 
     Name: `salesforce`
 
     Notes
     -----
     - Requires the `simple-salesforce` library for Salesforce API integration
-    - Only supports streaming write operations (not read operations)
+    - **Write-only sink**: Only supports streaming write operations (no read operations)
     - Uses Salesforce username/password/security token authentication
-    - Supports streaming processing for efficient API usage
+    - Supports batch writing with Salesforce Composite Tree API for efficient processing
+    - Implements exactly-once semantics through Spark's checkpoint mechanism
 
     Parameters
     ----------
@@ -49,7 +52,7 @@ class SalesforceDataSource(DataSource):
 
     Examples
     --------
-    Register the data source:
+    Register the Salesforce sink:
 
     >>> from pyspark_datasources import SalesforceDataSource
     >>> spark.dataSource.register(SalesforceDataSource)
@@ -70,7 +73,7 @@ class SalesforceDataSource(DataSource):
     ...     (col("value") * 100000).cast("double").alias("AnnualRevenue")
     ... )
     >>> 
-    >>> # Write to Salesforce
+    >>> # Write to Salesforce using the sink
     >>> query = account_data.writeStream \\
     ...     .format("salesforce") \\
     ...     .option("username", "your-username@company.com") \\
@@ -78,7 +81,7 @@ class SalesforceDataSource(DataSource):
     ...     .option("security_token", "your-security-token") \\
     ...     .option("salesforce_object", "Account") \\
     ...     .option("batch_size", "100") \\
-    ...     .option("schema", "Name STRING NOT NULL, Industry STRING, Phone STRING, Website STRING, AnnualRevenue DOUBLE, NumberOfEmployees INT, BillingStreet STRING, BillingCity STRING, BillingState STRING, BillingPostalCode STRING, BillingCountry STRING") \\
+    ...     .option("checkpointLocation", "/path/to/checkpoint") \\
     ...     .start()
 
     Write to Salesforce Contacts:
@@ -95,6 +98,7 @@ class SalesforceDataSource(DataSource):
     ...     .option("password", "your-password") \\
     ...     .option("security_token", "your-security-token") \\
     ...     .option("salesforce_object", "Contact") \\
+    ...     .option("checkpointLocation", "/path/to/checkpoint") \\
     ...     .start()
 
     Write to custom Salesforce objects:
@@ -110,12 +114,21 @@ class SalesforceDataSource(DataSource):
     ...     .option("password", "your-password") \\
     ...     .option("security_token", "your-security-token") \\
     ...     .option("salesforce_object", "Custom_Object__c") \\
+    ...     .option("checkpointLocation", "/path/to/checkpoint") \\
     ...     .start()
+    
+    Key Features:
+    
+    - **Write-only sink**: Designed specifically for writing data to Salesforce
+    - **Batch processing**: Uses Salesforce Composite Tree API for efficient bulk writes
+    - **Exactly-once semantics**: Integrates with Spark's checkpoint mechanism
+    - **Error handling**: Graceful fallback to individual record creation if batch fails
+    - **Flexible schema**: Supports any Salesforce object with proper field mapping
     """
 
     @classmethod
     def name(cls) -> str:
-        """Return the short name for this data source."""
+        """Return the short name for this Salesforce sink."""
         return "salesforce"
 
     def schema(self) -> str:
@@ -143,12 +156,12 @@ class SalesforceDataSource(DataSource):
         """
 
     def streamWriter(self, schema: StructType, overwrite: bool) -> "SalesforceStreamWriter":
-        """Create a stream writer for Salesforce integration."""
+        """Create a stream writer for Salesforce sink integration."""
         return SalesforceStreamWriter(schema, self.options)
 
 
 class SalesforceStreamWriter(DataSourceStreamWriter):
-    """Stream writer implementation for Salesforce integration."""
+    """Stream writer implementation for Salesforce sink integration."""
 
     def __init__(self, schema: StructType, options: Dict[str, str]):
         self.schema = schema
