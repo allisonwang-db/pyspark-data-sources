@@ -78,6 +78,7 @@ class SalesforceDataSource(DataSource):
     ...     .option("security_token", "your-security-token") \\
     ...     .option("salesforce_object", "Account") \\
     ...     .option("batch_size", "100") \\
+    ...     .option("schema", "Name STRING NOT NULL, Industry STRING, Phone STRING, Website STRING, AnnualRevenue DOUBLE, NumberOfEmployees INT, BillingStreet STRING, BillingCity STRING, BillingState STRING, BillingPostalCode STRING, BillingCountry STRING") \\
     ...     .start()
 
     Write to Salesforce Contacts:
@@ -119,10 +120,14 @@ class SalesforceDataSource(DataSource):
 
     def schema(self) -> str:
         """
-        Define the default schema for Salesforce Account objects.
-        
-        This schema can be overridden by users when creating their DataFrame.
+        Return the schema for Salesforce objects.
+
+        If the user provides a 'schema' option, use it.
+        Otherwise, return the default Account schema.
         """
+        user_schema = self.options.get("schema")
+        if user_schema:
+            return user_schema
         return """
             Name STRING NOT NULL,
             Industry STRING,
@@ -199,28 +204,42 @@ class SalesforceStreamWriter(DataSourceStreamWriter):
             logger.error(f"Failed to connect to Salesforce: {str(e)}")
             raise ConnectionError(f"Salesforce connection failed: {str(e)}")
         
-        # Convert rows to Salesforce records
-        records = []
+        # Convert rows to Salesforce records and write in batches to avoid memory issues
+        records_buffer = []
+        total_records_written = 0
+
+        def flush_buffer():
+            nonlocal total_records_written
+            if records_buffer:
+                try:
+                    written = self._write_to_salesforce(sf, records_buffer, batch_id)
+                    logger.info(f"✅ Batch {batch_id}: Successfully wrote {written} records (buffer flush)")
+                    total_records_written += written
+                except Exception as e:
+                    logger.error(f"❌ Batch {batch_id}: Failed to write records during buffer flush: {str(e)}")
+                    raise
+                records_buffer.clear()
+
         for row in iterator:
             try:
                 record = self._convert_row_to_salesforce_record(row)
                 if record:  # Only add non-empty records
-                    records.append(record)
+                    records_buffer.append(record)
+                    if len(records_buffer) >= self.batch_size:
+                        flush_buffer()
             except Exception as e:
                 logger.warning(f"Failed to convert row to Salesforce record: {str(e)}")
-        
-        if not records:
+
+        # Flush any remaining records in the buffer
+        if records_buffer:
+            flush_buffer()
+
+        if total_records_written == 0:
             logger.info(f"No valid records to write in batch {batch_id}")
-            return SalesforceCommitMessage(records_written=0, batch_id=batch_id)
-        
-        # Write records to Salesforce
-        try:
-            records_written = self._write_to_salesforce(sf, records, batch_id)
-            logger.info(f"✅ Batch {batch_id}: Successfully wrote {records_written} records")
-            return SalesforceCommitMessage(records_written=records_written, batch_id=batch_id)
-        except Exception as e:
-            logger.error(f"❌ Batch {batch_id}: Failed to write records: {str(e)}")
-            raise
+        else:
+            logger.info(f"✅ Batch {batch_id}: Successfully wrote {total_records_written} records (total)")
+
+        return SalesforceCommitMessage(records_written=total_records_written, batch_id=batch_id)
 
     def _convert_row_to_salesforce_record(self, row) -> Dict[str, Any]:
         """Convert a Spark Row to a Salesforce record format."""
@@ -250,45 +269,79 @@ class SalesforceStreamWriter(DataSourceStreamWriter):
         """Write records to Salesforce using REST API."""
         success_count = 0
         
-        # Get the Salesforce object API
-        try:
-            sf_object = getattr(sf, self.salesforce_object)
-        except AttributeError:
-            raise ValueError(f"Salesforce object '{self.salesforce_object}' not found")
-        
-        # Process records in batches
+        # Process records in batches using sObject Collections API
         for i in range(0, len(records), self.batch_size):
             batch_records = records[i:i + self.batch_size]
             
-            for j, record in enumerate(batch_records):
-                try:
-                    # Create the record in Salesforce
-                    result = sf_object.create(record)
-                    
-                    if result.get('success'):
-                        success_count += 1
+            try:
+                # Use Composite Tree API for batch creation (up to 200 records)
+                # Prepare records for batch API
+                collection_records = []
+                for idx, record in enumerate(batch_records):
+                    # Add required attributes for Composite Tree API
+                    record_with_attributes = {
+                        "attributes": {
+                            "type": self.salesforce_object,
+                            "referenceId": f"ref{i + idx}"
+                        },
+                        **record
+                    }
+                    collection_records.append(record_with_attributes)
+                
+                # Make batch API call using Composite Tree API
+                # This API is specifically designed for batch inserts
+                payload = {
+                    "records": collection_records
+                }
+                
+                response = sf.restful(
+                    f'composite/tree/{self.salesforce_object}',
+                    method='POST',
+                    json=payload
+                )
+                
+                # Count successful records
+                # Composite Tree API returns a different response format
+                if isinstance(response, dict):
+                    # Check if the batch was successful
+                    if response.get('hasErrors', True) is False:
+                        # All records in the batch were created successfully
+                        success_count += len(batch_records)
                     else:
-                        logger.warning(f"Failed to create record {i+j}: {result.get('errors', 'Unknown error')}")
-                        
-                except Exception as e:
-                    logger.error(f"Error creating record {i+j}: {str(e)}")
+                        # Some records failed, check individual results
+                        results = response.get('results', [])
+                        for result in results:
+                            if 'id' in result:
+                                success_count += 1
+                            else:
+                                errors = result.get('errors', [])
+                                for error in errors:
+                                    logger.warning(f"Failed to create record {result.get('referenceId', 'unknown')}: {error.get('message', 'Unknown error')}")
+                else:
+                    logger.error(f"Unexpected response format: {response}")
+                    
+            except Exception as e:
+                logger.error(f"Error in batch creation for batch {i//self.batch_size + 1}: {str(e)}")
+                # Fallback to individual record creation for this batch
+                try:
+                    sf_object = getattr(sf, self.salesforce_object)
+                    for j, record in enumerate(batch_records):
+                        try:
+                            # Create the record in Salesforce
+                            result = sf_object.create(record)
+                            
+                            if result.get('success'):
+                                success_count += 1
+                            else:
+                                logger.warning(f"Failed to create record {i+j}: {result.get('errors', 'Unknown error')}")
+                                
+                        except Exception as e:
+                            logger.error(f"Error creating record {i+j}: {str(e)}")
+                except AttributeError:
+                    raise ValueError(f"Salesforce object '{self.salesforce_object}' not found")
             
             # Log progress for large batches
             if len(records) > 50 and (i + self.batch_size) % 100 == 0:
                 logger.info(f"Batch {batch_id}: Processed {i + self.batch_size}/{len(records)} records")
         
         return success_count
-
-    def commit(self, messages: List[SalesforceCommitMessage], batch_id: int) -> None:
-        """Commit the write operation."""
-        total_records = sum(msg.records_written for msg in messages if msg is not None)
-        total_batches = len([msg for msg in messages if msg is not None])
-        
-        logger.info(f"✅ Commit batch {batch_id}: Successfully wrote {total_records} records across {total_batches} batches")
-
-    def abort(self, messages: List[SalesforceCommitMessage], batch_id: int) -> None:
-        """Abort the write operation."""
-        total_batches = len([msg for msg in messages if msg is not None])
-        logger.warning(f"❌ Abort batch {batch_id}: Rolling back {total_batches} batches")
-        # Note: Salesforce doesn't support transaction rollback for individual records
-        # Records that were successfully created will remain in Salesforce
