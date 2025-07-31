@@ -49,6 +49,10 @@ class SalesforceDataSource(DataSource):
         Number of records to process per batch (default: "200")
     instance_url : str, optional
         Custom Salesforce instance URL (auto-detected if not provided)
+    schema : str, optional
+        Custom schema definition for the Salesforce object. If not provided,
+        uses the default Account schema. Should be in Spark SQL DDL format.
+        Example: "Name STRING NOT NULL, Industry STRING, AnnualRevenue DOUBLE"
 
     Examples
     --------
@@ -116,6 +120,41 @@ class SalesforceDataSource(DataSource):
     ...     .option("salesforce_object", "Custom_Object__c") \\
     ...     .option("checkpointLocation", "/path/to/checkpoint") \\
     ...     .start()
+
+    Using custom schema for specific Salesforce objects:
+
+    >>> # Define schema for Contact object as a DDL string
+    >>> contact_schema = "FirstName STRING NOT NULL, LastName STRING NOT NULL, Email STRING, Phone STRING"
+    >>>
+    >>> query = contact_data.writeStream \\
+    ...     .format("salesforce") \\
+    ...     .option("username", "your-username@company.com") \\
+    ...     .option("password", "your-password") \\
+    ...     .option("security_token", "your-security-token") \\
+    ...     .option("salesforce_object", "Contact") \\
+    ...     .option("schema", "FirstName STRING NOT NULL, LastName STRING NOT NULL, Email STRING, Phone STRING") \\
+    ...     .option("batch_size", "50") \\
+    ...     .option("checkpointLocation", "/path/to/checkpoint") \\
+    ...     .start()
+
+    Using schema with Opportunity object:
+
+    >>> opportunity_data = streaming_df.select(
+    ...     col("name").alias("Name"),
+    ...     col("amount").alias("Amount"),
+    ...     col("stage").alias("StageName"),
+    ...     col("close_date").alias("CloseDate")
+    ... )
+    >>> 
+    >>> query = opportunity_data.writeStream \\
+    ...     .format("salesforce") \\
+    ...     .option("username", "your-username@company.com") \\
+    ...     .option("password", "your-password") \\
+    ...     .option("security_token", "your-security-token") \\
+    ...     .option("salesforce_object", "Opportunity") \\
+    ...     .option("schema", "Name STRING NOT NULL, Amount DOUBLE, StageName STRING NOT NULL, CloseDate DATE") \\
+    ...     .option("checkpointLocation", "/path/to/checkpoint") \\
+    ...     .start()
     
     Key Features:
     
@@ -123,7 +162,7 @@ class SalesforceDataSource(DataSource):
     - **Batch processing**: Uses Salesforce Composite Tree API for efficient bulk writes
     - **Exactly-once semantics**: Integrates with Spark's checkpoint mechanism
     - **Error handling**: Graceful fallback to individual record creation if batch fails
-    - **Flexible schema**: Supports any Salesforce object with proper field mapping
+    - **Flexible schema**: Supports any Salesforce object with custom schema definition
     """
 
     @classmethod
