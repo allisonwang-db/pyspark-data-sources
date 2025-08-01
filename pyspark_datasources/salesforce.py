@@ -34,6 +34,11 @@ class SalesforceDataSource(DataSource):
     - Uses Salesforce username/password/security token authentication
     - Supports batch writing with Salesforce Composite Tree API for efficient processing
     - Implements exactly-once semantics through Spark's checkpoint mechanism
+    - If a streaming write job fails and is resumed from the checkpoint,
+      it will not overwrite records already written in Salesforce;
+      it resumes from the last committed offset.
+      However, if records were written to Salesforce but not yet committed at the time of failure,
+      duplicate records may occur after recovery.
 
     Parameters
     ----------
