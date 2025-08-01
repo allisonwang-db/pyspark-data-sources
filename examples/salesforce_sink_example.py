@@ -83,7 +83,7 @@ def example_1_rate_source_to_accounts():
         
         # Write to Salesforce
         query = account_data.writeStream \
-            .format("salesforce") \
+            .format("salesforce-sink") \
             .option("username", username) \
             .option("password", password) \
             .option("security_token", security_token) \
@@ -172,7 +172,7 @@ def example_2_csv_to_contacts():
         
         # Write to Salesforce with custom schema
         query = streaming_df.writeStream \
-            .format("salesforce") \
+            .format("salesforce-sink") \
             .option("username", username) \
             .option("password", password) \
             .option("security_token", security_token) \
@@ -269,7 +269,7 @@ def example_3_checkpoint_demonstration():
         )
         
         query1 = account_df1.writeStream \
-            .format("salesforce") \
+            .format("salesforce-sink") \
             .option("username", username) \
             .option("password", password) \
             .option("security_token", security_token) \
@@ -319,7 +319,7 @@ def example_3_checkpoint_demonstration():
         )
         
         query2 = account_df2.writeStream \
-            .format("salesforce") \
+            .format("salesforce-sink") \
             .option("username", username) \
             .option("password", password) \
             .option("security_token", security_token) \
@@ -405,7 +405,7 @@ def example_4_custom_object():
         # Example code (commented out since custom object may not exist)
         print("""
         query = custom_data.writeStream \\
-            .format("salesforce") \\
+            .format("salesforce-sink") \\
             .option("username", username) \\
             .option("password", password) \\
             .option("security_token", security_token) \\
