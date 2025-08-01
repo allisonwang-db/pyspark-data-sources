@@ -23,6 +23,7 @@ nav:
     - datasources/huggingface.md
     - datasources/stock.md
     - datasources/simplejson.md
+    - datasources/salesforce.md
     - datasources/googlesheets.md
     - datasources/kaggle.md
 
