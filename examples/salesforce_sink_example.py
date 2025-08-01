@@ -28,9 +28,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, lit, current_timestamp
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
 
-# Add the project root to Python path
-sys.path.append('..')
-
 def check_credentials():
     """Check if Salesforce credentials are available"""
     username = os.getenv('SALESFORCE_USERNAME')
