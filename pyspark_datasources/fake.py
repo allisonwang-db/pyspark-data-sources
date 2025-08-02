@@ -124,7 +124,7 @@ class FakeDataSource(DataSource):
         return "fake"
 
     def schema(self):
-        return "name string, date string, zipcode string, state string, creationDate timestamp"
+        return "name string, date string, zipcode string, state string"
 
     def reader(self, schema: StructType) -> "FakeDataSourceReader":
         _validate_faker_schema(schema)
