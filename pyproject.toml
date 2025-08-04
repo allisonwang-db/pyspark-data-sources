@@ -37,6 +37,19 @@ grpcio-status = "^1.60.1"
 pandas = "^2.2.0"
 mkdocs-material = "^9.5.40"
 pyspark = "4.0.0"
+ruff = "^0.6.0"
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = []
 
 [build-system]
 requires = ["poetry-core"]

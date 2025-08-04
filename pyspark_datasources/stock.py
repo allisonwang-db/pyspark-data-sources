@@ -26,6 +26,7 @@ class StockDataSource(DataSource):
     |2024-05-29|525.68|527.31|525.37| 526.1|45190323|   SPY|
     +----------+------+------+------+------+--------+------+
     """
+
     @classmethod
     def name(self) -> str:
         return "stock"
@@ -64,6 +65,7 @@ class StockDataReader(DataSourceReader):
 
     def read(self, partition: Symbol):
         import requests
+
         symbol = partition.name
         resp = requests.get(
             f"https://www.alphavantage.co/query?"
@@ -80,5 +82,5 @@ class StockDataReader(DataSourceReader):
                 float(info["3. low"]),
                 float(info["4. close"]),
                 float(info["5. volume"]),
-                symbol
+                symbol,
             )

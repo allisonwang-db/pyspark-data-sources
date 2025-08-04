@@ -66,6 +66,15 @@ mkdocs serve                     # Start local docs server
 mkdocs build                     # Build static documentation
 ```
 
+### Code Formatting
+This project uses [Ruff](https://github.com/astral-sh/ruff) for code formatting and linting.
+
+```bash
+poetry run ruff format .         # Format code
+poetry run ruff check .          # Run linter
+poetry run ruff check . --fix    # Run linter with auto-fix
+```
+
 ### Package Management
 Please refer to RELEASE.md for more details.
 ```bash
