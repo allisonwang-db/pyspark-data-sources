@@ -1,4 +1,7 @@
 import pytest
+import tempfile
+import os
+import pyarrow as pa
 
 from pyspark.sql import SparkSession
 from pyspark_datasources import *
@@ -91,3 +94,87 @@ def test_salesforce_datasource_registration(spark):
         error_msg = str(e).lower()
         # The error can be about unsupported mode or missing writer
         assert "unsupported" in error_msg or "writer" in error_msg or "not implemented" in error_msg
+
+
+def test_arrow_datasource_single_file(spark):
+    """Test reading a single Arrow file."""
+    spark.dataSource.register(ArrowDataSource)
+    
+    # Create test data
+    test_data = pa.table({
+        'id': [1, 2, 3],
+        'name': ['Alice', 'Bob', 'Charlie'],
+        'age': [25, 30, 35]
+    })
+    
+    # Write to temporary Arrow file
+    with tempfile.NamedTemporaryFile(suffix='.arrow', delete=False) as tmp_file:
+        tmp_path = tmp_file.name
+        
+    try:
+        with pa.ipc.new_file(tmp_path, test_data.schema) as writer:
+            writer.write_table(test_data)
+        
+        # Read using Arrow data source
+        df = spark.read.format("arrow").load(tmp_path)
+        
+        # Verify results
+        assert df.count() == 3
+        assert len(df.columns) == 3
+        assert set(df.columns) == {'id', 'name', 'age'}
+        
+        # Verify data content
+        rows = df.collect()
+        assert len(rows) == 3
+        assert rows[0]['name'] == 'Alice'
+        
+    finally:
+        # Clean up
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+
+
+def test_arrow_datasource_multiple_files(spark):
+    """Test reading multiple Arrow files from a directory."""
+    spark.dataSource.register(ArrowDataSource)
+    
+    # Create test data for multiple files
+    test_data1 = pa.table({
+        'id': [1, 2],
+        'name': ['Alice', 'Bob'],
+        'department': ['Engineering', 'Sales']
+    })
+    
+    test_data2 = pa.table({
+        'id': [3, 4],
+        'name': ['Charlie', 'Diana'],
+        'department': ['Marketing', 'HR']
+    })
+    
+    # Create temporary directory
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        # Write multiple Arrow files
+        file1_path = os.path.join(tmp_dir, 'data1.arrow')
+        file2_path = os.path.join(tmp_dir, 'data2.arrow')
+        
+        with pa.ipc.new_file(file1_path, test_data1.schema) as writer:
+            writer.write_table(test_data1)
+            
+        with pa.ipc.new_file(file2_path, test_data2.schema) as writer:
+            writer.write_table(test_data2)
+        
+        # Read using Arrow data source from directory
+        df = spark.read.format("arrow").load(tmp_dir)
+        
+        # Verify results
+        assert df.count() == 4  # 2 rows from each file
+        assert len(df.columns) == 3
+        assert set(df.columns) == {'id', 'name', 'department'}
+        
+        # Verify partitioning (should have 2 partitions, one per file)
+        assert df.rdd.getNumPartitions() == 2
+        
+        # Verify all data is present
+        rows = df.collect()
+        names = {row['name'] for row in rows}
+        assert names == {'Alice', 'Bob', 'Charlie', 'Diana'}

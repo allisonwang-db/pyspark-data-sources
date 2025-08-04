@@ -55,8 +55,9 @@ poetry shell                     # Activate virtual environment
 # Note: On macOS, set this environment variable to avoid fork safety issues
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
-pytest                           # Run all tests
+pytest                              # Run all tests
 pytest tests/test_data_sources.py  # Run specific test file
+pytest tests/test_data_sources.py::test_arrow_datasource_single_file -v # Run a specific test
 ```
 
 ### Documentation
@@ -66,6 +67,7 @@ mkdocs build                     # Build static documentation
 ```
 
 ### Package Management
+Please refer to RELEASE.md for more details.
 ```bash
 poetry build                     # Build package
 poetry publish                   # Publish to PyPI (requires auth)
