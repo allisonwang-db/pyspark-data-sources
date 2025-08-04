@@ -46,7 +46,7 @@ spark.readStream.format("fake").load().writeStream.format("console").start()
 | [KaggleDataSource](pyspark_datasources/kaggle.py)                      | `kaggle`       | Read datasets from Kaggle                    | `kagglehub`, `pandas` |
 | [SimpleJsonDataSource](pyspark_datasources/simplejson.py)              | `simplejson`   | Write JSON data to Databricks DBFS                 | `databricks-sdk`      |
 | [OpenSkyDataSource](pyspark_datasources/opensky.py)                 | `opensky`      | Read from OpenSky Network.                   | None                  |
-| [SalesforceDataSource](pyspark_datasources/salesforce.py)              | `salesforce`   | Streaming sink for writing data to Salesforce | `simple-salesforce`   |
+| [SalesforceDataSource](pyspark_datasources/salesforce.py)              | `pyspark.datasource.salesforce`   | Streaming datasource for writing data to Salesforce | `simple-salesforce`   |
 
 See more here: https://allisonwang-db.github.io/pyspark-data-sources/.
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Salesforce Sink Example
+Salesforce Datasource Example
 
-This example demonstrates how to use the SalesforceDataSource as a streaming sink
+This example demonstrates how to use the SalesforceDataSource as a streaming datasource
 to write data from various sources to Salesforce objects.
 
 Requirements:
@@ -61,10 +61,10 @@ def example_1_rate_source_to_accounts():
         .getOrCreate()
     
     try:
-        # Register Salesforce sink
+        # Register Salesforce Datasource
         from pyspark_datasources.salesforce import SalesforceDataSource
         spark.dataSource.register(SalesforceDataSource)
-        print("✅ Salesforce sink registered")
+        print("✅ Salesforce datasource registered")
         
         # Create streaming data from rate source
         streaming_df = spark.readStream \
@@ -131,7 +131,7 @@ def example_2_csv_to_contacts():
         .getOrCreate()
     
     try:
-        # Register Salesforce sink
+        # Register Salesforce datasource
         from pyspark_datasources.salesforce import SalesforceDataSource
         spark.dataSource.register(SalesforceDataSource)
         
@@ -426,8 +426,8 @@ def example_4_custom_object():
 
 def main():
     """Run all examples"""
-    print("🚀 Salesforce Sink Examples")
-    print("This demonstrates various ways to use the Salesforce streaming sink")
+    print("🚀 Salesforce Datasource Examples")
+    print("This demonstrates various ways to use the Salesforce streaming datasource")
     
     try:
         # Run examples
@@ -440,7 +440,7 @@ def main():
         print("✅ All examples completed!")
         print("="*60)
         print("\n💡 Key takeaways:")
-        print("   - Salesforce sink supports various input sources (rate, CSV, etc.)")
+        print("   - Salesforce datasource supports various input sources (rate, CSV, etc.)")
         print("   - Checkpoint functionality enables exactly-once processing")
         print("   - Custom schemas allow flexibility for different Salesforce objects")
         print("   - Batch processing optimizes Salesforce API usage")
