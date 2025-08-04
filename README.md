@@ -58,6 +58,29 @@ For production use, consider these official data source implementations built wi
 |--------------------------|-----------------------------------------------------------------------------------------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | **HuggingFace Datasets** | [@huggingface/pyspark_huggingface](https://github.com/huggingface/pyspark_huggingface)       | Production-ready Spark Data Source for 🤗 Hugging Face Datasets | • Stream datasets as Spark DataFrames<br>• Select subsets/splits with filters<br>• Authentication support<br>• Save DataFrames to Hugging Face<br> |
 
+## Data Source Naming Convention
+
+When creating custom data sources using the Python Data Source API, follow these naming conventions for the `short_name` parameter:
+
+### Recommended Approach
+- **Use the system name directly**: Use lowercase system names like `huggingface`, `opensky`, `googlesheets`, etc.
+- This provides clear, intuitive naming that matches the service being integrated
+
+### Conflict Resolution
+- **If there's a naming conflict**: Use the format `pyspark.datasource.<system_name>`
+- Example: `pyspark.datasource.salesforce` if "salesforce" conflicts with existing naming
+
+### Examples from this repository:
+```python
+# Direct system naming (preferred)
+spark.read.format("github").load()       # GithubDataSource
+spark.read.format("googlesheets").load() # GoogleSheetsDataSource  
+spark.read.format("opensky").load()      # OpenSkyDataSource
+
+# Namespaced format (when conflicts exist)
+spark.read.format("pyspark.datasource.opensky").load()
+```
+
 ## Contributing
 We welcome and appreciate any contributions to enhance and expand the custom data sources.:
 
