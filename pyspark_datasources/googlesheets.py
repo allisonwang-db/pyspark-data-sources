@@ -29,9 +29,7 @@ class Sheet:
         from urllib.parse import parse_qs, urlparse
 
         parsed = urlparse(url)
-        if parsed.netloc != "docs.google.com" or not parsed.path.startswith(
-            "/spreadsheets/d/"
-        ):
+        if parsed.netloc != "docs.google.com" or not parsed.path.startswith("/spreadsheets/d/"):
             raise ValueError("URL is not a Google Sheets URL")
         qs = parse_qs(parsed.query)
         spreadsheet_id = parsed.path.split("/")[3]
@@ -147,9 +145,7 @@ class GoogleSheetsDataSource(DataSource):
         elif "path" in options:
             sheet = Sheet(options.pop("path"), options.pop("sheet_id", None))
         else:
-            raise ValueError(
-                "You must specify either `url` or `path` (spreadsheet ID)."
-            )
+            raise ValueError("You must specify either `url` or `path` (spreadsheet ID).")
         has_header = options.pop("has_header", "true").lower() == "true"
         self.parameters = Parameters(sheet, has_header)
 
@@ -168,7 +164,6 @@ class GoogleSheetsDataSource(DataSource):
 
 
 class GoogleSheetsReader(DataSourceReader):
-
     def __init__(self, parameters: Parameters, schema: StructType):
         self.parameters = parameters
         self.schema = schema

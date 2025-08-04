@@ -44,6 +44,7 @@ class SimpleJsonDataSource(DataSource):
     ...     .save("/path/to/output")
     ... )
     """
+
     @classmethod
     def name(self) -> str:
         return "simplejson"
@@ -76,7 +77,7 @@ class SimpleJsonWriter(DataSourceWriter):
         # Consume all input rows and dump them as json.
         rows = [row.asDict() for row in iterator]
         json_data = json.dumps(rows)
-        f = io.BytesIO(json_data.encode('utf-8'))
+        f = io.BytesIO(json_data.encode("utf-8"))
 
         context = TaskContext.get()
         id = context.taskAttemptId()

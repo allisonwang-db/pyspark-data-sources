@@ -8,7 +8,7 @@ from pyspark.sql.types import StructType, StructField, DoubleType, StringType
 
 class WeatherDataSource(DataSource):
     """
-    A custom PySpark data source for fetching weather data from tomorrow.io for given 
+    A custom PySpark data source for fetching weather data from tomorrow.io for given
     locations (latitude, longitude).
 
     Options
@@ -16,7 +16,7 @@ class WeatherDataSource(DataSource):
 
     - locations: specify a list of (latitude, longitude) tuples.
     - apikey: specify the API key for the weather service (tomorrow.io).
-    - frequency: specify the frequency of the data ("minutely", "hourly", "daily"). 
+    - frequency: specify the frequency of the data ("minutely", "hourly", "daily").
                  Default is "minutely".
 
     Examples
@@ -29,14 +29,14 @@ class WeatherDataSource(DataSource):
 
 
     Define the options for the custom data source
-    
+
     >>> options = {
     ...    "locations": "[(37.7749, -122.4194), (40.7128, -74.0060)]",  # San Francisco and New York
     ...    "apikey": "your_api_key_here",
     ... }
 
     Create a DataFrame using the custom weather data source
-    
+
     >>> weather_df = spark.readStream.format("weather").options(**options).load()
 
     Stream weather data and print the results to the console in real-time.
@@ -58,12 +58,14 @@ class WeatherDataSource(DataSource):
 
     def schema(self):
         """Defines the output schema of the data source."""
-        return StructType([
-            StructField("latitude", DoubleType(), True),
-            StructField("longitude", DoubleType(), True),
-            StructField("weather", StringType(), True),
-            StructField("timestamp", StringType(), True),
-        ])
+        return StructType(
+            [
+                StructField("latitude", DoubleType(), True),
+                StructField("longitude", DoubleType(), True),
+                StructField("weather", StringType(), True),
+                StructField("timestamp", StringType(), True),
+            ]
+        )
 
     def simpleStreamReader(self, schema: StructType):
         """Returns an instance of the reader for this data source."""
@@ -71,15 +73,14 @@ class WeatherDataSource(DataSource):
 
 
 class WeatherSimpleStreamReader(SimpleDataSourceStreamReader):
-
     def initialOffset(self):
         """
-        Returns the initial offset for reading, which serves as the starting point for 
+        Returns the initial offset for reading, which serves as the starting point for
         the streaming data source.
 
         The initial offset is returned as a dictionary where each key is a unique identifier
-        for a specific (latitude, longitude) pair, and each value is a timestamp string 
-        (in ISO 8601 format) representing the point in time from which data should start being 
+        for a specific (latitude, longitude) pair, and each value is a timestamp string
+        (in ISO 8601 format) representing the point in time from which data should start being
         read.
 
         Example:
@@ -90,7 +91,7 @@ class WeatherSimpleStreamReader(SimpleDataSourceStreamReader):
             }
         """
         return {f"offset_{lat}_{long}": "2024-09-01T00:00:00Z" for (lat, long) in self.locations}
-    
+
     @staticmethod
     def _parse_locations(locations_str: str):
         """Converts string representation of list of tuples to actual list of tuples."""

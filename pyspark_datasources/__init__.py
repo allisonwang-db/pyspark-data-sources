@@ -1,3 +1,4 @@
+from .arrow import ArrowDataSource
 from .fake import FakeDataSource
 from .github import GithubDataSource
 from .googlesheets import GoogleSheetsDataSource

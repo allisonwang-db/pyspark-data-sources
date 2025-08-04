@@ -119,6 +119,21 @@ Then follow steps 2-4 above.
 - Authenticate: `gh auth login`
 - Check repository access: `gh repo view`
 
+### PyArrow Compatibility Issues
+
+If you see `objc_initializeAfterForkError` crashes on macOS, set this environment variable:
+
+```bash
+# For single commands
+OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES python your_script.py
+
+# For Poetry environment
+OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES poetry run python your_script.py
+
+# To set permanently in your shell (add to ~/.zshrc or ~/.bash_profile):
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+```
+
 ## Useful Poetry Version Commands
 
 ```bash

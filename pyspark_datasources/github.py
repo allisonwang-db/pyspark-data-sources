@@ -64,10 +64,9 @@ class GithubPullRequestReader(DataSourceReader):
         prs = response.json()
         for pr in prs:
             yield Row(
-                id = pr.get("number"),
-                title = pr.get("title"),
-                author = pr.get("user", {}).get("login"),
-                created_at = pr.get("created_at"),
-                updated_at = pr.get("updated_at")
+                id=pr.get("number"),
+                title=pr.get("title"),
+                author=pr.get("user", {}).get("login"),
+                created_at=pr.get("created_at"),
+                updated_at=pr.get("updated_at"),
             )
-
