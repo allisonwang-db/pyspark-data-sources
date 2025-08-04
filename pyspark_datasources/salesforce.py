@@ -173,7 +173,7 @@ class SalesforceDataSource(DataSource):
     @classmethod
     def name(cls) -> str:
         """Return the short name for this Salesforce sink."""
-        return "salesforce-sink"
+        return "pyspark.datasource.salesforce"
 
     def schema(self) -> str:
         """

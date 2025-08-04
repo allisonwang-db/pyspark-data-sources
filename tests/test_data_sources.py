@@ -71,7 +71,7 @@ def test_salesforce_datasource_registration(spark):
     spark.dataSource.register(SalesforceDataSource)
     
     # Test that the datasource is registered with correct name
-    assert SalesforceDataSource.name() == "salesforce-sink"
+    assert SalesforceDataSource.name() == "pyspark.datasource.salesforce"
     
     # Test that the data source is streaming-only (no batch writer)
     from pyspark.sql.functions import lit
@@ -84,7 +84,7 @@ def test_salesforce_datasource_registration(spark):
             lit(50000.0).alias("AnnualRevenue")
         )
         
-        df.write.format("salesforce-sink").mode("append").save()
+        df.write.format("pyspark.datasource.salesforce").mode("append").save()
         assert False, "Should have raised error - Salesforce DataSource only supports streaming"
     except Exception as e:
         # This is expected - Salesforce DataSource only supports streaming writes
