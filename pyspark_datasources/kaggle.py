@@ -76,9 +76,7 @@ class KaggleDataSource(DataSource):
         key = self.options.pop("key", None)
         if username or key:
             if not (username and key):
-                raise ValueError(
-                    "Both username and key must be provided to authenticate."
-                )
+                raise ValueError("Both username and key must be provided to authenticate.")
             os.environ["KAGGLE_USERNAME"] = username
             os.environ["KAGGLE_KEY"] = key
 

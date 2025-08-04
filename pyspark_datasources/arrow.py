@@ -30,7 +30,7 @@ class ArrowDataSource(DataSource):
     - Single file: 1 partition
     - Multiple files: N partitions (one per file)
     - Directory: N partitions (one per .arrow file found)
-    
+
     This enables Spark to process multiple files in parallel across different
     executor cores, improving performance for large datasets.
 
@@ -72,11 +72,11 @@ class ArrowDataSource(DataSource):
     Working with the result DataFrame and PySpark 4.0 Arrow integration:
 
     >>> df = spark.read.format("arrow").load("/path/to/data.arrow")
-    >>> 
+    >>>
     >>> # Process with Spark
     >>> result = df.filter(df.age > 25).groupBy("department").count()
     >>> result.show()
-    >>> 
+    >>>
     >>> # Convert back to Arrow using PySpark 4.0+ feature
     >>> arrow_table = result.to_arrow()  # New in PySpark 4.0+
     >>> print(f"Arrow table: {arrow_table}")
@@ -100,18 +100,19 @@ class ArrowDataSource(DataSource):
         path = self.options.get("path")
         if not path:
             raise ValueError("Path option is required for Arrow data source")
-        
+
         # Get the first file to determine schema
         files = self._get_files(path)
         if not files:
             raise ValueError(f"No files found at path: {path}")
-        
+
         # Read schema from first file (Arrow IPC format)
         with pa.ipc.open_file(files[0]) as reader:
             table = reader.read_all()
-        
+
         # Convert PyArrow schema to Spark schema using PySpark utility
         from pyspark.sql.pandas.types import from_arrow_schema
+
         return from_arrow_schema(table.schema)
 
     def reader(self, schema: StructType) -> "ArrowDataSourceReader":
@@ -128,7 +129,6 @@ class ArrowDataSource(DataSource):
         else:
             # Treat as glob pattern
             return sorted(glob.glob(path))
-
 
 
 class ArrowDataSourceReader(DataSourceReader):
@@ -150,7 +150,7 @@ class ArrowDataSourceReader(DataSourceReader):
     def read(self, partition: InputPartition) -> Iterator[pa.RecordBatch]:
         """Read data from a single file partition, returning PyArrow RecordBatch."""
         file_path = partition.value
-        
+
         try:
             # Read Arrow IPC file
             with pa.ipc.open_file(file_path) as reader:

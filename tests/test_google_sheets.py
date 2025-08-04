@@ -22,9 +22,7 @@ def test_url(spark):
 
 
 def test_spreadsheet_id(spark):
-    df = spark.read.format("googlesheets").load(
-        "10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0"
-    )
+    df = spark.read.format("googlesheets").load("10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0")
     df.show()
     assert df.count() == 2
     assert len(df.columns) == 2
@@ -47,12 +45,7 @@ def test_mutual_exclusive_options(spark):
 
 def test_custom_schema(spark):
     url = "https://docs.google.com/spreadsheets/d/10pD8oRN3RTBJq976RKPWHuxYy0Qa_JOoGFpsaS0Lop0/edit?gid=846122797#gid=846122797"
-    df = (
-        spark.read.format("googlesheets")
-        .options(url=url)
-        .schema("a double, b string")
-        .load()
-    )
+    df = spark.read.format("googlesheets").options(url=url).schema("a double, b string").load()
     df.show()
     assert df.count() == 2
     assert len(df.columns) == 2

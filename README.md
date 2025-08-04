@@ -1,6 +1,7 @@
 # PySpark Data Sources
 
 [![pypi](https://img.shields.io/pypi/v/pyspark-data-sources.svg?color=blue)](https://pypi.org/project/pyspark-data-sources/)
+[![code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 This repository showcases custom Spark data sources built using the new [**Python Data Source API**](https://spark.apache.org/docs/4.0.0/api/python/tutorial/sql/python_data_source.html) introduced in Apache Spark 4.0.
 For an in-depth understanding of the API, please refer to the [API source code](https://github.com/apache/spark/blob/master/python/pyspark/sql/datasource.py).
@@ -99,4 +100,18 @@ poetry env activate
 ### Build Docs
 ```
 mkdocs serve
+```
+
+### Code Formatting
+This project uses [Ruff](https://github.com/astral-sh/ruff) for code formatting and linting.
+
+```bash
+# Format code
+poetry run ruff format .
+
+# Run linter
+poetry run ruff check .
+
+# Run linter with auto-fix
+poetry run ruff check . --fix
 ```

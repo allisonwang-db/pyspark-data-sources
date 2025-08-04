@@ -61,6 +61,7 @@ class HuggingFaceDatasets(DataSource):
     def schema(self):
         # The imports must be inside the method to be serializable.
         from datasets import load_dataset_builder
+
         dataset_name = self.options["path"]
         ds_builder = load_dataset_builder(dataset_name)
         features = ds_builder.info.features
@@ -88,6 +89,7 @@ class HuggingFaceDatasetsReader(DataSourceReader):
 
     def read(self, partition):
         from datasets import load_dataset
+
         columns = [field.name for field in self.schema.fields]
         iter_dataset = load_dataset(self.dataset_name, split=self.split, streaming=True)
         for example in iter_dataset:

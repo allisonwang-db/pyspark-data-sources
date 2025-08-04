@@ -126,7 +126,6 @@ class FakeDataSource(DataSource):
 
 
 class FakeDataSourceReader(DataSourceReader):
-
     def __init__(self, schema, options) -> None:
         self.schema: StructType = schema
         self.options = options

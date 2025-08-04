@@ -64,7 +64,6 @@ For commercial use, contact OpenSky Network directly.
 
 """
 
-
 import requests
 import time
 from datetime import datetime, timezone
@@ -79,12 +78,14 @@ from pyspark.sql.types import *
 
 DS_NAME = "opensky"
 
+
 @dataclass
 class BoundingBox:
     lamin: float  # Minimum latitude
     lamax: float  # Maximum latitude
     lomin: float  # Minimum longitude
     lomax: float  # Maximum longitude
+
 
 class Region(Enum):
     EUROPE = BoundingBox(35.0, 72.0, -25.0, 45.0)
@@ -95,16 +96,20 @@ class Region(Enum):
     AFRICA = BoundingBox(-35.0, 37.0, -20.0, 52.0)
     GLOBAL = BoundingBox(-90.0, 90.0, -180.0, 180.0)
 
+
 class OpenSkyAPIError(Exception):
     """Base exception for OpenSky API errors"""
+
     pass
+
 
 class RateLimitError(OpenSkyAPIError):
     """Raised when API rate limit is exceeded"""
+
     pass
 
-class OpenSkyStreamReader(SimpleDataSourceStreamReader):
 
+class OpenSkyStreamReader(SimpleDataSourceStreamReader):
     DEFAULT_REGION = "NORTH_AMERICA"
     MIN_REQUEST_INTERVAL = 5.0  # seconds between requests
     ANONYMOUS_RATE_LIMIT = 100  # calls per day
@@ -120,15 +125,15 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
         self.session = self._create_session()
         self.last_request_time = 0
 
-        region_name = options.get('region', self.DEFAULT_REGION).upper()
+        region_name = options.get("region", self.DEFAULT_REGION).upper()
         try:
             self.bbox = Region[region_name].value
         except KeyError:
             print(f"Invalid region '{region_name}'. Defaulting to {self.DEFAULT_REGION}.")
             self.bbox = Region[self.DEFAULT_REGION].value
 
-        self.client_id = options.get('client_id')
-        self.client_secret = options.get('client_secret')
+        self.client_id = options.get("client_id")
+        self.client_secret = options.get("client_secret")
         self.access_token = None
         self.token_expires_at = 0
 
@@ -148,7 +153,7 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
         data = {
             "grant_type": "client_credentials",
             "client_id": self.client_id,
-            "client_secret": self.client_secret
+            "client_secret": self.client_secret,
         }
 
         try:
@@ -169,7 +174,7 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
         retry_strategy = Retry(
             total=self.MAX_RETRIES,
             backoff_factor=self.RETRY_BACKOFF,
-            status_forcelist=self.RETRY_STATUS_CODES
+            status_forcelist=self.RETRY_STATUS_CODES,
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         session.mount("https://", adapter)
@@ -177,7 +182,7 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
         return session
 
     def initialOffset(self) -> Dict[str, int]:
-        return {'last_fetch': 0}
+        return {"last_fetch": 0}
 
     def _handle_rate_limit(self):
         """Ensure e MIN_REQUEST_INTERVAL seconds between requests"""
@@ -198,22 +203,22 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
             self._get_access_token()
 
         params = {
-            'lamin': self.bbox.lamin,
-            'lamax': self.bbox.lamax,
-            'lomin': self.bbox.lomin,
-            'lomax': self.bbox.lomax
+            "lamin": self.bbox.lamin,
+            "lamax": self.bbox.lamax,
+            "lomin": self.bbox.lomin,
+            "lomax": self.bbox.lomax,
         }
 
         headers = {}
         if self.access_token:
-            headers['Authorization'] = f'Bearer {self.access_token}'
+            headers["Authorization"] = f"Bearer {self.access_token}"
 
         try:
             response = self.session.get(
                 "https://opensky-network.org/api/states/all",
                 params=params,
                 headers=headers,
-                timeout=10
+                timeout=10,
             )
 
             if response.status_code == 429:
@@ -235,12 +240,15 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
         if not state or len(state) < 17:
             return False
 
-        return (state[0] is not None and  # icao24
-                state[5] is not None and  # longitude
-                state[6] is not None)     # latitude
+        return (
+            state[0] is not None  # icao24
+            and state[5] is not None  # longitude
+            and state[6] is not None
+        )  # latitude
 
     def parse_state(self, state: List, timestamp: int) -> Tuple:
         """Parse state data with safe type conversion"""
+
         def safe_float(value: Any) -> Optional[float]:
             try:
                 return float(value) if value is not None else None
@@ -274,7 +282,7 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
             safe_float(state[13]),  # baro_altitude
             state[14],  # squawk
             safe_bool(state[15]),  # spi
-            safe_int(state[16])  # category
+            safe_int(state[16]),  # category
         )
 
     def readBetweenOffsets(self, start: Dict[str, int], end: Dict[str, int]) -> Iterator[Tuple]:
@@ -288,15 +296,12 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
             data = response.json()
 
             valid_states = [
-                self.parse_state(s, data['time'])
-                for s in data.get('states', [])
+                self.parse_state(s, data["time"])
+                for s in data.get("states", [])
                 if self.valid_state(s)
             ]
 
-            return (
-                valid_states,
-                {'last_fetch': data.get('time', int(time.time()))}
-            )
+            return (valid_states, {"last_fetch": data.get("time", int(time.time()))})
 
         except OpenSkyAPIError as e:
             print(f"OpenSky API Error: {str(e)}")
@@ -427,41 +432,46 @@ class OpenSkyDataSource(DataSource):
     In Proceedings of the 13th IEEE/ACM International Symposium on Information Processing
     in Sensor Networks (IPSN), pages 83-94, April 2014.
     """
+
     def __init__(self, options: Dict[str, str] = None):
         super().__init__(options or {})
         self.options = options or {}
 
-        if 'client_id' in self.options and not self.options.get('client_secret'):
+        if "client_id" in self.options and not self.options.get("client_secret"):
             raise ValueError("client_secret must be provided when client_id is set")
 
-        if 'region' in self.options and self.options['region'].upper() not in Region.__members__:
-            raise ValueError(f"Invalid region. Must be one of: {', '.join(Region.__members__.keys())}")
+        if "region" in self.options and self.options["region"].upper() not in Region.__members__:
+            raise ValueError(
+                f"Invalid region. Must be one of: {', '.join(Region.__members__.keys())}"
+            )
 
     @classmethod
     def name(cls) -> str:
         return DS_NAME
 
     def schema(self) -> StructType:
-        return StructType([
-            StructField("time_ingest", TimestampType()),
-            StructField("icao24", StringType()),
-            StructField("callsign", StringType()),
-            StructField("origin_country", StringType()),
-            StructField("time_position", TimestampType()),
-            StructField("last_contact", TimestampType()),
-            StructField("longitude", DoubleType()),
-            StructField("latitude", DoubleType()),
-            StructField("geo_altitude", DoubleType()),
-            StructField("on_ground", BooleanType()),
-            StructField("velocity", DoubleType()),
-            StructField("true_track", DoubleType()),
-            StructField("vertical_rate", DoubleType()),
-            StructField("sensors", ArrayType(IntegerType())),
-            StructField("baro_altitude", DoubleType()),
-            StructField("squawk", StringType()),
-            StructField("spi", BooleanType()),
-            StructField("category", IntegerType())
-        ])
+        return StructType(
+            [
+                StructField("time_ingest", TimestampType()),
+                StructField("icao24", StringType()),
+                StructField("callsign", StringType()),
+                StructField("origin_country", StringType()),
+                StructField("time_position", TimestampType()),
+                StructField("last_contact", TimestampType()),
+                StructField("longitude", DoubleType()),
+                StructField("latitude", DoubleType()),
+                StructField("geo_altitude", DoubleType()),
+                StructField("on_ground", BooleanType()),
+                StructField("velocity", DoubleType()),
+                StructField("true_track", DoubleType()),
+                StructField("vertical_rate", DoubleType()),
+                StructField("sensors", ArrayType(IntegerType())),
+                StructField("baro_altitude", DoubleType()),
+                StructField("squawk", StringType()),
+                StructField("spi", BooleanType()),
+                StructField("category", IntegerType()),
+            ]
+        )
 
     def simpleStreamReader(self, schema: StructType) -> OpenSkyStreamReader:
         return OpenSkyStreamReader(schema, self.options)

@@ -44,6 +44,7 @@ class LanceSink(DataSource):
     -----
     - Currently this only works with Spark local mode. Cluster mode is not supported.
     """
+
     @classmethod
     def name(cls) -> str:
         return "lance"
@@ -83,7 +84,7 @@ class LanceWriter(DataSourceArrowWriter):
         return LanceCommitMessage(fragments=fragments)
 
     def commit(self, messages):
-        fragments = [fragment for msg in messages for fragment in msg.fragments ]
+        fragments = [fragment for msg in messages for fragment in msg.fragments]
         if self.read_version:
             # This means the dataset already exists.
             op = lance.LanceOperation.Append(fragments)
