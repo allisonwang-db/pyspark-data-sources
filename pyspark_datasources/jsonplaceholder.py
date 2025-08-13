@@ -1,6 +1,5 @@
 from typing import Dict, Any, List, Iterator
 import requests
-import logging
 from pyspark.sql.datasource import DataSource, DataSourceReader, InputPartition
 from pyspark.sql.types import StructType
 from pyspark.sql import Row
@@ -136,13 +135,13 @@ class JSONPlaceholderReader(DataSourceReader):
             return iter([self._process_item(item) for item in data])
 
         except requests.RequestException as e:
-            logging.warning(f"Failed to fetch data from {url}: {e}")
+            print(f"Failed to fetch data from {url}: {e}")
             return iter([])
         except ValueError as e:
-            logging.warning(f"Failed to parse JSON from {url}: {e}")
+            print(f"Failed to parse JSON from {url}: {e}")
             return iter([])
         except Exception as e:
-            logging.error(f"Unexpected error while reading data: {e}")
+            print(f"Unexpected error while reading data: {e}")
             return iter([])
 
     def _process_item(self, item: Dict[str, Any]) -> Row:
