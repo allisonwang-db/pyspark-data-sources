@@ -8,3 +8,4 @@ from .opensky import OpenSkyDataSource
 from .salesforce import SalesforceDataSource
 from .simplejson import SimpleJsonDataSource
 from .stock import StockDataSource
+from .jsonplaceholder import JSONPlaceholderDataSource
