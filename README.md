@@ -40,14 +40,18 @@ spark.readStream.format("fake").load().writeStream.format("console").start()
 
 | Data Source                                                             | Short Name     | Description                                   | Dependencies          |
 |-------------------------------------------------------------------------|----------------|-----------------------------------------------|-----------------------|
-| [GithubDataSource](pyspark_datasources/github.py)                      | `github`       | Read pull requests from a Github repository  | None                  |
+| [ArrowDataSource](pyspark_datasources/arrow.py)                        | `arrow`        | Read Apache Arrow files (.arrow)             | `pyarrow`             |
 | [FakeDataSource](pyspark_datasources/fake.py)                          | `fake`         | Generate fake data using the `Faker` library | `faker`               |
-| [StockDataSource](pyspark_datasources/stock.py)                        | `stock`        | Read stock data from Alpha Vantage           | None                  |
+| [GithubDataSource](pyspark_datasources/github.py)                      | `github`       | Read pull requests from a Github repository  | None                  |
 | [GoogleSheetsDataSource](pyspark_datasources/googlesheets.py)          | `googlesheets` | Read table from public Google Sheets        | None                  |
+| [HuggingFaceDatasets](pyspark_datasources/huggingface.py)              | `huggingface`  | Read datasets from HuggingFace Hub           | `datasets`            |
 | [KaggleDataSource](pyspark_datasources/kaggle.py)                      | `kaggle`       | Read datasets from Kaggle                    | `kagglehub`, `pandas` |
-| [SimpleJsonDataSource](pyspark_datasources/simplejson.py)              | `simplejson`   | Write JSON data to Databricks DBFS                 | `databricks-sdk`      |
+| [LanceSink](pyspark_datasources/lance.py)                              | `lance`        | Write data in Lance format                    | `lance`               |
 | [OpenSkyDataSource](pyspark_datasources/opensky.py)                 | `opensky`      | Read from OpenSky Network.                   | None                  |
 | [SalesforceDataSource](pyspark_datasources/salesforce.py)              | `pyspark.datasource.salesforce`   | Streaming datasource for writing data to Salesforce | `simple-salesforce`   |
+| [SimpleJsonDataSource](pyspark_datasources/simplejson.py)              | `simplejson`   | Write JSON data to Databricks DBFS                 | `databricks-sdk`      |
+| [StockDataSource](pyspark_datasources/stock.py)                        | `stock`        | Read stock data from Alpha Vantage           | None                  |
+| [WeatherDataSource](pyspark_datasources/weather.py)                    | `weather`      | Fetch weather data from tomorrow.io           | None                  |
 
 See more here: https://allisonwang-db.github.io/pyspark-data-sources/.
 
