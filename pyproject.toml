@@ -19,6 +19,7 @@ datasets = {version = "^2.17.0", optional = true}
 databricks-sdk = {version = "^0.28.0", optional = true}
 kagglehub = {extras = ["pandas-datasets"], version = "^0.3.10", optional = true}
 simple-salesforce = {version = "^1.12.0", optional = true}
+pynacl = {version = "^1.5.0", optional = true}
 
 [tool.poetry.extras]
 faker = ["faker"]
@@ -26,8 +27,9 @@ datasets = ["datasets"]
 databricks = ["databricks-sdk"]
 kaggle = ["kagglehub"]
 lance = ["pylance"]
+robinhood = ["pynacl"]
 salesforce = ["simple-salesforce"]
-all = ["faker", "datasets", "databricks-sdk", "kagglehub", "simple-salesforce"]
+all = ["faker", "datasets", "databricks-sdk", "kagglehub", "pynacl", "simple-salesforce"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
