@@ -63,8 +63,8 @@ def test_robinhood_invalid_private_key_format(spark):
     assert "Invalid private key format" in str(excinfo.value)
 
 
-def test_robinhood_real_btc_data(spark):
-    """Test real BTC-USD data retrieval with registered API key - REQUIRES REAL DATA."""
+def test_robinhood_btc_data(spark):
+    """Test BTC-USD data retrieval with registered API key - REQUIRES API CREDENTIALS."""
     # Get credentials from environment variables
     api_key = os.environ.get("ROBINHOOD_API_KEY")
     private_key = os.environ.get("ROBINHOOD_PRIVATE_KEY")
@@ -96,8 +96,8 @@ def test_robinhood_real_btc_data(spark):
         assert isinstance(row.updated_at, str), f"Updated timestamp should be string, got {type(row.updated_at)}"
 
 
-def test_robinhood_real_multiple_crypto_pairs(spark):
-    """Test real multi-crypto data retrieval with registered API key - REQUIRES REAL DATA."""
+def test_robinhood_multiple_crypto_pairs(spark):
+    """Test multi-crypto data retrieval with registered API key - REQUIRES API CREDENTIALS."""
     # Get credentials from environment variables
     api_key = os.environ.get("ROBINHOOD_API_KEY")
     private_key = os.environ.get("ROBINHOOD_PRIVATE_KEY")
