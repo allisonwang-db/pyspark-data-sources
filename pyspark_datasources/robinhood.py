@@ -20,9 +20,7 @@ class RobinhoodDataSource(DataSource):
 
     Name: `robinhood`
 
-    Schema: `symbol string, price double, bid_price double, ask_price double, 
-             volume_24h double, price_change_24h double, percent_change_24h double, 
-             market_cap double, updated_at string`
+    Schema: `symbol string, price double, bid_price double, ask_price double, updated_at string`
 
     Examples
     --------
@@ -38,13 +36,13 @@ class RobinhoodDataSource(DataSource):
     ...     .option("private_key", "your-base64-private-key") \\
     ...     .load("BTC-USD,ETH-USD,DOGE-USD")
     >>> df.show()
-    +--------+--------+---------+---------+---------+------------------+--------------------+----------+--------------------+
-    |  symbol|   price|bid_price|ask_price|volume_24h|   price_change_24h|  percent_change_24h|market_cap|          updated_at|
-    +--------+--------+---------+---------+---------+------------------+--------------------+----------+--------------------+
-    |BTC-USD |45000.50|45000.25 |45000.75 | 28.5B   |             250.50|                0.56| 880.2B   |2024-01-15T16:00:...|
-    |ETH-USD | 2650.75| 2650.50 | 2651.00 | 12.8B   |              45.75|                1.76| 318.5B   |2024-01-15T16:00:...|
-    |DOGE-USD|    0.085|    0.084|    0.086|  2.1B   |             0.0025|                3.02|  12.1B   |2024-01-15T16:00:...|
-    +--------+--------+---------+---------+---------+------------------+--------------------+----------+--------------------+
+    +--------+--------+---------+---------+--------------------+
+    |  symbol|   price|bid_price|ask_price|          updated_at|
+    +--------+--------+---------+---------+--------------------+
+    |BTC-USD |45000.50|45000.25 |45000.75 |2024-01-15T16:00:...|
+    |ETH-USD | 2650.75| 2650.50 | 2651.00 |2024-01-15T16:00:...|
+    |DOGE-USD|    0.085|    0.084|    0.086|2024-01-15T16:00:...|
+    +--------+--------+---------+---------+--------------------+
 
     Load data for specific trading pairs:
 
