@@ -53,8 +53,8 @@ class RobinhoodDataReader(DataSourceReader):
 
 
         
-        # Crypto API base URL
-        self.base_url = "https://trading.robinhood.com"
+        # Crypto API base URL (configurable for testing)
+        self.base_url = options.get("base_url", "https://trading.robinhood.com")
 
     def _get_current_timestamp(self) -> int:
         """Get current UTC timestamp."""
@@ -226,15 +226,29 @@ class RobinhoodDataSource(DataSource):
 
 
 
+    Options
+    -------
+    - api_key: string (required) — Robinhood Crypto API key.
+    - private_key: string (required) — Base64-encoded Ed25519 private key seed.
+    - base_url: string (optional, default "https://trading.robinhood.com") — Override for sandbox/testing.
+
+    Errors
+    ------
+    - Raises ValueError when required options are missing or private_key is invalid.
+    - Network/API errors are logged and skipped per symbol; no rows are emitted for failed symbols.
+
+    Partitioning
+    ------------
+    - One partition per requested trading pair (e.g., "BTC-USD,ETH-USD"). Symbols are uppercased and auto-appended with "-USD" if missing pair format.
+
+    Arrow
+    -----
+    - Rows are yielded directly; Arrow-based batches can be added in future for improved performance.
+
     Notes
     -----
-    - Requires valid Robinhood Crypto API credentials (API key and base64-encoded private key)
-    - Supports all major cryptocurrencies available on Robinhood
-    - Implements proper API authentication with NaCl (Sodium) signing
-    - Rate limiting is handled automatically
-    - Based on official Robinhood Crypto Trading API documentation
-    - Requires 'pynacl' library for cryptographic signing: pip install pynacl
-    - Reference: https://docs.robinhood.com/crypto/trading/
+    - Requires 'pynacl' for Ed25519 signing: pip install pynacl
+    - Refer to official Robinhood documentation for authentication details.
     """
 
     @classmethod
