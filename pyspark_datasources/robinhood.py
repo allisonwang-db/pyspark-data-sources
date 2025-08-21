@@ -109,12 +109,7 @@ class RobinhoodDataReader(DataSourceReader):
             raise ValueError(f"Invalid private key format: {str(e)}")
         
 
-        
-        # Initialize session for connection pooling
-        self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'PySpark Robinhood Crypto DataSource/1.0'
-        })
+
         
         # Crypto API base URL
         self.base_url = "https://trading.robinhood.com"
@@ -153,18 +148,18 @@ class RobinhoodDataReader(DataSourceReader):
         headers = {
             'x-api-key': self.api_key,
             'x-signature': signature,
-            'x-timestamp': str(timestamp),
+            'x-timestamp': str(timestamp)
         }
         
         try:
             # Make request
             if method.upper() == "GET":
-                response = self.session.get(url, headers=headers, params=params, timeout=10)
+                response = requests.get(url, headers=headers, params=params, timeout=10)
             elif method.upper() == "POST":
                 headers['Content-Type'] = 'application/json'
-                response = self.session.post(url, headers=headers, json=json_data, timeout=10)
+                response = requests.post(url, headers=headers, json=json_data, timeout=10)
             else:
-                response = self.session.request(method, url, headers=headers, params=params, json=json_data, timeout=10)
+                response = requests.request(method, url, headers=headers, params=params, json=json_data, timeout=10)
             
             response.raise_for_status()
             return response.json()
