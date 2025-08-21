@@ -38,8 +38,8 @@ def test_robinhood_missing_credentials(spark):
     assert "ValueError" in str(excinfo.value) and ("api_key" in str(excinfo.value) or "private_key" in str(excinfo.value))
 
 
-def test_robinhood_missing_symbols_without_load_all(spark):
-    """Test that missing symbols without load_all_pairs raises an error."""
+def test_robinhood_missing_symbols(spark):
+    """Test that missing symbols raises an error."""
     with pytest.raises(AnalysisException) as excinfo:
         df = spark.read.format("robinhood") \
             .option("api_key", "test-key") \
@@ -136,4 +136,3 @@ def test_robinhood_multiple_crypto_pairs(spark):
     
     # Test passes only if we have real data for the requested pairs
     assert len(symbols_found) >= 3, f"Expected at least 3 different symbols, got {len(symbols_found)}: {symbols_found}"
-

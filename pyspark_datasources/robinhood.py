@@ -41,25 +41,10 @@ class RobinhoodDataSource(DataSource):
     +--------+--------+---------+---------+--------------------+
     |BTC-USD |45000.50|45000.25 |45000.75 |2024-01-15T16:00:...|
     |ETH-USD | 2650.75| 2650.50 | 2651.00 |2024-01-15T16:00:...|
-    |DOGE-USD|    0.085|    0.084|    0.086|2024-01-15T16:00:...|
+    |DOGE-USD|   0.085|    0.084|    0.086|2024-01-15T16:00:...|
     +--------+--------+---------+---------+--------------------+
 
-    Load data for specific trading pairs:
 
-    >>> df = spark.read.format("robinhood") \\
-    ...     .option("api_key", "your-api-key") \\
-    ...     .option("private_key", "your-base64-private-key") \\
-    ...     .load("BTC-USD,ETH-USD")
-    >>> df.show()
-
-    Load all available trading pairs:
-
-    >>> df = spark.read.format("robinhood") \\
-    ...     .option("api_key", "your-api-key") \\
-    ...     .option("private_key", "your-base64-private-key") \\
-    ...     .option("load_all_pairs", "true") \\
-    ...     .load()
-    >>> df.show()
 
     Notes
     -----
@@ -123,8 +108,7 @@ class RobinhoodDataReader(DataSourceReader):
         except Exception as e:
             raise ValueError(f"Invalid private key format: {str(e)}")
         
-        # Option to load all available pairs
-        self.load_all_pairs = options.get("load_all_pairs", "false").lower() == "true"
+
         
         # Initialize session for connection pooling
         self.session = requests.Session()
@@ -198,39 +182,24 @@ class RobinhoodDataReader(DataSourceReader):
     
     def partitions(self):
         """Create partitions for parallel processing of crypto pairs."""
-        if self.load_all_pairs:
-            # Get all available trading pairs
-            try:
-                path = "/api/v1/crypto/trading/trading_pairs/"
-                pairs_data = self._make_authenticated_request("GET", path)
-                
-                if pairs_data and 'results' in pairs_data:
-                    symbols = [pair['symbol'] for pair in pairs_data['results']]
-                    return [CryptoPair(symbol=symbol) for symbol in symbols]
-                else:
-                    raise ValueError("No trading pairs data returned from API")
-            except Exception as e:
-                raise ValueError(f"Failed to fetch available trading pairs: {str(e)}")
-        else:
-            # Use specified symbols from path
-            symbols_str = self.options.get("path", "")
-            if not symbols_str:
-                raise ValueError(
-                    "Must specify crypto pairs to load using .load('BTC-USD,ETH-USD') "
-                    "or use .option('load_all_pairs', 'true') to load all available pairs"
-                )
+        # Use specified symbols from path
+        symbols_str = self.options.get("path", "")
+        if not symbols_str:
+            raise ValueError(
+                "Must specify crypto pairs to load using .load('BTC-USD,ETH-USD')"
+            )
             
-            # Split symbols by comma and create partitions
-            symbols = [symbol.strip().upper() for symbol in symbols_str.split(",")]
-            # Ensure proper format (e.g., BTC-USD)
-            formatted_symbols = []
-            for symbol in symbols:
-                if symbol and '-' not in symbol:
-                    symbol = f"{symbol}-USD"  # Default to USD pair
-                if symbol:
-                    formatted_symbols.append(symbol)
-            
-            return [CryptoPair(symbol=symbol) for symbol in formatted_symbols]
+        # Split symbols by comma and create partitions
+        symbols = [symbol.strip().upper() for symbol in symbols_str.split(",")]
+        # Ensure proper format (e.g., BTC-USD)
+        formatted_symbols = []
+        for symbol in symbols:
+            if symbol and '-' not in symbol:
+                symbol = f"{symbol}-USD"  # Default to USD pair
+            if symbol:
+                formatted_symbols.append(symbol)
+        
+        return [CryptoPair(symbol=symbol) for symbol in formatted_symbols]
 
     def read(self, partition: CryptoPair):
         """Read crypto data for a single trading pair partition."""
