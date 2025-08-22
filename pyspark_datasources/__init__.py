@@ -5,6 +5,7 @@ from .googlesheets import GoogleSheetsDataSource
 from .huggingface import HuggingFaceDatasets
 from .kaggle import KaggleDataSource
 from .opensky import OpenSkyDataSource
+from .robinhood import RobinhoodDataSource
 from .salesforce import SalesforceDataSource
 from .simplejson import SimpleJsonDataSource
 from .stock import StockDataSource
