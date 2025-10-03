@@ -8,7 +8,7 @@
 
 ### Python-Side Components
 
-#### SimpleDataSourceStreamReader (datasource.py:816-911)
+#### SimpleDataSourceStreamReader (datasource.py)
 The user-facing API with three core methods:
 - `initialOffset()`: Returns the starting position for a new streaming query
 - `read(start)`: Reads all available data from a given offset and returns both the data and the next offset
@@ -22,13 +22,13 @@ A private wrapper that implements the prefetch-and-cache pattern:
 
 ### Scala-Side Components
 
-#### PythonMicroBatchStream (PythonMicroBatchStream.scala:31-111)
+#### PythonMicroBatchStream (PythonMicroBatchStream.scala)
 Manages the micro-batch execution:
 - Creates and manages `PythonStreamingSourceRunner` for Python communication
 - Stores prefetched data in BlockManager with `PythonStreamBlockId`
 - Handles offset management and partition planning
 
-#### PythonStreamingSourceRunner (PythonStreamingSourceRunner.scala:63-268)
+#### PythonStreamingSourceRunner (PythonStreamingSourceRunner.scala)
 The bridge between JVM and Python:
 - Spawns a Python worker process running `python_streaming_source_runner.py`
 - Serializes/deserializes data using Arrow format
@@ -146,7 +146,7 @@ PythonMicroBatchStream
 - **Throughput ceiling**: Limited by driver's processing capacity
 
 ### Important Note from Source Code
-From datasource.py:823-827:
+From datasource.py:
 > "Because SimpleDataSourceStreamReader read records in Spark driver node to determine end offset of each batch without partitioning, it is only supposed to be used in lightweight use cases where input rate and batch size is small."
 
 ## Use Cases
