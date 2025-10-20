@@ -165,3 +165,4 @@ claude_cache/
 
 # Gemini
 .gemini/
+.vscode

@@ -88,13 +88,13 @@ df.show()
 
 The schema for the `tracks` type is as follows:
 
-| Field       | Type                |
-|-------------|---------------------|
-| id          | `string`            |
-| name        | `string`            |
-| artists     | `array<string>`     |
-| album       | `string`            |
-| duration_ms | `long`              |
-| popularity  | `integer`           |
-| added_at    | `string`            |
+| Field       | Type            |
+|-------------|-----------------|
+| id          | `string`        |
+| name        | `string`        |
+| artists     | `array<string>` |
+| album       | `string`        |
+| duration_ms | `long`          |
+| popularity  | `integer`       |
+| added_at    | `string`        |
 
