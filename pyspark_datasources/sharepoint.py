@@ -361,7 +361,6 @@ class SharepointStreamWriter(DataSourceStreamWriter):
                 buffer.clear()
 
         for row in iterator:
-            record = None
             try:
                 record = self.resource.convert_row_to_sharepoint_record(row=row)
             except Exception as e:
