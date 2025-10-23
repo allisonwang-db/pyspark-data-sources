@@ -54,17 +54,18 @@ query = stream.writeStream.format("console").start()
 
 ## Available Data Sources
 
-| Data Source | Type | Description | Install |
-|-------------|------|-------------|---------|
-| `fake` | Batch/Stream | Generate synthetic test data using Faker | `pip install pyspark-data-sources[faker]` |
-| `github` | Batch | Read GitHub pull requests | Built-in |
-| `googlesheets` | Batch | Read public Google Sheets | Built-in |
-| `huggingface` | Batch | Load Hugging Face datasets | `[huggingface]` |
-| `stock` | Batch | Fetch stock market data (Alpha Vantage) | Built-in |
-| `opensky` | Batch/Stream | Live flight tracking data | Built-in |
-| `kaggle` | Batch | Load Kaggle datasets | `[kaggle]` |
-| `arrow` | Batch | Read Apache Arrow files | `[arrow]` |
-| `lance` | Batch Write | Write Lance vector format | `[lance]` |
+| Data Source | Type         | Description                                | Install                                   |
+|-------------|--------------|--------------------------------------------|-------------------------------------------|
+| `fake` | Batch/Stream | Generate synthetic test data using Faker   | `pip install pyspark-data-sources[faker]` |
+| `github` | Batch        | Read GitHub pull requests                  | Built-in                                  |
+| `googlesheets` | Batch        | Read public Google Sheets                  | Built-in                                  |
+| `huggingface` | Batch        | Load Hugging Face datasets                 | `[huggingface]`                           |
+| `stock` | Batch        | Fetch stock market data (Alpha Vantage)    | Built-in                                  |
+| `opensky` | Batch/Stream | Live flight tracking data                  | Built-in                                  |
+| `kaggle` | Batch        | Load Kaggle datasets                       | `[kaggle]`                                |
+| `arrow` | Batch        | Read Apache Arrow files                    | `[arrow]`                                 |
+| `lance` | Batch Write  | Write Lance vector format                  | `[lance]`                                 |
+| `pyspark.datasource.sharepoint` | Stream Write | Write streaming data to Sharepoint objects | `[sharepoint]` |
 
 📚 **[See detailed examples for all data sources →](docs/data-sources-guide.md)**
 
