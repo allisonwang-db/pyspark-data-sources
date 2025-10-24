@@ -60,7 +60,7 @@ class SharepointResource(abc.ABC):
 
     def validate_required_options(self) -> List[bool]:
         """Validates the required options for a resource."""
-        return [True if getattr(self, option.rsplit(".", 1)[1]) else False for option in self.required_options()]
+        return [True if getattr(self, option.rsplit(".", 1)[-1], None) else False for option in self.required_options()]
 
 
 class ListResource(SharepointResource):
@@ -190,7 +190,7 @@ class SharepointDataSource(DataSource):
 
     Examples
     --------
-    Register the Salesforce Datasource:
+    Register the Sharepoint Datasource:
 
     >>> from pyspark_datasources import SharepointDataSource
     >>> spark.dataSource.register(SharepointDataSource)
