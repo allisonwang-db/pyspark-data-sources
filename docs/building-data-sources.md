@@ -313,7 +313,53 @@ class MyWriter(DataSourceWriter):
 
 ## Best Practices
 
-### 1. Always Validate Options
+### 1. Schema Inference
+
+For data sources that have a well-defined schema, such as a database or a structured API, it is best to infer the schema directly from the source. This is more convenient for users, as they do not have to manually specify the schema.
+
+```python
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType
+import my_api_client
+
+class MyApiDataSource(DataSource):
+    def __init__(self, options):
+        self.options = options
+        self.client = my_api_client.connect(options["api_key"])
+
+    def schema(self):
+        """Infer the schema from the API metadata."""
+        api_schema = self.client.get_schema()
+        fields = []
+        for name, type_str in api_schema.items():
+            if type_str == "string":
+                fields.append(StructField(name, StringType(), True))
+            elif type_str == "number":
+                fields.append(StructField(name, DoubleType(), True))
+        return StructType(fields)
+```
+
+### 2. Avoid Using Pandas
+
+While `pandas` is a powerful library, it can have high memory usage, especially on the Spark workers. Whenever possible, it is best to work with PyArrow tables directly. This is more memory-efficient and can lead to better performance.
+
+```python
+import pyarrow as pa
+
+class MyArrowReader(DataSourceReader):
+    def read(self, partition):
+        # Your data fetching logic here
+        data = self._fetch_data()
+
+        # Convert your data to a PyArrow Table
+        # This is just an example, the conversion will depend on your data format
+        pydict = { "col1": [1, 2, 3], "col2": ["A", "B", "C"] }
+        arrow_table = pa.Table.from_pydict(pydict)
+
+        # Yield the table in batches
+        yield from arrow_table.to_batches()
+```
+
+### 3. Always Validate Options
 
 ```python
 def __init__(self, options):
