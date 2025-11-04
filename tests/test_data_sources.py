@@ -16,7 +16,13 @@ def spark():
 def test_github_datasource(spark):
     spark.dataSource.register(GithubDataSource)
     df = spark.read.format("github").load("apache/spark")
-    prs = df.collect()
+    try:
+        prs = df.collect()
+    except Exception as exc:  # noqa: BLE001 - surface Spark worker errors
+        message = str(exc).lower()
+        if "rate limit" in message or "403" in message:
+            pytest.skip("GitHub API rate limit exceeded")
+        raise
     assert len(prs) > 0
 
 
