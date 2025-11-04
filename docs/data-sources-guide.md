@@ -12,6 +12,7 @@ This guide provides detailed examples and usage patterns for all available data 
 7. [KaggleDataSource - Load Kaggle Datasets](#7-kaggledatasource---load-kaggle-datasets)
 8. [ArrowDataSource - Read Apache Arrow Files](#8-arrowdatasource---read-apache-arrow-files)
 9. [LanceDataSource - Vector Database Format](#9-lancedatasource---vector-database-format)
+10. [SharepointDataSource - Write to Sharepoint](#10-sharepointdatasource---write-to-sharepoint)
 
 ## 1. FakeDataSource - Generate Synthetic Data
 
@@ -421,6 +422,58 @@ lance_df.printSchema()
 - Efficient storage of array columns
 - Fast random access
 - Version control built-in
+
+## 10. SharepointDataSource - Write to Sharepoint
+
+Write (streaming) data to Sharepoint.
+
+### Installation
+```bash
+pip install pyspark-data-sources[sharepoint]
+```
+
+### Write Data
+```python
+import json
+from pyspark.sql.functions import col, lit
+from pyspark_datasources import SharepointDataSource
+
+spark.dataSource.register(SharepointDataSource)
+
+# Prepare your DataFrame
+df = (
+        spark.readStream.format("rate").option("rowsPerSecond", 10).load()
+        .select(
+            col("value").cast("string").alias("name"),   
+            lit("Technology").alias("industry"),
+            (col("value") * 100000).cast("double").alias("annual_revenue")
+        )
+)
+
+# Write DataFrame to Sharepoint
+query = (
+    df.writeStream
+      .format("pyspark.datasource.sharepoint")
+      .option("pyspark.datasource.sharepoint.auth.tenant_id", "<>")
+      .option("pyspark.datasource.sharepoint.auth.client_id", "<>")
+      .option("pyspark.datasource.sharepoint.auth.client_secret", "<>")
+      .option("pyspark.datasource.sharepoint.resource", "list")
+      .option("pyspark.datasource.sharepoint.site_id", "<>")
+      .option("pyspark.datasource.sharepoint.list.list_id", "<>")
+      .option("pyspark.datasource.sharepoint.list.fields", json.dumps({"name": "Name", "industry": "Industry", "annual_revenue": "AnnualRevenue"}))
+      .option("pyspark.datasource.sharepoint.batch_size", "200")
+      .option("pyspark.datasource.sharepoint.fail_fast", "true")
+      .option("checkpointLocation", "/Volumes/bu_1/default/test/chk/sharepoint")
+      .start()
+)
+```
+
+### Features
+- **Write-only datasource**: Designed specifically for writing data to Sharepoint
+- **Stream processing**: Uses Microsoft Graph API for efficient concurrent writes based on configurable batch-size parameter
+- **Exactly-once semantics**: Integrates with Spark's checkpoint mechanism
+- **Error handling**: Control over whether to fail the write operation if a record fails to be written
+- **Flexible resource implementations**: Supports multiple resource types (currently only `list`)
 
 ## Common Patterns
 
