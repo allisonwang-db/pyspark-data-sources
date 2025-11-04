@@ -111,10 +111,27 @@ pre-commit run --all-files
 
 ### Building Documentation
 
-The project previously used MkDocs for documentation. Documentation now lives primarily in:
-- README.md - Main documentation
-- Docstrings in source code
-- Contributing guides in /contributing
+MkDocs (Material theme) powers the public documentation site hosted at `https://allisonwang-db.github.io/pyspark-data-sources/`.
+
+#### Preview Locally
+
+Run the live preview server (restarts on save):
+
+```bash
+poetry run mkdocs serve
+```
+
+The site is served at `http://127.0.0.1:8000/` by default.
+
+#### Build for Verification
+
+Before sending a PR, ensure the static build succeeds and address any warnings:
+
+```bash
+poetry run mkdocs build
+```
+
+Common warnings include missing navigation entries or broken links—update `mkdocs.yml` or the relevant Markdown files to resolve them.
 
 ### Writing Docstrings
 

@@ -173,6 +173,21 @@ gh workflow run docs.yml
 # Go to Actions tab → Deploy MkDocs to GitHub Pages → Run workflow
 ```
 
+### Releasing the Documentation Site
+
+Follow these steps when you want to publish documentation updates:
+
+1. Verify the docs build locally:
+   ```bash
+   poetry run mkdocs build
+   ```
+2. Commit any updated Markdown or configuration files and push to the default branch. This triggers the `docs.yml` workflow, which rebuilds and publishes the site to GitHub Pages.
+3. (Optional) If you need to deploy immediately without waiting for CI, run:
+   ```bash
+   poetry run mkdocs gh-deploy
+   ```
+   This command builds the site and pushes it to the `gh-pages` branch directly.
+
 ### Documentation URLs
 
 - **Live Docs**: https://allisonwang-db.github.io/pyspark-data-sources
