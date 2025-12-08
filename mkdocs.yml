@@ -37,6 +37,8 @@ nav:
     - datasources/lance.md
     - datasources/opensky.md
     - datasources/weather.md
+    - datasources/meta_capi.md
+
 
 markdown_extensions:
   - pymdownx.highlight:

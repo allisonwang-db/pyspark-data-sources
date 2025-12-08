@@ -494,5 +494,4 @@ df = spark.read.format("fake") \
    - Use partitioning for large datasets
    - Consider sampling: `df.sample(0.1)`
    - Increase Spark executor memory
-
 For more help, see the [Development Guide](../contributing/DEVELOPMENT.md) or open an issue on GitHub.
