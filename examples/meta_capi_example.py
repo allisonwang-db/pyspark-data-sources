@@ -3,7 +3,7 @@
 """
 Meta Conversions API (CAPI) Datasource Example
 
-This example demonstrates how to use the MetaCapiDataSource as a streaming datasource
+This example demonstrates how to use the MetaCapiDataSource as a datasource
 to write event data to Meta for ad optimization.
 
 Requirements:
