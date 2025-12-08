@@ -30,7 +30,7 @@ This file provides context and guidelines for AI agents working on the `pyspark-
 
 ### Pull Requests
 
-- Use `gh` CLI to create Pull Requests.
+- **ALWAYS** `gh` CLI to create and update Pull Requests.
 
 ## Project Structure
 
