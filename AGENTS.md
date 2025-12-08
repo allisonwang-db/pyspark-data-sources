@@ -28,6 +28,10 @@ This file provides context and guidelines for AI agents working on the `pyspark-
 - **Command**: Run `pytest` from the root directory to execute the test suite.
 - **Coverage**: The project uses `pytest-cov` for coverage reporting.
 
+### Pull Requests
+
+- Use `gh` CLI to create Pull Requests.
+
 ## Project Structure
 
 - `pyspark_datasources/`: Source code for the data source implementations.
