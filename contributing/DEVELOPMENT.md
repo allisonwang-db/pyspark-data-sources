@@ -4,7 +4,7 @@
 
 ### Prerequisites
 - Python 3.9-3.12
-- Poetry for dependency management
+- [uv](https://docs.astral.sh/uv/) for dependency management
 - Apache Spark 4.0+ (or Databricks Runtime 15.4 LTS+)
 
 ### Installation
@@ -14,14 +14,14 @@
 git clone https://github.com/allisonwang-db/pyspark-data-sources.git
 cd pyspark-data-sources
 
-# Install dependencies
-poetry install
+# Install dependencies (creates .venv/ automatically)
+uv sync
 
 # Install with all optional dependencies
-poetry install --extras all
+uv sync --extra all
 
-# Activate virtual environment
-poetry shell
+# Activate virtual environment (optional)
+source .venv/bin/activate
 ```
 
 ### macOS Setup
@@ -84,37 +84,54 @@ This project uses [Ruff](https://github.com/astral-sh/ruff) for code formatting 
 
 ```bash
 # Format code
-poetry run ruff format .
+uv run ruff format .
 
 # Run linter
-poetry run ruff check .
+uv run ruff check .
 
 # Run linter with auto-fix
-poetry run ruff check . --fix
+uv run ruff check . --fix
 
 # Check specific file
-poetry run ruff check pyspark_datasources/fake.py
+uv run ruff check pyspark_datasources/fake.py
 ```
 
 ### Pre-commit Hooks (Optional)
 
 ```bash
 # Install pre-commit hooks
-poetry add --group dev pre-commit
-pre-commit install
+uv add --dev pre-commit
+uv run pre-commit install
 
 # Run manually
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 ## Documentation
 
 ### Building Documentation
 
-The project previously used MkDocs for documentation. Documentation now lives primarily in:
-- README.md - Main documentation
-- Docstrings in source code
-- Contributing guides in /contributing
+MkDocs (Material theme) powers the public documentation site hosted at `https://allisonwang-db.github.io/pyspark-data-sources/`.
+
+#### Preview Locally
+
+Run the live preview server (restarts on save):
+
+```bash
+poetry run mkdocs serve
+```
+
+The site is served at `http://127.0.0.1:8000/` by default.
+
+#### Build for Verification
+
+Before sending a PR, ensure the static build succeeds and address any warnings:
+
+```bash
+poetry run mkdocs build
+```
+
+Common warnings include missing navigation entries or broken links—update `mkdocs.yml` or the relevant Markdown files to resolve them.
 
 ### Writing Docstrings
 
@@ -228,16 +245,16 @@ Add your data source to the table in README.md with examples.
 
 ```bash
 # Add required dependency
-poetry add requests
+uv add requests
 
 # Add optional dependency
-poetry add --optional faker
+uv add --optional faker faker
 
 # Add dev dependency
-poetry add --group dev pytest-cov
+uv add --dev pytest-cov
 
 # Update dependencies
-poetry update
+uv sync --upgrade
 ```
 
 ### Managing Extras
@@ -245,7 +262,7 @@ poetry update
 Edit `pyproject.toml` to add optional dependency groups:
 
 ```toml
-[tool.poetry.extras]
+[project.optional-dependencies]
 mynewsource = ["special-library"]
 all = ["faker", "datasets", "special-library", ...]
 ```
@@ -346,17 +363,18 @@ import os
 os.environ["OBJC_DISABLE_INITIALIZE_FORK_SAFETY"] = "YES"
 ```
 
-### Poetry Issues
+### uv Troubleshooting
 
 ```bash
 # Clear cache
-poetry cache clear pypi --all
+uv cache clean
 
-# Update lock file
-poetry lock --no-update
+# Check that the lockfile matches pyproject
+uv lock --check
 
-# Reinstall
-poetry install --remove-untracked
+# Recreate the virtual environment
+rm -rf .venv
+uv sync
 ```
 
 ### Spark Session Issues

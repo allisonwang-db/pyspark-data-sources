@@ -149,3 +149,6 @@ We welcome contributions! See our [Development Guide](contributing/DEVELOPMENT.m
 
 - [Python Data Source API Documentation](https://spark.apache.org/docs/4.0.0/api/python/tutorial/sql/python_data_source.html)
 - [API Source Code](https://github.com/apache/spark/blob/master/python/pyspark/sql/datasource.py)
+
+## Community Tools
+- [Polymo](https://github.com/dan1elt0m/polymo) - Declarative REST API ingestion. [Medium article](https://medium.com/@d.e.tom89/turn-any-rest-api-into-spark-dataframes-in-minutes-with-polymo-028a48113eb1)

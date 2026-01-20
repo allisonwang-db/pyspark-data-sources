@@ -4,41 +4,44 @@ This document outlines the steps to create a new release for the `pyspark-data-s
 
 ## Prerequisites
 
-- Ensure you have Poetry installed
+- Ensure you have [uv](https://docs.astral.sh/uv/) installed
 - Ensure you have GitHub CLI installed (optional, for enhanced releases)
 - Ensure you have push access to the repository
 - Ensure all tests pass and the code is ready for release
 
 ## Release Steps
 
-### 1. Update Version (Using Poetry Commands)
+### 1. Update Version
 
-Use Poetry's built-in version bumping commands:
+`uv` does not manage versions directly, but you can use the Hatch CLI via `uvx` or edit `pyproject.toml` manually.
 
 ```bash
 # Bump patch version (0.1.6 → 0.1.7) - for bug fixes
-poetry version patch
+uvx hatch version patch
 
 # Bump minor version (0.1.6 → 0.2.0) - for new features
-poetry version minor
+uvx hatch version minor
 
 # Bump major version (0.1.6 → 1.0.0) - for breaking changes
-poetry version major
+uvx hatch version major
 
 # Or set a specific version
-poetry version 1.2.3
+uvx hatch version 1.2.3
 ```
 
-This automatically updates the version in `pyproject.toml`.
+These commands update the `version` field under `[project]` in `pyproject.toml`. You can also open the file and edit the value manually if you prefer.
 
 ### 2. Build and Publish
 
 ```bash
-# Build the package
-poetry build
+# Build the package (creates dist/ artifacts)
+uv build
 
-# Publish to PyPI (requires PyPI credentials)
-poetry publish
+# Publish to PyPI (requires token or username/password)
+uv publish
+
+# Optional: dry-run to verify upload without publishing
+uv publish --dry-run
 ```
 
 ### 3. Commit Version Changes
@@ -48,7 +51,8 @@ poetry publish
 git add pyproject.toml
 
 # Commit with the current version (automatically retrieved)
-git commit -m "Bump version to $(poetry version -s)"
+VERSION=$(uvx hatch version)
+git commit -m "Bump version to ${VERSION}"
 
 # Push to main branch
 git push
@@ -59,18 +63,20 @@ git push
 #### Option A: Simple Git Tag
 ```bash
 # Create an annotated tag with current version
-git tag -a "v$(poetry version -s)" -m "Release version $(poetry version -s)"
+VERSION=$(uvx hatch version)
+git tag -a "v${VERSION}" -m "Release version ${VERSION}"
 
 # Push the tag to GitHub
-git push origin "v$(poetry version -s)"
+git push origin "v${VERSION}"
 ```
 
 #### Option B: Rich GitHub Release (Recommended)
 ```bash
 # Create a GitHub release with current version
-gh release create "v$(poetry version -s)" \
-  --title "Release v$(poetry version -s)" \
-  --notes "Release notes for version $(poetry version -s)" \
+VERSION=$(uvx hatch version)
+gh release create "v${VERSION}" \
+  --title "Release v${VERSION}" \
+  --notes "Release notes for version ${VERSION}" \
   --latest
 ```
 
@@ -78,16 +84,16 @@ gh release create "v$(poetry version -s)" \
 
 Follow [Semantic Versioning](https://semver.org/):
 
-- **Patch** (`poetry version patch`): Bug fixes, no breaking changes
-- **Minor** (`poetry version minor`): New features, backward compatible  
-- **Major** (`poetry version major`): Breaking changes
+- **Patch** (`uvx hatch version patch`): Bug fixes, no breaking changes
+- **Minor** (`uvx hatch version minor`): New features, backward compatible  
+- **Major** (`uvx hatch version major`): Breaking changes
 
 ## Manual Version Update (Alternative)
 
 If you prefer to manually edit `pyproject.toml`:
 
 ```toml
-[tool.poetry]
+[project]
 version = "x.y.z"  # Update this line manually
 ```
 
@@ -98,9 +104,9 @@ Then follow steps 2-4 above.
 - [ ] All tests pass
 - [ ] Documentation is up to date
 - [ ] CHANGELOG.md is updated (if applicable)
-- [ ] Version is bumped using `poetry version [patch|minor|major]`
-- [ ] Package builds successfully (`poetry build`)
-- [ ] Package publishes successfully (`poetry publish`)
+- [ ] Version is bumped using `uvx hatch version [patch|minor|major]` (or manual edit)
+- [ ] Package builds successfully (`uv build`)
+- [ ] Package publishes successfully (`uv publish`)
 - [ ] Version changes are committed and pushed
 - [ ] GitHub release/tag is created
 - [ ] Release notes are written
@@ -108,11 +114,17 @@ Then follow steps 2-4 above.
 ## Troubleshooting
 
 ### Publishing Issues
-- Ensure you're authenticated with PyPI: `poetry config pypi-token.pypi your-token`
+- Ensure you're authenticated with PyPI: `uv publish --token <pypi-token>` or set credentials via environment variables
 - Check if the version already exists on PyPI
 
 ### Git Tag Issues
-- If tag already exists: `git tag -d "v$(poetry version -s)"` (delete local) and `git push origin :refs/tags/"v$(poetry version -s)"` (delete remote)
+- If tag already exists:
+
+```bash
+VERSION=$(uvx hatch version)
+git tag -d "v${VERSION}"
+git push origin :refs/tags/"v${VERSION}"
+```
 - Ensure you have push permissions to the repository
 
 ### GitHub CLI Issues
@@ -127,26 +139,21 @@ If you see `objc_initializeAfterForkError` crashes on macOS, set this environmen
 # For single commands
 OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES python your_script.py
 
-# For Poetry environment
-OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES poetry run python your_script.py
+# For commands that run inside the uv environment
+OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES uv run python your_script.py
 
 # To set permanently in your shell (add to ~/.zshrc or ~/.bash_profile):
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ```
 
-## Useful Poetry Version Commands
+## Useful Version Commands
 
 ```bash
 # Check current version
-poetry version
+uvx hatch version
 
-# Show version number only (useful for scripts)
-poetry version -s
-
-# Preview what the next version would be (without changing it)
-poetry version --dry-run patch
-poetry version --dry-run minor
-poetry version --dry-run major
+# Bump to an explicit version
+uvx hatch version 0.2.0
 ```
 
 ## Documentation Releases
@@ -172,6 +179,21 @@ gh workflow run docs.yml
 # Or trigger via GitHub web interface:
 # Go to Actions tab → Deploy MkDocs to GitHub Pages → Run workflow
 ```
+
+### Releasing the Documentation Site
+
+Follow these steps when you want to publish documentation updates:
+
+1. Verify the docs build locally:
+   ```bash
+   poetry run mkdocs build
+   ```
+2. Commit any updated Markdown or configuration files and push to the default branch. This triggers the `docs.yml` workflow, which rebuilds and publishes the site to GitHub Pages.
+3. (Optional) If you need to deploy immediately without waiting for CI, run:
+   ```bash
+   poetry run mkdocs gh-deploy
+   ```
+   This command builds the site and pushes it to the `gh-pages` branch directly.
 
 ### Documentation URLs
 

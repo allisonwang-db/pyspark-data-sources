@@ -60,7 +60,10 @@ class SharepointResource(abc.ABC):
 
     def validate_required_options(self) -> List[bool]:
         """Validates the required options for a resource."""
-        return [True if getattr(self, option.rsplit(".", 1)[-1], None) else False for option in self.required_options()]
+        return [
+            True if getattr(self, option.rsplit(".", 1)[-1], None) else False
+            for option in self.required_options()
+        ]
 
 
 class ListResource(SharepointResource):
@@ -117,9 +120,13 @@ class ListResource(SharepointResource):
                     record[listfield] = value
 
             except AttributeError as e:
-                raise Exception(f"Field '{rowfield}' not found in row with keys {', '.join(row.asDict().keys())}")
+                raise Exception(
+                    f"Field '{rowfield}' not found in row with keys {', '.join(row.asDict().keys())}"
+                )
             except Exception as e:
-                raise Exception(f"Conversion failed for field '{rowfield}' --> '{listfield}': {str(e)}")
+                raise Exception(
+                    f"Conversion failed for field '{rowfield}' --> '{listfield}': {str(e)}"
+                )
         return record
 
     async def push_record(self, client, record: Dict[str, Any], site_id: str) -> None:
@@ -133,7 +140,9 @@ class ListResource(SharepointResource):
             await client.sites.by_site_id(site_id).lists.by_list_id(self.list_id).items.post(body)
 
         except Exception as e:
-            logger.warning(f"Pushing record to Sharepoint List with Microsoft Graph API failed: {str(e)}")
+            logger.warning(
+                f"Pushing record to Sharepoint List with Microsoft Graph API failed: {str(e)}"
+            )
             raise
 
 
@@ -291,21 +300,42 @@ class SharepointStreamWriter(DataSourceStreamWriter):
         self.client_id = options.get(f"{datasource}.auth.client_id")
         self.client_secret = options.get(f"{datasource}.auth.client_secret")
         self.tenant_id = options.get(f"{datasource}.auth.tenant_id")
-        self.scopes = [scope.strip() for scope in options.get(f"{datasource}.auth.scopes", "https://graph.microsoft.com/.default").split(",")]
+        self.scopes = [
+            scope.strip()
+            for scope in options.get(
+                f"{datasource}.auth.scopes", "https://graph.microsoft.com/.default"
+            ).split(",")
+        ]
 
         self.site_id = options.get(f"{datasource}.site_id")
         self.batch_size = int(options.get(f"{datasource}.batch_size", "200"))
-        self.fail_fast = True if str(options.get(f"{datasource}.fail_fast", "false")).strip().lower() == "true" else False
+        self.fail_fast = (
+            True
+            if str(options.get(f"{datasource}.fail_fast", "false")).strip().lower() == "true"
+            else False
+        )
 
         # resource specific configuration
-        resource = self._supported_resources.get(options.get(f"{datasource}.resource", "").lower(), None)
+        resource = self._supported_resources.get(
+            options.get(f"{datasource}.resource", "").lower(), None
+        )
         if resource is None or not issubclass(resource, SharepointResource):
-            raise ValueError(f"Unsupported resource: {str(resource)}. Supported resources are: {list(self._supported_resources.keys())}")
+            raise ValueError(
+                f"Unsupported resource: {str(resource)}. Supported resources are: {list(self._supported_resources.keys())}"
+            )
 
         self.resource = resource(options=options, datasource=datasource)
 
         # validate required options
-        if not all([self.client_id, self.client_secret, self.tenant_id, self.site_id, *self.resource.validate_required_options()]):
+        if not all(
+            [
+                self.client_id,
+                self.client_secret,
+                self.tenant_id,
+                self.site_id,
+                *self.resource.validate_required_options(),
+            ]
+        ):
             raise ValueError(
                 f"Sharepoint options \n\t{'\n\t'.join([f'{datasource}.{ro}' for ro in self._required_options])}\nand resource specific options\n\t{'\n\t'.join(self.resource.required_options())}\nare required. "
                 "Set them using .option() / .options() method in your streaming query."
@@ -355,7 +385,9 @@ class SharepointStreamWriter(DataSourceStreamWriter):
             nonlocal total_records_written
             nonlocal total_records_failed
             if buffer:
-                success, failed = self._push_to_sharepoint(client=client, records=buffer, batch_id=batch_id)
+                success, failed = self._push_to_sharepoint(
+                    client=client, records=buffer, batch_id=batch_id
+                )
                 total_records_written += success
                 total_records_failed.extend(failed)
                 buffer.clear()
@@ -365,7 +397,11 @@ class SharepointStreamWriter(DataSourceStreamWriter):
                 record = self.resource.convert_row_to_sharepoint_record(row=row)
             except Exception as e:
                 record = None
-                total_records_failed.append(Exception(f"Could not convert row to Sharepoint record (batch {batch_id}):\n\t\t{str(e)}"))
+                total_records_failed.append(
+                    Exception(
+                        f"Could not convert row to Sharepoint record (batch {batch_id}):\n\t\t{str(e)}"
+                    )
+                )
 
             if record:  # only add non-empty records
                 buffer.append(record)
@@ -383,9 +419,15 @@ class SharepointStreamWriter(DataSourceStreamWriter):
             else:
                 logger.warning(msg)
 
-        return SharepointCommitMessage(records_written=total_records_written, records_failed=len(total_records_failed), batch_id=batch_id)
+        return SharepointCommitMessage(
+            records_written=total_records_written,
+            records_failed=len(total_records_failed),
+            batch_id=batch_id,
+        )
 
-    def _push_to_sharepoint(self, client, records: List[Dict[str, Any]], batch_id: int) -> Tuple[int, List[Any]]:
+    def _push_to_sharepoint(
+        self, client, records: List[Dict[str, Any]], batch_id: int
+    ) -> Tuple[int, List[Any]]:
         """Push records to Sharepoint using Microsoft Graph API."""
 
         async def push() -> List[Any]:
@@ -395,16 +437,16 @@ class SharepointStreamWriter(DataSourceStreamWriter):
                 async with sem:
                     try:
                         await self.resource.push_record(
-                            client=client,
-                            record=record,
-                            site_id=self.site_id
+                            client=client, record=record, site_id=self.site_id
                         )
                     except Exception as e:
-                        raise Exception(f"Task {i}: Failed to write record to Sharepoint (batch {batch_id}):\n\t\t{str(e)}")
+                        raise Exception(
+                            f"Task {i}: Failed to write record to Sharepoint (batch {batch_id}):\n\t\t{str(e)}"
+                        )
 
             results = await asyncio.gather(
                 *(task(i=i, record=record) for i, record in enumerate(records)),
-                return_exceptions=True
+                return_exceptions=True,
             )
             return results
 

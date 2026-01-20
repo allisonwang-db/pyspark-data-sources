@@ -16,7 +16,13 @@ def spark():
 def test_github_datasource(spark):
     spark.dataSource.register(GithubDataSource)
     df = spark.read.format("github").load("apache/spark")
-    prs = df.collect()
+    try:
+        prs = df.collect()
+    except Exception as exc:  # noqa: BLE001 - surface Spark worker errors
+        message = str(exc).lower()
+        if "rate limit" in message or "403" in message:
+            pytest.skip("GitHub API rate limit exceeded")
+        raise
     assert len(prs) > 0
 
 
@@ -71,6 +77,7 @@ def test_opensky_datasource_stream(spark):
     result.show()
     assert len(result.columns) == 18  # Check schema has expected number of fields
     assert result.count() > 0  # Verify we got some data
+
 
 def test_salesforce_datasource_registration(spark):
     """Test that Salesforce DataSource can be registered and validates required options."""
@@ -176,16 +183,17 @@ def test_arrow_datasource_multiple_files(spark):
         names = {row["name"] for row in rows}
         assert names == {"Alice", "Bob", "Charlie", "Diana"}
 
+
 def test_jsonplaceholder_posts(spark):
-     spark.dataSource.register(JSONPlaceholderDataSource)
-     posts_df = spark.read.format("jsonplaceholder").option("endpoint", "posts").load()
-     assert posts_df.count() > 0 # Ensure we have some posts
+    spark.dataSource.register(JSONPlaceholderDataSource)
+    posts_df = spark.read.format("jsonplaceholder").option("endpoint", "posts").load()
+    assert posts_df.count() > 0  # Ensure we have some posts
 
 
 def test_jsonplaceholder_referential_integrity(spark):
     spark.dataSource.register(JSONPlaceholderDataSource)
     users_df = spark.read.format("jsonplaceholder").option("endpoint", "users").load()
-    assert users_df.count() > 0 # Ensure we have some users
+    assert users_df.count() > 0  # Ensure we have some users
     posts_df = spark.read.format("jsonplaceholder").option("endpoint", "posts").load()
     posts_with_authors = posts_df.join(users_df, posts_df.userId == users_df.id)
     assert posts_with_authors.count() > 0  # Ensure join is valid and we have posts with authors
