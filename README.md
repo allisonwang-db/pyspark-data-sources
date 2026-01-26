@@ -54,17 +54,30 @@ query = stream.writeStream.format("console").start()
 
 ## Available Data Sources
 
-| Data Source | Type | Description | Install |
-|-------------|------|-------------|---------|
-| `fake` | Batch/Stream | Generate synthetic test data using Faker | `pip install pyspark-data-sources[faker]` |
-| `github` | Batch | Read GitHub pull requests | Built-in |
-| `googlesheets` | Batch | Read public Google Sheets | Built-in |
+### Sources (Read)
+
+| Data Source | Type | Description | Dependency |
+|-------------|------|-------------|------------|
+| `fake` | Batch/Stream | Generate synthetic test data using Faker | `[faker]` |
+| `github` | Batch | Read GitHub pull requests | None |
+| `googlesheets` | Batch | Read public Google Sheets | None |
 | `huggingface` | Batch | Load Hugging Face datasets | `[huggingface]` |
-| `stock` | Batch | Fetch stock market data (Alpha Vantage) | Built-in |
-| `opensky` | Batch/Stream | Live flight tracking data | Built-in |
+| `stock` | Batch | Fetch stock market data (Alpha Vantage) | None |
+| `opensky` | Batch/Stream | Live flight tracking data | None |
 | `kaggle` | Batch | Load Kaggle datasets | `[kaggle]` |
 | `arrow` | Batch | Read Apache Arrow files | `[arrow]` |
+| `robinhood` | Batch | Read cryptocurrency market data from Robinhood API | `[robinhood]` |
+| `jsonplaceholder` | Batch | Read JSON data for testing | None |
+| `weather` | Batch | Read current weather data (OpenWeatherMap) | None |
+
+### Sinks (Write)
+
+| Data Source | Type | Description | Dependency |
+|-------------|------|-------------|------------|
 | `lance` | Batch Write | Write Lance vector format | `[lance]` |
+| `salesforce` | Stream Write | Write to Salesforce objects | `[salesforce]` |
+| `meta_capi` | Batch/Stream Write | Write to Meta Conversions API | None |
+
 
 📚 **[See detailed examples for all data sources →](docs/data-sources-guide.md)**
 
