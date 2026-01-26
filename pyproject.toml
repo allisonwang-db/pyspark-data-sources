@@ -1,6 +1,6 @@
 [project]
 name = "pyspark-data-sources"
-version = "0.1.10"
+version = "0.1.11"
 description = "Custom Spark data sources for reading and writing data in Apache Spark, using the Python Data Source API"
 readme = "README.md"
 requires-python = ">=3.9,<3.13"
