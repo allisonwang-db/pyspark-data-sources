@@ -12,6 +12,7 @@ This guide provides detailed examples and usage patterns for all available data 
 7. [KaggleDataSource - Load Kaggle Datasets](#7-kaggledatasource---load-kaggle-datasets)
 8. [ArrowDataSource - Read Apache Arrow Files](#8-arrowdatasource---read-apache-arrow-files)
 9. [LanceDataSource - Vector Database Format](#9-lancedatasource---vector-database-format)
+10. [SFTPDataSource - Read/Write SFTP Files](#10-sftpdatasource---readwrite-sftp-files)
 
 ## 1. FakeDataSource - Generate Synthetic Data
 
@@ -421,6 +422,50 @@ lance_df.printSchema()
 - Efficient storage of array columns
 - Fast random access
 - Version control built-in
+
+## 10. SFTPDataSource - Read/Write SFTP Files
+
+Read and write text files to an SFTP server.
+
+### Installation
+```bash
+pip install pyspark-data-sources[sftp]
+```
+
+### Read Data
+```python
+from pyspark_datasources import SFTPDataSource
+
+spark.dataSource.register(SFTPDataSource)
+
+# Read from SFTP
+df = spark.read.format("sftp") \
+    .option("host", "sftp.example.com") \
+    .option("username", "user") \
+    .option("password", "pass") \
+    .option("path", "/remote/path/data.txt") \
+    .load()
+```
+
+### Write Data
+```python
+# Write to SFTP
+df.write.format("sftp") \
+    .option("host", "sftp.example.com") \
+    .option("username", "user") \
+    .option("password", "pass") \
+    .option("path", "/remote/path/output") \
+    .save()
+```
+
+### Options
+- `host`: SFTP server hostname (required)
+- `username`: SFTP username (required)
+- `password`: SFTP password (optional if key_filename provided)
+- `key_filename`: Path to private key file (optional if password provided)
+- `path`: Remote file or directory path (required)
+- `port`: SFTP port (default: 22)
+- `recursive`: Recursively list files in directories (read only, default: false)
 
 ## Common Patterns
 
