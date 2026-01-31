@@ -38,6 +38,7 @@ nav:
     - datasources/opensky.md
     - datasources/weather.md
     - datasources/meta_capi.md
+    - datasources/sftp.md
 
 
 markdown_extensions:

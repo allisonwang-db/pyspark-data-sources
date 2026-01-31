@@ -69,6 +69,7 @@ query = stream.writeStream.format("console").start()
 | `robinhood` | Batch | Read cryptocurrency market data from Robinhood API | `[robinhood]` |
 | `jsonplaceholder` | Batch | Read JSON data for testing | None |
 | `weather` | Batch | Read current weather data (OpenWeatherMap) | None |
+| `sftp` | Batch | Read files from SFTP server | `[sftp]` |
 
 ### Sinks (Write)
 
@@ -77,6 +78,7 @@ query = stream.writeStream.format("console").start()
 | `lance` | Batch Write | Write Lance vector format | `[lance]` |
 | `salesforce` | Stream Write | Write to Salesforce objects | `[salesforce]` |
 | `meta_capi` | Batch/Stream Write | Write to Meta Conversions API | None |
+| `sftp` | Batch Write | Write files to SFTP server | `[sftp]` |
 
 
 📚 **[See detailed examples for all data sources →](docs/data-sources-guide.md)**

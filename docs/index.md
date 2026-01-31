@@ -44,3 +44,4 @@ spark.readStream.format("fake").load().writeStream.format("console").start()
 | [RobinhoodDataSource](./datasources/robinhood.md)       | `robinhood`    | Read cryptocurrency market data from Robinhood API | `pynacl`             |
 | [SalesforceDataSource](./datasources/salesforce.md)     | `salesforce`   | Write streaming data to Salesforce objects    |`simple-salesforce`    |
 | [MetaCapiDataSource](./datasources/meta_capi.md)        | `meta_capi`    | Write event data to Meta Conversions API      | None            |
+| [SFTPDataSource](./datasources/sftp.md)                | `sftp`         | Read/Write files from SFTP server             | `paramiko`            |
