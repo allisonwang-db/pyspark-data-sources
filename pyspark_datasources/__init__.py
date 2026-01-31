@@ -11,3 +11,4 @@ from .simplejson import SimpleJsonDataSource
 from .stock import StockDataSource
 from .jsonplaceholder import JSONPlaceholderDataSource
 from .meta_capi import MetaCapiDataSource
+from .sftp import SFTPDataSource
