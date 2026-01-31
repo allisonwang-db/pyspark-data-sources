@@ -63,8 +63,11 @@ class SFTPDataSource(DataSource):
         Path to the private key file.
     path : str
         The directory or file path on the SFTP server.
+        - If a file path is provided, only that file is read.
+        - If a directory path is provided, all files in that directory are read.
     recursive : str, optional
-        Whether to recursively list files (default: false).
+        Whether to recursively list files in subdirectories when `path` is a directory (default: false).
+        Only used for reading.
     file_format : str, optional
         The file format (default: text). Currently only 'text' is supported.
     """

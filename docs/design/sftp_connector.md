@@ -29,8 +29,8 @@ The following options will be supported:
 | `username` | The username for authentication. | Yes | - |
 | `password` | The password for authentication. | No | - |
 | `key_filename` | Path to a private key file for authentication. | No | - |
-| `path` | The directory or file path on the SFTP server. | Yes | - |
-| `recursive` | Whether to recursively list files in directories (Read only). | No | `false` |
+| `path` | The directory or file path on the SFTP server. If a directory is specified, all files in the directory will be read. | Yes | - |
+| `recursive` | Whether to recursively list files in subdirectories when `path` is a directory (Read only). | No | `false` |
 | `file_format` | The format of files to read/write. Currently supports `text`. | No | `text` |
 
 **Note**: Either `password` or `key_filename` must be provided.
