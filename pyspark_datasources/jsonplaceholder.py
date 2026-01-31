@@ -76,20 +76,18 @@ class JSONPlaceholderDataSource(DataSource):
         self.options = options or {}
 
     def schema(self) -> str:
-        """Returns the schema for the selected endpoint."""
+        """ Returns the schema for the selected endpoint."""
         schemas = {
             "posts": "userId INT, id INT, title STRING, body STRING",
-            "users": (
-                "id INT, name STRING, username STRING, email STRING, phone STRING, "
-                "website STRING, address_street STRING, address_suite STRING, "
-                "address_city STRING, address_zipcode STRING, address_geo_lat STRING, "
-                "address_geo_lng STRING, company_name STRING, company_catchPhrase STRING, "
-                "company_bs STRING"
-            ),
+            "users": ("id INT, name STRING, username STRING, email STRING, phone STRING, "
+                      "website STRING, address_street STRING, address_suite STRING, "
+                      "address_city STRING, address_zipcode STRING, address_geo_lat STRING, "
+                      "address_geo_lng STRING, company_name STRING, company_catchPhrase STRING, "
+                      "company_bs STRING"),
             "todos": "userId INT, id INT, title STRING, completed BOOLEAN",
             "comments": "postId INT, id INT, name STRING, email STRING, body STRING",
             "albums": "userId INT, id INT, title STRING",
-            "photos": "albumId INT, id INT, title STRING, url STRING, thumbnailUrl STRING",
+            "photos": "albumId INT, id INT, title STRING, url STRING, thumbnailUrl STRING"
         }
 
         endpoint = self.options.get("endpoint", "posts")
@@ -154,7 +152,7 @@ class JSONPlaceholderReader(DataSourceReader):
                 userId=item.get("userId"),
                 id=item.get("id"),
                 title=item.get("title", ""),
-                body=item.get("body", ""),
+                body=item.get("body", "")
             )
 
         def _process_users(item):
@@ -177,7 +175,7 @@ class JSONPlaceholderReader(DataSourceReader):
                 address_geo_lng=geo.get("lng", ""),
                 company_name=company.get("name", ""),
                 company_catchPhrase=company.get("catchPhrase", ""),
-                company_bs=company.get("bs", ""),
+                company_bs=company.get("bs", "")
             )
 
         def _process_todos(item):
@@ -185,7 +183,7 @@ class JSONPlaceholderReader(DataSourceReader):
                 userId=item.get("userId"),
                 id=item.get("id"),
                 title=item.get("title", ""),
-                completed=item.get("completed", False),
+                completed=item.get("completed", False)
             )
 
         def _process_comments(item):
@@ -194,11 +192,15 @@ class JSONPlaceholderReader(DataSourceReader):
                 id=item.get("id"),
                 name=item.get("name", ""),
                 email=item.get("email", ""),
-                body=item.get("body", ""),
+                body=item.get("body", "")
             )
 
         def _process_albums(item):
-            return Row(userId=item.get("userId"), id=item.get("id"), title=item.get("title", ""))
+            return Row(
+                userId=item.get("userId"),
+                id=item.get("id"),
+                title=item.get("title", "")
+            )
 
         def _process_photos(item):
             return Row(
@@ -206,7 +208,7 @@ class JSONPlaceholderReader(DataSourceReader):
                 id=item.get("id"),
                 title=item.get("title", ""),
                 url=item.get("url", ""),
-                thumbnailUrl=item.get("thumbnailUrl", ""),
+                thumbnailUrl=item.get("thumbnailUrl", "")
             )
 
         processors = {
@@ -215,7 +217,7 @@ class JSONPlaceholderReader(DataSourceReader):
             "todos": _process_todos,
             "comments": _process_comments,
             "albums": _process_albums,
-            "photos": _process_photos,
+            "photos": _process_photos
         }
 
         processor = processors.get(self.endpoint, _process_posts)

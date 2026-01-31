@@ -97,19 +97,19 @@ def test_robinhood_btc_data(spark):
 
         # Validate data structure
         assert row.symbol == "BTC-USD", f"Expected BTC-USD, got {row.symbol}"
-        assert isinstance(
-            row.price, (int, float)
-        ), f"Price should be numeric, got {type(row.price)}"
+        assert isinstance(row.price, (int, float)), (
+            f"Price should be numeric, got {type(row.price)}"
+        )
         assert row.price > 0, f"Price should be > 0, got {row.price}"
-        assert isinstance(
-            row.bid_price, (int, float)
-        ), f"Bid price should be numeric, got {type(row.bid_price)}"
-        assert isinstance(
-            row.ask_price, (int, float)
-        ), f"Ask price should be numeric, got {type(row.ask_price)}"
-        assert isinstance(
-            row.updated_at, str
-        ), f"Updated timestamp should be string, got {type(row.updated_at)}"
+        assert isinstance(row.bid_price, (int, float)), (
+            f"Bid price should be numeric, got {type(row.bid_price)}"
+        )
+        assert isinstance(row.ask_price, (int, float)), (
+            f"Ask price should be numeric, got {type(row.ask_price)}"
+        )
+        assert isinstance(row.updated_at, str), (
+            f"Updated timestamp should be string, got {type(row.updated_at)}"
+        )
 
 
 def test_robinhood_multiple_crypto_pairs(spark):
@@ -148,21 +148,21 @@ def test_robinhood_multiple_crypto_pairs(spark):
 
         # Validate each record
         assert isinstance(row.symbol, str), f"Symbol should be string, got {type(row.symbol)}"
-        assert isinstance(
-            row.price, (int, float)
-        ), f"Price should be numeric, got {type(row.price)}"
+        assert isinstance(row.price, (int, float)), (
+            f"Price should be numeric, got {type(row.price)}"
+        )
         assert row.price > 0, f"Price should be > 0, got {row.price}"
-        assert isinstance(
-            row.bid_price, (int, float)
-        ), f"Bid price should be numeric, got {type(row.bid_price)}"
-        assert isinstance(
-            row.ask_price, (int, float)
-        ), f"Ask price should be numeric, got {type(row.ask_price)}"
-        assert isinstance(
-            row.updated_at, str
-        ), f"Updated timestamp should be string, got {type(row.updated_at)}"
+        assert isinstance(row.bid_price, (int, float)), (
+            f"Bid price should be numeric, got {type(row.bid_price)}"
+        )
+        assert isinstance(row.ask_price, (int, float)), (
+            f"Ask price should be numeric, got {type(row.ask_price)}"
+        )
+        assert isinstance(row.updated_at, str), (
+            f"Updated timestamp should be string, got {type(row.updated_at)}"
+        )
 
     # Test passes only if we have real data for the requested pairs
-    assert (
-        len(symbols_found) >= 3
-    ), f"Expected at least 3 different symbols, got {len(symbols_found)}: {symbols_found}"
+    assert len(symbols_found) >= 3, (
+        f"Expected at least 3 different symbols, got {len(symbols_found)}: {symbols_found}"
+    )

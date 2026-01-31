@@ -26,7 +26,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, lit, current_timestamp, unix_timestamp
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, LongType
 
-
 def check_credentials():
     """Check if Meta credentials are available"""
     token = os.getenv("META_ACCESS_TOKEN")
@@ -42,7 +41,6 @@ def check_credentials():
     print(f"✅ Using Pixel ID: {pixel_id}")
     return True, token, pixel_id
 
-
 def example_1_rate_source_to_capi():
     """Example 1: Stream simulated purchases to Meta CAPI"""
     print("\n" + "=" * 60)
@@ -57,7 +55,6 @@ def example_1_rate_source_to_capi():
 
     try:
         from pyspark_datasources.meta_capi import MetaCapiDataSource
-
         spark.dataSource.register(MetaCapiDataSource)
         print("✅ Meta CAPI datasource registered")
 
@@ -73,7 +70,7 @@ def example_1_rate_source_to_capi():
             lit("website").alias("action_source"),
             (col("value") * 10.0 + 5.0).alias("value"),
             lit("USD").alias("currency"),
-            lit("TEST12345").alias("test_event_code"),  # For testing in Events Manager
+            lit("TEST12345").alias("test_event_code") # For testing in Events Manager
         )
 
         print("📊 Starting streaming write to Meta CAPI...")
@@ -84,7 +81,7 @@ def example_1_rate_source_to_capi():
             events_df.writeStream.format("meta_capi")
             .option("access_token", token)
             .option("pixel_id", pixel_id)
-            .option("test_event_code", "TEST12345")  # Optional: direct test code option
+            .option("test_event_code", "TEST12345") # Optional: direct test code option
             .option("batch_size", "10")
             .option("checkpointLocation", "/tmp/meta_capi_example1_checkpoint")
             .trigger(processingTime="10 seconds")
@@ -101,7 +98,6 @@ def example_1_rate_source_to_capi():
     finally:
         spark.stop()
 
-
 def example_2_batch_dataframe_to_capi():
     """Example 2: Batch write a static DataFrame to Meta CAPI"""
     print("\n" + "=" * 60)
@@ -116,7 +112,6 @@ def example_2_batch_dataframe_to_capi():
 
     try:
         from pyspark_datasources.meta_capi import MetaCapiDataSource
-
         spark.dataSource.register(MetaCapiDataSource)
         print("✅ Meta CAPI datasource registered")
 
@@ -126,22 +121,24 @@ def example_2_batch_dataframe_to_capi():
             ("Purchase", 1700000002, "user2@example.com", 85.00, "USD"),
             ("AddToCart", 1700000003, "user3@example.com", 25.99, "USD"),
         ]
-
+        
         columns = ["event_name", "event_time", "email", "value", "currency"]
         df = spark.createDataFrame(data, columns)
 
         # Add optional fields
-        df = df.withColumn("action_source", lit("website")).withColumn(
-            "test_event_code", lit("TEST12345")
-        )
+        df = df.withColumn("action_source", lit("website")) \
+               .withColumn("test_event_code", lit("TEST12345"))
 
         print(f"📊 Writing {df.count()} records to Meta CAPI in batch mode...")
         print("   Check your Events Manager 'Test Events' tab!")
 
         # Write to Meta CAPI (Batch)
-        df.write.format("meta_capi").option("access_token", token).option(
-            "pixel_id", pixel_id
-        ).option("test_event_code", "TEST12345").option("batch_size", "50").save()
+        df.write.format("meta_capi") \
+            .option("access_token", token) \
+            .option("pixel_id", pixel_id) \
+            .option("test_event_code", "TEST12345") \
+            .option("batch_size", "50") \
+            .save()
 
         print("✅ Batch write completed")
 
@@ -150,12 +147,10 @@ def example_2_batch_dataframe_to_capi():
     finally:
         spark.stop()
 
-
 def main():
     print("🚀 Meta CAPI Datasource Example")
     example_1_rate_source_to_capi()
     example_2_batch_dataframe_to_capi()
-
 
 if __name__ == "__main__":
     main()
