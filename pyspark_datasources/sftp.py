@@ -74,15 +74,49 @@ class SFTPDataSource(DataSource):
 
     @classmethod
     def name(cls):
+        """
+        Returns the name of the data source.
+        """
         return "sftp"
 
     def schema(self):
+        """
+        Returns the schema of the data source.
+        """
         return "value string"
 
     def reader(self, schema: StructType) -> "DataSourceReader":
+        """
+        Returns a reader for the data source.
+
+        Parameters
+        ----------
+        schema : StructType
+            The schema of the data source.
+
+        Returns
+        -------
+        DataSourceReader
+            The reader for the data source.
+        """
         return SFTPDataSourceReader(schema, self.options)
 
     def writer(self, schema: StructType, overwrite: bool) -> "DataSourceWriter":
+        """
+        Returns a writer for the data source.
+
+        Parameters
+        ----------
+        schema : StructType
+            The schema of the data source.
+        overwrite : bool
+            Whether to overwrite the existing data.
+
+        Returns
+        -------
+        DataSourceWriter
+            The writer for the data source.
+        """
         return SFTPDataSourceWriter(schema, self.options, overwrite)
 
 
@@ -96,6 +130,14 @@ class SFTPDataSourceReader(DataSourceReader):
         self.recursive = options.get("recursive", "false").lower() == "true"
 
     def partitions(self) -> list[InputPartition]:
+        """
+        Returns a list of input partitions.
+
+        Returns
+        -------
+        list[InputPartition]
+            A list of input partitions.
+        """
         sftp, transport = _get_sftp_client(self.options)
         try:
             files = []
@@ -118,6 +160,18 @@ class SFTPDataSourceReader(DataSourceReader):
             transport.close()
 
     def _list_files(self, sftp, path, files):
+        """
+        Recursively lists files in a directory.
+
+        Parameters
+        ----------
+        sftp : paramiko.SFTPClient
+            The SFTP client.
+        path : str
+            The path to list.
+        files : list
+            The list to append found files to.
+        """
         import stat
         for entry in sftp.listdir_attr(path):
             full_path = f"{path}/{entry.filename}"
@@ -127,6 +181,19 @@ class SFTPDataSourceReader(DataSourceReader):
                 self._list_files(sftp, full_path, files)
 
     def read(self, partition: InputPartition) -> Iterator[tuple[Any]]:
+        """
+        Reads data from a partition.
+
+        Parameters
+        ----------
+        partition : InputPartition
+            The partition to read.
+
+        Yields
+        ------
+        tuple
+            A row of data.
+        """
         sftp, transport = _get_sftp_client(self.options)
         try:
             with sftp.open(partition.path, "r") as f:
@@ -158,6 +225,19 @@ class SFTPDataSourceWriter(DataSourceWriter):
             raise ValueError("Option 'path' is required.")
 
     def write(self, iterator: Iterator[tuple[Any]]) -> SFTPCommitMessage:
+        """
+        Writes data to the data source.
+
+        Parameters
+        ----------
+        iterator : Iterator[tuple[Any]]
+            The iterator of rows to write.
+
+        Returns
+        -------
+        SFTPCommitMessage
+            The commit message.
+        """
         sftp, transport = _get_sftp_client(self.options)
         try:
             # Ensure directory exists (simple check, might fail if nested)
@@ -185,6 +265,14 @@ class SFTPDataSourceWriter(DataSourceWriter):
             transport.close()
 
     def commit(self, messages: list[SFTPCommitMessage]) -> None:
+        """
+        Commits the write operation.
+
+        Parameters
+        ----------
+        messages : list[SFTPCommitMessage]
+            The list of commit messages.
+        """
         # In a real implementation, we might move files from temp to final
         # Here we wrote directly to final path.
         # We could handle overwrite here by deleting other files?
@@ -207,6 +295,14 @@ class SFTPDataSourceWriter(DataSourceWriter):
                 transport.close()
 
     def abort(self, messages: list[SFTPCommitMessage]) -> None:
+        """
+        Aborts the write operation.
+
+        Parameters
+        ----------
+        messages : list[SFTPCommitMessage]
+            The list of commit messages.
+        """
         sftp, transport = _get_sftp_client(self.options)
         try:
             for msg in messages:
