@@ -76,3 +76,32 @@ Future versions may support `binary` (file content as bytes) or `csv`/`json` par
 3.  Add unit/integration tests in `tests/test_sftp.py`.
     -   Mock SFTP server or use `mock` library to simulate `paramiko` behavior.
 4.  Verify functionality.
+
+## Testing
+
+To perform an end-to-end test, you can use the provided example script `examples/sftp_e2e_test.py`.
+
+### Prerequisites
+
+-   Docker
+-   `paramiko` library
+
+### Steps
+
+1.  Start a local SFTP server using Docker:
+
+    ```bash
+    docker run -p 2222:22 -d atmoz/sftp foo:pass:::upload
+    ```
+
+2.  Run the example script:
+
+    ```bash
+    python examples/sftp_e2e_test.py
+    ```
+
+This script will:
+1.  Upload test data to the SFTP server using `paramiko`.
+2.  Read the data using the `sftp` data source.
+3.  Write the data back to the SFTP server.
+4.  Verify the output files.
