@@ -13,6 +13,7 @@ This guide provides detailed examples and usage patterns for all available data 
 8. [ArrowDataSource - Read Apache Arrow Files](#8-arrowdatasource---read-apache-arrow-files)
 9. [LanceDataSource - Vector Database Format](#9-lancedatasource---vector-database-format)
 10. [SFTPDataSource - Read/Write SFTP Files](#10-sftpdatasource---readwrite-sftp-files)
+11. [OracleDataSource - Read/Write Oracle Database](#11-oracledatasource---readwrite-oracle-database)
 
 ## 1. FakeDataSource - Generate Synthetic Data
 
@@ -466,6 +467,61 @@ df.write.format("sftp") \
 - `path`: Remote file or directory path (required)
 - `port`: SFTP port (default: 22)
 - `recursive`: Recursively list files in directories (read only, default: false)
+
+## 11. OracleDataSource - Read/Write Oracle Database
+
+Read from and write to Oracle databases.
+
+### Installation
+```bash
+pip install pyspark-data-sources[oracledb]
+```
+
+### Read Data
+```python
+from pyspark_datasources import OracleDataSource
+
+spark.dataSource.register(OracleDataSource)
+
+# Read table
+df = spark.read.format("oracle") \
+    .option("user", "oracle_user") \
+    .option("password", "oracle_pass") \
+    .option("host", "oracle.example.com") \
+    .option("dbtable", "EMPLOYEES") \
+    .load()
+
+# Read query
+df = spark.read.format("oracle") \
+    .option("user", "oracle_user") \
+    .option("password", "oracle_pass") \
+    .option("host", "oracle.example.com") \
+    .option("query", "SELECT * FROM EMPLOYEES WHERE DEPT_ID = 10") \
+    .load()
+```
+
+### Write Data
+```python
+# Write to table
+df.write.format("oracle") \
+    .option("user", "oracle_user") \
+    .option("password", "oracle_pass") \
+    .option("host", "oracle.example.com") \
+    .option("dbtable", "NEW_EMPLOYEES") \
+    .mode("append") \
+    .save()
+```
+
+### Options
+- `user`: Database username (required)
+- `password`: Database password (required)
+- `host`: Database hostname (default: localhost)
+- `port`: Database port (default: 1521)
+- `sid`: Database SID (optional)
+- `service_name`: Database Service Name (optional)
+- `dsn`: Full connection string (optional)
+- `dbtable`: Table name (required for write, or read table)
+- `query`: SQL query (read only)
 
 ## Common Patterns
 
