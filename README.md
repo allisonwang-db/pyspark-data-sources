@@ -53,6 +53,7 @@ df.select("id", "title", "author").show()
 | `oracle` | Batch | Batch | Read/write Oracle databases | `pip install pyspark-data-sources[oracledb]` | [→](examples/oracle.md) |
 | `stock` | Batch | — | Fetch stock market data (Alpha Vantage) | built-in | [→](examples/stock.md) |
 | `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](examples/jsonplaceholder.md) |
+| `nasa` | Batch | — | NASA APOD and space data | built-in | [→](examples/nasa.md) |
 | `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](examples/weather.md) |
 
 📚 **[See detailed examples →](docs/data-sources-guide.md)** · **[Copy-pastable examples →](examples/README.md)**
