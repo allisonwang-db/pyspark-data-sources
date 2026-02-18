@@ -39,6 +39,7 @@ nav:
     - datasources/weather.md
     - datasources/meta_capi.md
     - datasources/sftp.md
+    - datasources/jira.md
 
 
 markdown_extensions:

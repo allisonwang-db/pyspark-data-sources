@@ -14,6 +14,7 @@ pip install pyspark-data-sources
 
 # Install with specific extras
 pip install pyspark-data-sources[faker]        # For FakeDataSource
+pip install pyspark-data-sources[jira]         # For JiraDataSource
 
 pip install pyspark-data-sources[all]          # All optional dependencies
 ```
@@ -70,6 +71,7 @@ query = stream.writeStream.format("console").start()
 | `jsonplaceholder` | Batch | Read JSON data for testing | None |
 | `weather` | Batch | Read current weather data (OpenWeatherMap) | None |
 | `sftp` | Batch | Read files from SFTP server | `[sftp]` |
+| `jira` | Batch | Read Jira issues | `[jira]` |
 
 ### Sinks (Write)
 
@@ -79,6 +81,7 @@ query = stream.writeStream.format("console").start()
 | `salesforce` | Stream Write | Write to Salesforce objects | `[salesforce]` |
 | `meta_capi` | Batch/Stream Write | Write to Meta Conversions API | None |
 | `sftp` | Batch Write | Write files to SFTP server | `[sftp]` |
+| `jira` | Batch Write | Write Jira issues | `[jira]` |
 
 
 📚 **[See detailed examples for all data sources →](docs/data-sources-guide.md)**
