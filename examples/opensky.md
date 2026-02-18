@@ -6,11 +6,11 @@ Stream real-time flight tracking data. Anonymous access has low rate limits; OAu
 
 For **anonymous access**: No credentials. Limited to ~100 API calls/day.
 
-For **authenticated access** (higher limits):
+For **authenticated access** (higher limits), set these variables. For anonymous access, use empty strings:
 
-```bash
-export OPENSKY_CLIENT_ID="your-client-id"
-export OPENSKY_CLIENT_SECRET="your-client-secret"
+```python
+OPENSKY_CLIENT_ID = ""  # or "your-client-id"
+OPENSKY_CLIENT_SECRET = ""  # or "your-client-secret"
 ```
 
 Request API access at: https://opensky-network.org/apply-for-api-access (academic/research).
@@ -20,7 +20,6 @@ Request API access at: https://opensky-network.org/apply-for-api-access (academi
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession
 from pyspark_datasources import OpenSkyDataSource
 
@@ -34,8 +33,8 @@ spark.dataSource.register(OpenSkyDataSource)
 stream = (
     spark.readStream.format("opensky")
     .option("region", "EUROPE")
-    .option("client_id", os.environ.get("OPENSKY_CLIENT_ID", ""))
-    .option("client_secret", os.environ.get("OPENSKY_CLIENT_SECRET", ""))
+    .option("client_id", OPENSKY_CLIENT_ID)
+    .option("client_secret", OPENSKY_CLIENT_SECRET)
     .load()
 )
 

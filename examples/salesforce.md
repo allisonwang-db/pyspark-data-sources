@@ -4,10 +4,10 @@ Write streaming data to Salesforce objects (Account, Contact, Opportunity, etc.)
 
 ## Setup Credentials
 
-```bash
-export SALESFORCE_USERNAME="your-username@company.com"
-export SALESFORCE_PASSWORD="your-password"
-export SALESFORCE_SECURITY_TOKEN="your-security-token"
+```python
+SALESFORCE_USERNAME = "your-username@company.com"
+SALESFORCE_PASSWORD = "your-password"
+SALESFORCE_SECURITY_TOKEN = "your-security-token"
 ```
 
 Get security token from: Salesforce → Settings → My Personal Information → Reset My Security Token
@@ -21,7 +21,6 @@ pip install pyspark-data-sources[salesforce]
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, lit
 from pyspark_datasources import SalesforceDataSource
@@ -49,9 +48,9 @@ account_data = streaming_df.select(
 ```python
 query = (
     account_data.writeStream.format("pyspark.datasource.salesforce")
-    .option("username", os.environ["SALESFORCE_USERNAME"])
-    .option("password", os.environ["SALESFORCE_PASSWORD"])
-    .option("security_token", os.environ["SALESFORCE_SECURITY_TOKEN"])
+    .option("username", SALESFORCE_USERNAME)
+    .option("password", SALESFORCE_PASSWORD)
+    .option("security_token", SALESFORCE_SECURITY_TOKEN)
     .option("salesforce_object", "Account")
     .option("batch_size", "100")
     .option("checkpointLocation", "/tmp/salesforce_checkpoint")
@@ -71,9 +70,9 @@ contact_data = streaming_df.select(
 )
 (
     contact_data.writeStream.format("pyspark.datasource.salesforce")
-    .option("username", os.environ["SALESFORCE_USERNAME"])
-    .option("password", os.environ["SALESFORCE_PASSWORD"])
-    .option("security_token", os.environ["SALESFORCE_SECURITY_TOKEN"])
+    .option("username", SALESFORCE_USERNAME)
+    .option("password", SALESFORCE_PASSWORD)
+    .option("security_token", SALESFORCE_SECURITY_TOKEN)
     .option("salesforce_object", "Contact")
     .option("checkpointLocation", "/tmp/salesforce_contact_checkpoint")
     .start()

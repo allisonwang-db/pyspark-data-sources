@@ -8,8 +8,8 @@ For **public repositories**: No credentials required (subject to 60 req/hour rat
 
 For **private repos** or **higher rate limits**: Set a GitHub Personal Access Token:
 
-```bash
-export GITHUB_TOKEN="ghp_your_personal_access_token"
+```python
+GITHUB_TOKEN = "ghp_your_personal_access_token"
 ```
 
 Create a token at: https://github.com/settings/tokens (scope: `repo` for private repos).
@@ -19,7 +19,6 @@ Create a token at: https://github.com/settings/tokens (scope: `repo` for private
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession
 from pyspark_datasources import GithubDataSource
 
@@ -38,10 +37,9 @@ df.select("id", "title", "author", "created_at").show(5, truncate=False)
 ### Step 3: Optional - Use Token for Private Repo or Rate Limits
 
 ```python
-token = os.environ.get("GITHUB_TOKEN")
 df = (
     spark.read.format("github")
-    .option("token", token)
+    .option("token", GITHUB_TOKEN)
     .load("owner/private-repo")
 )
 df.show()

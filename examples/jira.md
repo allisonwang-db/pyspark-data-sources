@@ -4,10 +4,10 @@ Read and write Jira issues. Requires Jira credentials.
 
 ## Setup Credentials
 
-```bash
-export JIRA_URL="https://your-domain.atlassian.net"
-export JIRA_USERNAME="your-email@example.com"
-export JIRA_TOKEN="your-api-token"
+```python
+JIRA_URL = "https://your-domain.atlassian.net"
+JIRA_USERNAME = "your-email@example.com"
+JIRA_TOKEN = "your-api-token"
 ```
 
 Create an API token at: https://id.atlassian.com/manage-profile/security/api-tokens
@@ -19,7 +19,6 @@ Install the Jira client: `pip install pyspark-data-sources[jira]`
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession
 from pyspark_datasources import JiraDataSource
 
@@ -32,9 +31,9 @@ spark.dataSource.register(JiraDataSource)
 ```python
 df = (
     spark.read.format("jira")
-    .option("url", os.environ["JIRA_URL"])
-    .option("username", os.environ["JIRA_USERNAME"])
-    .option("token", os.environ["JIRA_TOKEN"])
+    .option("url", JIRA_URL)
+    .option("username", JIRA_USERNAME)
+    .option("token", JIRA_TOKEN)
     .option("jql", "project = PROJ ORDER BY created DESC")
     .load()
 )
@@ -57,7 +56,6 @@ df.select("key", "summary", "status", "assignee").show()
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession, Row
 from pyspark_datasources import JiraDataSource
 
@@ -80,9 +78,9 @@ df = spark.createDataFrame(new_issues)
 ```python
 (
     df.write.format("jira")
-    .option("url", os.environ["JIRA_URL"])
-    .option("username", os.environ["JIRA_USERNAME"])
-    .option("token", os.environ["JIRA_TOKEN"])
+    .option("url", JIRA_URL)
+    .option("username", JIRA_USERNAME)
+    .option("token", JIRA_TOKEN)
     .option("project", "PROJ")
     .option("issuetype", "Task")
     .mode("append")
@@ -99,9 +97,9 @@ updates = [Row(key="PROJ-123", summary="Updated title", description="New descrip
 df_updates = spark.createDataFrame(updates)
 (
     df_updates.write.format("jira")
-    .option("url", os.environ["JIRA_URL"])
-    .option("username", os.environ["JIRA_USERNAME"])
-    .option("token", os.environ["JIRA_TOKEN"])
+    .option("url", JIRA_URL)
+    .option("username", JIRA_USERNAME)
+    .option("token", JIRA_TOKEN)
     .mode("append")
     .save()
 )

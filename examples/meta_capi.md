@@ -4,9 +4,9 @@ Write event data to Meta (Facebook) for ad optimization. Supports batch and stre
 
 ## Setup Credentials
 
-```bash
-export META_ACCESS_TOKEN="your-system-user-access-token"
-export META_PIXEL_ID="your-pixel-id"
+```python
+META_ACCESS_TOKEN = "your-system-user-access-token"
+META_PIXEL_ID = "your-pixel-id"
 ```
 
 Create credentials in Meta Business Suite: Events Manager → Data Sources → Add new → Conversions API.
@@ -17,7 +17,6 @@ Use a System User token with `ads_management` and `business_management` permissi
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit, unix_timestamp
 from pyspark_datasources import MetaCapiDataSource
@@ -43,8 +42,8 @@ events_df = spark.createDataFrame(events)
 ```python
 (
     events_df.write.format("meta_capi")
-    .option("access_token", os.environ["META_ACCESS_TOKEN"])
-    .option("pixel_id", os.environ["META_PIXEL_ID"])
+    .option("access_token", META_ACCESS_TOKEN)
+    .option("pixel_id", META_PIXEL_ID)
     .option("test_event_code", "TEST12345")
     .save()  # Path not used for Meta CAPI
 )
@@ -55,7 +54,6 @@ events_df = spark.createDataFrame(events)
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, lit
 from pyspark_datasources import MetaCapiDataSource
@@ -85,8 +83,8 @@ events_df = streaming_df.select(
 ```python
 query = (
     events_df.writeStream.format("meta_capi")
-    .option("access_token", os.environ["META_ACCESS_TOKEN"])
-    .option("pixel_id", os.environ["META_PIXEL_ID"])
+    .option("access_token", META_ACCESS_TOKEN)
+    .option("pixel_id", META_PIXEL_ID)
     .option("test_event_code", "TEST12345")
     .option("checkpointLocation", "/tmp/meta_capi_checkpoint")
     .trigger(processingTime="10 seconds")

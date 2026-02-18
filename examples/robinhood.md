@@ -4,9 +4,9 @@ Read cryptocurrency market data from Robinhood Crypto API. Requires API credenti
 
 ## Setup Credentials
 
-```bash
-export ROBINHOOD_API_KEY="your-api-key"
-export ROBINHOOD_PRIVATE_KEY="base64-encoded-private-key"
+```python
+ROBINHOOD_API_KEY = "your-api-key"
+ROBINHOOD_PRIVATE_KEY = "base64-encoded-private-key"
 ```
 
 Get credentials from: https://docs.robinhood.com/crypto/trading/
@@ -21,7 +21,6 @@ pip install pyspark-data-sources[robinhood]
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession
 from pyspark_datasources import RobinhoodDataSource
 
@@ -34,8 +33,8 @@ spark.dataSource.register(RobinhoodDataSource)
 ```python
 df = (
     spark.read.format("robinhood")
-    .option("api_key", os.environ["ROBINHOOD_API_KEY"])
-    .option("private_key", os.environ["ROBINHOOD_PRIVATE_KEY"])
+    .option("api_key", ROBINHOOD_API_KEY)
+    .option("private_key", ROBINHOOD_PRIVATE_KEY)
     .load("ETH-USD, BTC-USD")  # Comma-separated symbols
 )
 df.show()

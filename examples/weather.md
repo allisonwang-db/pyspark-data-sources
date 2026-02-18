@@ -4,8 +4,8 @@ Fetch weather data from tomorrow.io. Streaming read only. Requires API key.
 
 ## Setup Credentials
 
-```bash
-export TOMORROW_IO_API_KEY="your-api-key"
+```python
+TOMORROW_IO_API_KEY = "your-api-key"
 ```
 
 Get API key at: https://www.tomorrow.io/weather-api/
@@ -15,7 +15,6 @@ Get API key at: https://www.tomorrow.io/weather-api/
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession
 from pyspark_datasources import WeatherDataSource
 
@@ -29,7 +28,7 @@ spark.dataSource.register(WeatherDataSource)
 # Locations as list of (lat, lon) tuples
 options = {
     "locations": "[(37.7749, -122.4194), (40.7128, -74.0060)]",  # SF, NYC
-    "apikey": os.environ["TOMORROW_IO_API_KEY"],
+    "apikey": TOMORROW_IO_API_KEY,
     "frequency": "minutely",  # or "hourly", "daily"
 }
 

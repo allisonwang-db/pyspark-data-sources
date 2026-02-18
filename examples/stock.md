@@ -4,8 +4,8 @@ Fetch stock market data from Alpha Vantage API. Batch read only.
 
 ## Setup Credentials
 
-```bash
-export ALPHA_VANTAGE_API_KEY="your-api-key"
+```python
+ALPHA_VANTAGE_API_KEY = "your-api-key"
 ```
 
 Get a free API key at: https://www.alphavantage.co/support/#api-key
@@ -15,7 +15,6 @@ Get a free API key at: https://www.alphavantage.co/support/#api-key
 ### Step 1: Create Spark Session and Register Data Source
 
 ```python
-import os
 from pyspark.sql import SparkSession
 from pyspark_datasources import StockDataSource
 
@@ -29,7 +28,7 @@ spark.dataSource.register(StockDataSource)
 # Load single symbol
 df = (
     spark.read.format("stock")
-    .option("api_key", os.environ["ALPHA_VANTAGE_API_KEY"])
+    .option("api_key", ALPHA_VANTAGE_API_KEY)
     .load("SPY")
 )
 df.show(5)
@@ -41,7 +40,7 @@ df.show(5)
 # Multiple symbols (comma-separated)
 df = (
     spark.read.format("stock")
-    .option("api_key", os.environ["ALPHA_VANTAGE_API_KEY"])
+    .option("api_key", ALPHA_VANTAGE_API_KEY)
     .option("function", "TIME_SERIES_DAILY")  # or TIME_SERIES_WEEKLY, TIME_SERIES_MONTHLY
     .load("AAPL, GOOGL, MSFT")
 )
