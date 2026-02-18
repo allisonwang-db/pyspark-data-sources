@@ -3,7 +3,7 @@
 [![pypi](https://img.shields.io/pypi/v/pyspark-data-sources.svg?color=blue)](https://pypi.org/project/pyspark-data-sources/)
 [![code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-Custom Apache Spark data sources using the [Python Data Source API](https://spark.apache.org/docs/4.0.0/api/python/tutorial/sql/python_data_source.html) (Spark 4.0+). Learn by example and build your own data sources.
+Custom Apache Spark data sources using the [Python Data Source API](https://spark.apache.org/docs/4.0.0/api/python/tutorial/sql/python_data_source.html) (Spark 4.0+). Requires Apache Spark 4.0+ or [Databricks Runtime 15.4 LTS](https://docs.databricks.com/aws/en/release-notes/runtime/15.4lts)+.
 
 ## Quick Start
 
@@ -11,101 +11,54 @@ Custom Apache Spark data sources using the [Python Data Source API](https://spar
 
 ```bash
 pip install pyspark-data-sources
-
-# Install with specific extras
-pip install pyspark-data-sources[faker]        # For FakeDataSource
-
-pip install pyspark-data-sources[all]          # All optional dependencies
 ```
-
-### Requirements
-- Apache Spark 4.0+ or [Databricks Runtime 15.4 LTS](https://docs.databricks.com/aws/en/release-notes/runtime/15.4lts)+
-- Python 3.9-3.12
 
 ### Basic Usage
 
 ```python
 from pyspark.sql import SparkSession
-from pyspark_datasources import FakeDataSource
+from pyspark_datasources import GithubDataSource
 
-# Create Spark session
 spark = SparkSession.builder.appName("datasource-demo").getOrCreate()
+spark.dataSource.register(GithubDataSource)
 
-# Register the data source
-spark.dataSource.register(FakeDataSource)
-
-# Read batch data
-df = spark.read.format("fake").option("numRows", 5).load()
-df.show()
-# +--------------+----------+-------+------------+
-# |          name|      date|zipcode|       state|
-# +--------------+----------+-------+------------+
-# |  Pam Mitchell|1988-10-20|  23788|   Tennessee|
-# |Melissa Turner|1996-06-14|  30851|      Nevada|
-# |  Brian Ramsey|2021-08-21|  55277|  Washington|
-# |  Caitlin Reed|1983-06-22|  89813|Pennsylvania|
-# | Douglas James|2007-01-18|  46226|     Alabama|
-# +--------------+----------+-------+------------+
-
-# Stream data
-stream = spark.readStream.format("fake").load()
-query = stream.writeStream.format("console").start()
+# Read pull requests from a public GitHub repository (no API key required)
+df = spark.read.format("github").load("apache/spark")
+df.select("id", "title", "author").show()
+# +---+--------------------+--------+
+# | id|               title|  author|
+# +---+--------------------+--------+
+# |  1|Initial commit      |  matei |...
+# +---+--------------------+--------+
 ```
 
 ## Available Data Sources
 
-### Sources (Read)
+| Data Source | Read | Write | Description | Installation | Example |
+|-------------|------|-------|-------------|--------------|--------|
+| `arrow` | Batch | — | Read Apache Arrow files | built-in | [→](examples/arrow.md) |
+| `fake` | Batch, Stream | — | Generate synthetic test data using Faker | built-in | [→](examples/fake.md) |
+| `github` | Batch | — | Read GitHub pull requests | built-in | [→](examples/github.md) |
+| `googlesheets` | Batch | — | Read public Google Sheets | built-in | [→](examples/googlesheets.md) |
+| `huggingface` | Batch | — | Load Hugging Face datasets | `pip install pyspark-data-sources[datasets]` | [→](examples/huggingface.md) |
+| `jira` | Batch | Batch | Read and write Jira issues | `pip install pyspark-data-sources[jira]` | [→](examples/jira.md) |
+| `kaggle` | Batch | — | Load Kaggle datasets | `pip install pyspark-data-sources[kaggle]` | [→](examples/kaggle.md) |
+| `lance` | — | Batch | Write Lance vector format | `pip install pyspark-data-sources[lance]` | [→](examples/lance.md) |
+| `meta_capi` | — | Batch, Stream | Write to Meta Conversions API | built-in | [→](examples/meta_capi.md) |
+| `opensky` | Batch, Stream | — | Live flight tracking data | built-in | [→](examples/opensky.md) |
+| `robinhood` | Batch | — | Cryptocurrency market data from Robinhood API | `pip install pyspark-data-sources[robinhood]` | [→](examples/robinhood.md) |
+| `salesforce` | — | Stream | Write to Salesforce objects | `pip install pyspark-data-sources[salesforce]` | [→](examples/salesforce.md) |
+| `sftp` | Batch | Batch | Read/write files from SFTP server | `pip install pyspark-data-sources[sftp]` | [→](examples/sftp.md) |
+| `oracle` | Batch | Batch | Read/write Oracle databases | `pip install pyspark-data-sources[oracledb]` | [→](examples/oracle.md) |
+| `stock` | Batch | — | Fetch stock market data (Alpha Vantage) | built-in | [→](examples/stock.md) |
+| `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](examples/jsonplaceholder.md) |
+| `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](examples/weather.md) |
 
-| Data Source | Type | Description | Dependency |
-|-------------|------|-------------|------------|
-| `fake` | Batch/Stream | Generate synthetic test data using Faker | `[faker]` |
-| `github` | Batch | Read GitHub pull requests | None |
-| `googlesheets` | Batch | Read public Google Sheets | None |
-| `huggingface` | Batch | Load Hugging Face datasets | `[huggingface]` |
-| `stock` | Batch | Fetch stock market data (Alpha Vantage) | None |
-| `opensky` | Batch/Stream | Live flight tracking data | None |
-| `kaggle` | Batch | Load Kaggle datasets | `[kaggle]` |
-| `arrow` | Batch | Read Apache Arrow files | `[arrow]` |
-| `robinhood` | Batch | Read cryptocurrency market data from Robinhood API | `[robinhood]` |
-| `jsonplaceholder` | Batch | Read JSON data for testing | None |
-| `weather` | Batch | Read current weather data (OpenWeatherMap) | None |
-| `sftp` | Batch | Read files from SFTP server | `[sftp]` |
-
-### Sinks (Write)
-
-| Data Source | Type | Description | Dependency |
-|-------------|------|-------------|------------|
-| `lance` | Batch Write | Write Lance vector format | `[lance]` |
-| `salesforce` | Stream Write | Write to Salesforce objects | `[salesforce]` |
-| `meta_capi` | Batch/Stream Write | Write to Meta Conversions API | None |
-| `sftp` | Batch Write | Write files to SFTP server | `[sftp]` |
-
-
-📚 **[See detailed examples for all data sources →](docs/data-sources-guide.md)**
-
-## Example: Generate Fake Data
-
-```python
-from pyspark_datasources import FakeDataSource
-
-spark.dataSource.register(FakeDataSource)
-
-# Generate synthetic data with custom schema
-df = spark.read.format("fake") \
-    .schema("name string, email string, company string") \
-    .option("numRows", 5) \
-    .load()
-
-df.show(truncate=False)
-# +------------------+-------------------------+-----------------+
-# |name              |email                    |company          |
-# +------------------+-------------------------+-----------------+
-# |Christine Sampson |johnsonjeremy@example.com|Hernandez-Nguyen |
-# |Yolanda Brown     |williamlowe@example.net  |Miller-Hernandez |
-# +------------------+-------------------------+-----------------+
-```
+📚 **[See detailed examples →](docs/data-sources-guide.md)** · **[Copy-pastable examples →](examples/README.md)**
 
 ## Building Your Own Data Source
+
+**Recommendation:** Leverage AI to speed up development. If you use [Cursor](https://cursor.com), try the `create-data-source` skill (in `.cursor/skills/`) to generate a full implementation with templates and a step-by-step checklist.
 
 Here's a minimal example to get started:
 
@@ -145,15 +98,10 @@ df = spark.read.format("mycustom").load()
 
 ## Documentation
 
-- 📚 **[Data Sources Guide](docs/data-sources-guide.md)** - Detailed examples for each data source
+- 📚 **[Data Sources Guide](docs/data-sources-guide.md)** - Common patterns and troubleshooting
 - 🔧 **[Building Data Sources](docs/building-data-sources.md)** - Complete tutorial with advanced patterns
 - 📖 **[API Reference](docs/api-reference.md)** - Full API specification and method signatures
 - 💻 **[Development Guide](contributing/DEVELOPMENT.md)** - Contributing and development setup
-
-## Requirements
-
-- Apache Spark 4.0+ or Databricks Runtime 15.4 LTS+
-- Python 3.9-3.12
 
 ## Contributing
 

@@ -12,4 +12,5 @@ from .stock import StockDataSource
 from .jsonplaceholder import JSONPlaceholderDataSource
 from .meta_capi import MetaCapiDataSource
 from .sftp import SFTPDataSource
+from .jira import JiraDataSource
 from .oracle import OracleDataSource
