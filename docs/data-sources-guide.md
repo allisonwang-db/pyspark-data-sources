@@ -13,6 +13,7 @@ This guide provides detailed examples and usage patterns for all available data 
 8. [ArrowDataSource - Read Apache Arrow Files](#8-arrowdatasource---read-apache-arrow-files)
 9. [LanceDataSource - Vector Database Format](#9-lancedatasource---vector-database-format)
 10. [SFTPDataSource - Read/Write SFTP Files](#10-sftpdatasource---readwrite-sftp-files)
+11. [JiraDataSource - Read/Write Jira Issues](#11-jiradatasource---readwrite-jira-issues)
 
 ## 1. FakeDataSource - Generate Synthetic Data
 
@@ -466,6 +467,62 @@ df.write.format("sftp") \
 - `path`: Remote file or directory path (required)
 - `port`: SFTP port (default: 22)
 - `recursive`: Recursively list files in directories (read only, default: false)
+
+## 11. JiraDataSource - Read/Write Jira Issues
+
+Read issues from Jira using JQL and create/update issues.
+
+### Installation
+```bash
+pip install pyspark-data-sources[jira]
+```
+
+### Read Data
+```python
+from pyspark_datasources import JiraDataSource
+
+spark.dataSource.register(JiraDataSource)
+
+# Read from Jira
+df = spark.read.format("jira") \
+    .option("url", "https://your-domain.atlassian.net") \
+    .option("username", "user@example.com") \
+    .option("token", "api-token") \
+    .option("jql", "project = PROJ") \
+    .load()
+```
+
+### Write Data (Create)
+```python
+# Create new issues
+df.write.format("jira") \
+    .option("url", "https://your-domain.atlassian.net") \
+    .option("username", "user@example.com") \
+    .option("token", "api-token") \
+    .option("project", "PROJ") \
+    .option("issuetype", "Task") \
+    .save()
+```
+
+### Write Data (Update)
+To update issues, include the `key` column in your DataFrame.
+
+```python
+# Update existing issues
+df.write.format("jira") \
+    .option("url", "https://your-domain.atlassian.net") \
+    .option("username", "user@example.com") \
+    .option("token", "api-token") \
+    .save()
+```
+
+### Options
+- `url`: Jira instance URL (required)
+- `username`: Jira username/email (required)
+- `token`: Jira API token (required)
+- `jql`: JQL query string (required for reading)
+- `project`: Project key (optional for writing, can be in DataFrame)
+- `issuetype`: Issue type name (optional for writing, can be in DataFrame)
 
 ## Common Patterns
 
