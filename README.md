@@ -52,6 +52,16 @@ df.select("id", "title", "author").show()
 | `sftp` | Batch | Batch | Read/write files from SFTP server | `pip install pyspark-data-sources[sftp]` | [→](examples/sftp.md) |
 | `oracle` | Batch | Batch | Read/write Oracle databases | `pip install pyspark-data-sources[oracledb]` | [→](examples/oracle.md) |
 | `stock` | Batch | — | Fetch stock market data (Alpha Vantage) | built-in | [→](examples/stock.md) |
+| `bored` | Batch | — | Activity suggestions from Bored API | built-in | [→](examples/bored.md) |
+| `cocktail` | Batch | — | Cocktail recipes from TheCocktailDB | built-in | [→](examples/cocktail.md) |
+| `dog` | Batch | — | Dog breeds from Dog CEO API | built-in | [→](examples/dog.md) |
+| `httpbin` | Batch | — | Test data from httpbin.org | built-in | [→](examples/httpbin.md) |
+| `ipapi` | Batch | — | IP geolocation from ip-api.com | built-in | [→](examples/ipapi.md) |
+| `jsonlines` | Batch | — | Read .jsonl files | built-in | [→](examples/jsonlines.md) |
+| `quotable` | Batch | — | Quotes from Quotable API | built-in | [→](examples/quotable.md) |
+| `tomlfile` | Batch | — | Read TOML files | `pip install pyspark-data-sources[toml]` | [→](examples/tomlfile.md) |
+| `universities` | Batch | — | University data from HipoLabs | built-in | [→](examples/universities.md) |
+| `yamlfile` | Batch | — | Read YAML files | `pip install pyspark-data-sources[yaml]` | [→](examples/yamlfile.md) |
 | `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](examples/jsonplaceholder.md) |
 | `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](examples/weather.md) |
 
