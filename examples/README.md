@@ -25,6 +25,7 @@ Each markdown file in this folder contains end-to-end, copy-pastable examples fo
 | oracle | Batch | Batch | [oracle.md](oracle.md) |
 | stock | Batch | — | [stock.md](stock.md) |
 | jsonplaceholder | Batch | — | [jsonplaceholder.md](jsonplaceholder.md) |
+| rss | Batch | — | [rss.md](rss.md) |
 | weather | Stream | — | [weather.md](weather.md) |
 
 These examples are designed for humans and AI agents to quickly generate working code.
