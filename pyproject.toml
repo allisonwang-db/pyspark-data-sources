@@ -42,6 +42,9 @@ jira = [
 sftp = [
   "paramiko>=3.4.0,<4.0.0",
 ]
+notion = [
+  "notion-client>=2.0.0,<3.0.0",
+]
 oracledb = [
   "oracledb>=2.0.0,<3.0.0",
 ]
@@ -54,6 +57,7 @@ all = [
   "simple-salesforce>=1.12.0,<2.0.0",
   "jira>=3.8.0,<4.0.0",
   "paramiko>=3.4.0,<4.0.0",
+  "notion-client>=2.0.0,<3.0.0",
   "oracledb>=2.0.0,<3.0.0",
 ]
 
