@@ -45,6 +45,7 @@ df.select("id", "title", "author").show()
 | `kaggle` | Batch | — | Load Kaggle datasets | `pip install pyspark-data-sources[kaggle]` | [→](examples/kaggle.md) |
 | `lance` | — | Batch | Write Lance vector format | `pip install pyspark-data-sources[lance]` | [→](examples/lance.md) |
 | `meta_capi` | — | Batch, Stream | Write to Meta Conversions API | built-in | [→](examples/meta_capi.md) |
+| `notion` | Batch | Batch | Read and write Notion databases | `pip install pyspark-data-sources[notion]` | [→](examples/notion.md) |
 | `opensky` | Batch, Stream | — | Live flight tracking data | built-in | [→](examples/opensky.md) |
 | `robinhood` | Batch | — | Cryptocurrency market data from Robinhood API | `pip install pyspark-data-sources[robinhood]` | [→](examples/robinhood.md) |
 | `salesforce` | — | Stream | Write to Salesforce objects | `pip install pyspark-data-sources[salesforce]` | [→](examples/salesforce.md) |
