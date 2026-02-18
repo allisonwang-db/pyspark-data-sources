@@ -15,3 +15,13 @@ from .sftp import SFTPDataSource
 from .jira import JiraDataSource
 from .oracle import OracleDataSource
 from .notion import NotionDataSource
+from .dog import DogDataSource
+from .quotable import QuotableDataSource
+from .bored import BoredDataSource
+from .universities import UniversitiesDataSource
+from .cocktail import CocktailDataSource
+from .yamlfile import YamlFileDataSource
+from .tomlfile import TomlFileDataSource
+from .jsonlines import JsonLinesDataSource
+from .httpbin import HttpbinDataSource
+from .ipapi import IpApiDataSource

@@ -24,6 +24,16 @@ Each markdown file in this folder contains end-to-end, copy-pastable examples fo
 | sftp | Batch | Batch | [sftp.md](sftp.md) |
 | oracle | Batch | Batch | [oracle.md](oracle.md) |
 | stock | Batch | — | [stock.md](stock.md) |
+| bored | Batch | — | [bored.md](bored.md) |
+| cocktail | Batch | — | [cocktail.md](cocktail.md) |
+| dog | Batch | — | [dog.md](dog.md) |
+| httpbin | Batch | — | [httpbin.md](httpbin.md) |
+| ipapi | Batch | — | [ipapi.md](ipapi.md) |
+| jsonlines | Batch | — | [jsonlines.md](jsonlines.md) |
+| quotable | Batch | — | [quotable.md](quotable.md) |
+| tomlfile | Batch | — | [tomlfile.md](tomlfile.md) |
+| universities | Batch | — | [universities.md](universities.md) |
+| yamlfile | Batch | — | [yamlfile.md](yamlfile.md) |
 | jsonplaceholder | Batch | — | [jsonplaceholder.md](jsonplaceholder.md) |
 | weather | Stream | — | [weather.md](weather.md) |
 
