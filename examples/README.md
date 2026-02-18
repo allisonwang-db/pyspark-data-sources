@@ -24,6 +24,7 @@ Each markdown file in this folder contains end-to-end, copy-pastable examples fo
 | sftp | Batch | Batch | [sftp.md](sftp.md) |
 | oracle | Batch | Batch | [oracle.md](oracle.md) |
 | stock | Batch | — | [stock.md](stock.md) |
+| excel | Batch | — | [excel.md](excel.md) |
 | jsonplaceholder | Batch | — | [jsonplaceholder.md](jsonplaceholder.md) |
 | weather | Stream | — | [weather.md](weather.md) |
 
