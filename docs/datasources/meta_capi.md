@@ -4,4 +4,3 @@
 > or use `pip install pyspark-data-sources`.
 
 ::: pyspark_datasources.meta_capi.MetaCapiDataSource
-
