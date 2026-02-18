@@ -26,5 +26,15 @@ Each markdown file in this folder contains end-to-end, copy-pastable examples fo
 | stock | Batch | — | [stock.md](stock.md) |
 | jsonplaceholder | Batch | — | [jsonplaceholder.md](jsonplaceholder.md) |
 | weather | Stream | — | [weather.md](weather.md) |
+| ghibli | Batch | — | [ghibli.md](ghibli.md) |
+| pokemon | Batch | — | [pokemon.md](pokemon.md) |
+| advice | Batch | — | [advice.md](advice.md) |
+| trivia | Batch | — | [trivia.md](trivia.md) |
+| fakestore | Batch | — | [fakestore.md](fakestore.md) |
+| reqres | Batch | — | [reqres.md](reqres.md) |
+| coindesk | Batch | — | [coindesk.md](coindesk.md) |
+| agify | Batch | — | [agify.md](agify.md) |
+| metmuseum | Batch | — | [metmuseum.md](metmuseum.md) |
+| picsum | Batch | — | [picsum.md](picsum.md) |
 
 These examples are designed for humans and AI agents to quickly generate working code.

@@ -54,6 +54,16 @@ df.select("id", "title", "author").show()
 | `stock` | Batch | — | Fetch stock market data (Alpha Vantage) | built-in | [→](examples/stock.md) |
 | `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](examples/jsonplaceholder.md) |
 | `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](examples/weather.md) |
+| `ghibli` | Batch | — | Studio Ghibli films catalog | built-in | [→](examples/ghibli.md) |
+| `pokemon` | Batch | — | Pokemon from PokeAPI | built-in | [→](examples/pokemon.md) |
+| `advice` | Batch | — | Random advice from Advice Slip API | built-in | [→](examples/advice.md) |
+| `trivia` | Batch | — | Trivia questions from Open Trivia DB | built-in | [→](examples/trivia.md) |
+| `fakestore` | Batch | — | E-commerce test data | built-in | [→](examples/fakestore.md) |
+| `reqres` | Batch | — | Test users from ReqRes.in | built-in | [→](examples/reqres.md) |
+| `coindesk` | Batch | — | Bitcoin price (USD) | built-in | [→](examples/coindesk.md) |
+| `agify` | Batch | — | Age prediction from name | built-in | [→](examples/agify.md) |
+| `metmuseum` | Batch | — | Met Museum artwork metadata | built-in | [→](examples/metmuseum.md) |
+| `picsum` | Batch | — | Placeholder photo metadata | built-in | [→](examples/picsum.md) |
 
 📚 **[See detailed examples →](docs/data-sources-guide.md)** · **[Copy-pastable examples →](examples/README.md)**
 

@@ -15,3 +15,13 @@ from .sftp import SFTPDataSource
 from .jira import JiraDataSource
 from .oracle import OracleDataSource
 from .notion import NotionDataSource
+from .ghibli import GhibliDataSource
+from .pokemon import PokemonDataSource
+from .advice import AdviceDataSource
+from .trivia import TriviaDataSource
+from .fakestore import FakeStoreDataSource
+from .reqres import ReqresDataSource
+from .coindesk import CoinDeskDataSource
+from .agify import AgifyDataSource
+from .metmuseum import MetMuseumDataSource
+from .picsum import PicsumDataSource
