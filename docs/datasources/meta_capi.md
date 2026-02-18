@@ -5,3 +5,6 @@
 
 ::: pyspark_datasources.meta_capi.MetaCapiDataSource
 
+## Copy-Pastable Example
+
+See [examples/meta_capi.md](../../examples/meta_capi.md) for batch and streaming write examples with credential setup.

@@ -53,7 +53,7 @@ df.select("id", "title", "author").show()
 | `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](docs/datasources/jsonplaceholder.md) |
 | `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](docs/datasources/weather.md) |
 
-📚 **[See detailed examples →](docs/data-sources-guide.md)**
+📚 **[See detailed examples →](docs/data-sources-guide.md)** · **[Copy-pastable examples →](examples/README.md)**
 
 ## Building Your Own Data Source
 
