@@ -92,7 +92,3 @@ df = spark.read.format("sftp") \
     .option("recursive", "true") \
     .load()
 ```
-
-## Copy-Pastable Example
-
-See [examples/sftp.md](../../examples/sftp.md) for read and write examples with credential setup and sample output.

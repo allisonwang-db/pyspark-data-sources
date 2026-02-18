@@ -4,7 +4,3 @@
 > or use `pip install pyspark-data-sources[faker]`.
 
 ::: pyspark_datasources.fake.FakeDataSource
-
-## Copy-Pastable Example
-
-See [examples/fake.md](../../examples/fake.md) for batch and streaming examples with credential setup and sample output.

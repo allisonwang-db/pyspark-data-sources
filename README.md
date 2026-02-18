@@ -34,24 +34,24 @@ df.select("id", "title", "author").show()
 
 ## Available Data Sources
 
-| Data Source | Read | Write | Description | Installation | Docs |
-|-------------|------|-------|-------------|--------------|------|
-| `arrow` | Batch | — | Read Apache Arrow files | built-in | [→](docs/datasources/arrow.md) |
-| `fake` | Batch, Stream | — | Generate synthetic test data using Faker | built-in | [→](docs/datasources/fake.md) |
-| `github` | Batch | — | Read GitHub pull requests | built-in | [→](docs/datasources/github.md) |
-| `googlesheets` | Batch | — | Read public Google Sheets | built-in | [→](docs/datasources/googlesheets.md) |
-| `huggingface` | Batch | — | Load Hugging Face datasets | `pip install pyspark-data-sources[datasets]` | [→](docs/datasources/huggingface.md) |
-| `jira` | Batch | Batch | Read and write Jira issues | `pip install pyspark-data-sources[jira]` | [→](docs/datasources/jira.md) |
-| `kaggle` | Batch | — | Load Kaggle datasets | `pip install pyspark-data-sources[kaggle]` | [→](docs/datasources/kaggle.md) |
-| `lance` | — | Batch | Write Lance vector format | `pip install pyspark-data-sources[lance]` | [→](docs/datasources/lance.md) |
-| `meta_capi` | — | Batch, Stream | Write to Meta Conversions API | built-in | [→](docs/datasources/meta_capi.md) |
-| `opensky` | Batch, Stream | — | Live flight tracking data | built-in | [→](docs/datasources/opensky.md) |
-| `robinhood` | Batch | — | Cryptocurrency market data from Robinhood API | `pip install pyspark-data-sources[robinhood]` | [→](docs/datasources/robinhood.md) |
-| `salesforce` | — | Stream | Write to Salesforce objects | `pip install pyspark-data-sources[salesforce]` | [→](docs/datasources/salesforce.md) |
-| `sftp` | Batch | Batch | Read/write files from SFTP server | `pip install pyspark-data-sources[sftp]` | [→](docs/datasources/sftp.md) |
-| `stock` | Batch | — | Fetch stock market data (Alpha Vantage) | built-in | [→](docs/datasources/stock.md) |
-| `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](docs/datasources/jsonplaceholder.md) |
-| `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](docs/datasources/weather.md) |
+| Data Source | Read | Write | Description | Installation | Example |
+|-------------|------|-------|-------------|--------------|--------|
+| `arrow` | Batch | — | Read Apache Arrow files | built-in | [→](examples/arrow.md) |
+| `fake` | Batch, Stream | — | Generate synthetic test data using Faker | built-in | [→](examples/fake.md) |
+| `github` | Batch | — | Read GitHub pull requests | built-in | [→](examples/github.md) |
+| `googlesheets` | Batch | — | Read public Google Sheets | built-in | [→](examples/googlesheets.md) |
+| `huggingface` | Batch | — | Load Hugging Face datasets | `pip install pyspark-data-sources[datasets]` | [→](examples/huggingface.md) |
+| `jira` | Batch | Batch | Read and write Jira issues | `pip install pyspark-data-sources[jira]` | [→](examples/jira.md) |
+| `kaggle` | Batch | — | Load Kaggle datasets | `pip install pyspark-data-sources[kaggle]` | [→](examples/kaggle.md) |
+| `lance` | — | Batch | Write Lance vector format | `pip install pyspark-data-sources[lance]` | [→](examples/lance.md) |
+| `meta_capi` | — | Batch, Stream | Write to Meta Conversions API | built-in | [→](examples/meta_capi.md) |
+| `opensky` | Batch, Stream | — | Live flight tracking data | built-in | [→](examples/opensky.md) |
+| `robinhood` | Batch | — | Cryptocurrency market data from Robinhood API | `pip install pyspark-data-sources[robinhood]` | [→](examples/robinhood.md) |
+| `salesforce` | — | Stream | Write to Salesforce objects | `pip install pyspark-data-sources[salesforce]` | [→](examples/salesforce.md) |
+| `sftp` | Batch | Batch | Read/write files from SFTP server | `pip install pyspark-data-sources[sftp]` | [→](examples/sftp.md) |
+| `stock` | Batch | — | Fetch stock market data (Alpha Vantage) | built-in | [→](examples/stock.md) |
+| `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](examples/jsonplaceholder.md) |
+| `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](examples/weather.md) |
 
 📚 **[See detailed examples →](docs/data-sources-guide.md)** · **[Copy-pastable examples →](examples/README.md)**
 
