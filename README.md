@@ -49,6 +49,7 @@ df.select("id", "title", "author").show()
 | `robinhood` | Batch | — | Cryptocurrency market data from Robinhood API | `pip install pyspark-data-sources[robinhood]` | [→](examples/robinhood.md) |
 | `salesforce` | — | Stream | Write to Salesforce objects | `pip install pyspark-data-sources[salesforce]` | [→](examples/salesforce.md) |
 | `sftp` | Batch | Batch | Read/write files from SFTP server | `pip install pyspark-data-sources[sftp]` | [→](examples/sftp.md) |
+| `oracle` | Batch | Batch | Read/write Oracle databases | `pip install pyspark-data-sources[oracledb]` | [→](examples/oracle.md) |
 | `stock` | Batch | — | Fetch stock market data (Alpha Vantage) | built-in | [→](examples/stock.md) |
 | `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](examples/jsonplaceholder.md) |
 | `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](examples/weather.md) |

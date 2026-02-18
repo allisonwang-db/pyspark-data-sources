@@ -1416,6 +1416,37 @@ wheels = [
 ]
 
 [[package]]
+name = "oracledb"
+version = "2.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cryptography" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9f/60/c7ea963536a46833f3c951e0d6a84f8f3db06fc47b0bba4edf22d3be9127/oracledb-2.5.1.tar.gz", hash = "sha256:63d17ebb95f9129d0ab9386cb632c9e667e3be2c767278cc11a8e4585468de33", size = 629297, upload-time = "2024-12-12T18:02:01.163Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1d/92/3eabd488271f20d04e1431d73cabd7a296108250f4eddfa79258e07a94af/oracledb-2.5.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:54ea7b4da179eb3fefad338685b44fed657a9cd733fb0bfc09d344cfb266355e", size = 3757547, upload-time = "2024-12-12T18:02:10.463Z" },
+    { url = "https://files.pythonhosted.org/packages/ab/2a/036491526d862d8a600e7b9bf4d1fd3269fac87e88de5ce99a62e1bf4c39/oracledb-2.5.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:05df7a5a61f4d26c986e235fae6f64a81afaac8f1dbef60e2e9ecf9236218e58", size = 2233703, upload-time = "2024-12-12T18:02:16.043Z" },
+    { url = "https://files.pythonhosted.org/packages/c6/10/d33cb384db5783565a39b0307a767348a0819d0d49baec88f0b785ea155b/oracledb-2.5.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d17c80063375a5d87a7ab57c8343e5434a16ea74f7be3b56f9100300ef0b69d6", size = 2417161, upload-time = "2024-12-12T18:02:20.545Z" },
+    { url = "https://files.pythonhosted.org/packages/99/3e/e6dd5afcf79fad5eec3bc41fb9b0e8a59b3cf89ff3d4c7e4f1aabdd2b2a0/oracledb-2.5.1-cp310-cp310-win32.whl", hash = "sha256:51b3911ee822319e20f2e19d816351aac747591a59a0a96cf891c62c2a5c0c0d", size = 1469257, upload-time = "2024-12-12T18:02:23.075Z" },
+    { url = "https://files.pythonhosted.org/packages/8e/05/48a0d7ff9aa8509f721da35e5422904bfc1e72b01d5a4995de43c94b3c28/oracledb-2.5.1-cp310-cp310-win_amd64.whl", hash = "sha256:e4e884625117e50b619c93828affbcffa594029ef8c8b40205394990e6af65a8", size = 1790076, upload-time = "2024-12-12T18:02:25.673Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/f4/70f0e52a79c215b1fae0a229cf10b572bf9eff07c5373320b2e25a7d4414/oracledb-2.5.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:85318350fa4837b7b637e436fa5f99c17919d6329065e64d1e18e5a7cae52457", size = 3792081, upload-time = "2024-12-12T18:02:29.298Z" },
+    { url = "https://files.pythonhosted.org/packages/35/40/0d7ddabeebb9ea11e520d24880e511eb92a3e421a88c0559656b196a8714/oracledb-2.5.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:676c221227159d9cee25030c56ff9782f330115cb86164d92d3360f55b07654b", size = 2239512, upload-time = "2024-12-12T18:02:32.459Z" },
+    { url = "https://files.pythonhosted.org/packages/13/73/b33a8b4ba58ddce0d83f86e93acb3158d9b59595c8b0232ec7cdf4f8175f/oracledb-2.5.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e78c6de57b4b5df7f932337c57e59b62e34fc4527d2460c0cab10c2ab01825f8", size = 2410818, upload-time = "2024-12-12T18:02:35.538Z" },
+    { url = "https://files.pythonhosted.org/packages/0f/92/2d3aa9934ddc3d5988567b5dde69fd6ee4e635fcd25e65cfcf6e3f89f3bd/oracledb-2.5.1-cp311-cp311-win32.whl", hash = "sha256:0d5974327a1957538a144b073367104cdf8bb39cf056940995b75cb099535589", size = 1472481, upload-time = "2024-12-12T18:02:41.075Z" },
+    { url = "https://files.pythonhosted.org/packages/15/35/9d12555d43d5bcb09498de4b9da1cd8bcac40e3f3a9c16e056a04f7452e7/oracledb-2.5.1-cp311-cp311-win_amd64.whl", hash = "sha256:541bb5a107917b9d9eba1346318b42f8b6024e7dd3bef1451f0745364f03399c", size = 1799457, upload-time = "2024-12-12T18:02:44.815Z" },
+    { url = "https://files.pythonhosted.org/packages/89/bc/eef07b9a4fd0eda9da07cb9c8c9c4ef695b28034c179a138c5267a22f52f/oracledb-2.5.1-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:970a9420cc351d650cc6716122e9aa50cfb8c27f425ffc9d83651fd3edff6090", size = 3829099, upload-time = "2024-12-12T18:02:49.573Z" },
+    { url = "https://files.pythonhosted.org/packages/bf/78/42a86c7e45bac215b9d93b5d69fb3c95c695f338ca435647536de1fd0642/oracledb-2.5.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:a6788c128af5a3a45689453fc4832f32b4a0dae2696d9917c7631a2e02865148", size = 2116133, upload-time = "2024-12-12T18:02:53.386Z" },
+    { url = "https://files.pythonhosted.org/packages/85/ba/ad70a08361fd2285b6942d898748876ab9918f3f45100c4fba98bd8a9037/oracledb-2.5.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:8778daa3f08639232341d802b95ca6da4c0c798c8530e4df331b3286d32e49d5", size = 2286969, upload-time = "2024-12-12T18:02:55.771Z" },
+    { url = "https://files.pythonhosted.org/packages/a7/d6/f5181943b27fb14b13303e65072ba4861577cf523cf9dca90e22139de867/oracledb-2.5.1-cp312-cp312-win32.whl", hash = "sha256:a44613f3dfacb2b9462c3871ee333fa535fbd0ec21942e14019fcfd572487db0", size = 1433894, upload-time = "2024-12-12T18:02:58.144Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/d3/12bd235547387f44c8d920ee35d24647699097e69424b6549961626bfeaf/oracledb-2.5.1-cp312-cp312-win_amd64.whl", hash = "sha256:934d02da80bfc030c644c5c43fbe58119dc170f15b4dfdb6fe04c220a1f8730d", size = 1757662, upload-time = "2024-12-12T18:03:00.829Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/59/080d3b5b39819b1d35f1704faad3ae48bd4862520c6cf15b7d0aa3162e3e/oracledb-2.5.1-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:8a2627a0d29390aaef7211c5b3f7182dfd8e76c969b39d57ee3e43c1057c6fe7", size = 3760546, upload-time = "2024-12-12T18:03:43.372Z" },
+    { url = "https://files.pythonhosted.org/packages/d7/05/288e0f254ddb27dd547c148944cd0d04aee70b21aae7c85b7a7007d669ac/oracledb-2.5.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:730cd03e7fbf05acd32a221ead2a43020b3b91391597eaf728d724548f418b1b", size = 2233938, upload-time = "2024-12-12T18:03:46.053Z" },
+    { url = "https://files.pythonhosted.org/packages/bb/94/027c0d3aece2f948afca1ab61c0c4eca419d250e0b39101cc838d6f49d9d/oracledb-2.5.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:f42524b586733daa896f675acad8b9f2fc2f4380656d60a22a109a573861fc93", size = 2409189, upload-time = "2024-12-12T18:03:50.175Z" },
+    { url = "https://files.pythonhosted.org/packages/6d/ce/4e80bbb3d9f3f854dd4f467edb2ef327c06b82c99a483b3e4cce26897220/oracledb-2.5.1-cp39-cp39-win32.whl", hash = "sha256:7958c7796df9f8c97484768c88817dec5c6d49220fc4cccdfde12a1a883f3d46", size = 1470887, upload-time = "2024-12-12T18:03:52.496Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/65/3477eb0d0258d0e8bcdb2d4bb7c60ce254408d6a8f66e6f682b23f8dc7d5/oracledb-2.5.1-cp39-cp39-win_amd64.whl", hash = "sha256:92e0d176e3c76a1916f4e34fc3d84994ad74cce6b8664656c4dbecb8fa7e8c37", size = 1792151, upload-time = "2024-12-12T18:03:56.015Z" },
+]
+
+[[package]]
 name = "packaging"
 version = "25.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1983,6 +2014,7 @@ all = [
     { name = "jira", version = "3.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "jira", version = "3.10.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "kagglehub", extra = ["pandas-datasets"] },
+    { name = "oracledb" },
     { name = "paramiko" },
     { name = "pynacl" },
     { name = "simple-salesforce" },
@@ -2005,6 +2037,9 @@ kaggle = [
 ]
 lance = [
     { name = "pylance" },
+]
+oracledb = [
+    { name = "oracledb" },
 ]
 robinhood = [
     { name = "pynacl" },
@@ -2040,6 +2075,8 @@ requires-dist = [
     { name = "jira", marker = "extra == 'jira'", specifier = ">=3.8.0,<4.0.0" },
     { name = "kagglehub", extras = ["pandas-datasets"], marker = "extra == 'all'", specifier = ">=0.3.10,<0.4.0" },
     { name = "kagglehub", extras = ["pandas-datasets"], marker = "extra == 'kaggle'", specifier = ">=0.3.10,<0.4.0" },
+    { name = "oracledb", marker = "extra == 'all'", specifier = ">=2.0.0,<3.0.0" },
+    { name = "oracledb", marker = "extra == 'oracledb'", specifier = ">=2.0.0,<3.0.0" },
     { name = "paramiko", marker = "extra == 'all'", specifier = ">=3.4.0,<4.0.0" },
     { name = "paramiko", marker = "extra == 'sftp'", specifier = ">=3.4.0,<4.0.0" },
     { name = "pyarrow", specifier = ">=11.0.0" },
@@ -2050,7 +2087,7 @@ requires-dist = [
     { name = "simple-salesforce", marker = "extra == 'all'", specifier = ">=1.12.0,<2.0.0" },
     { name = "simple-salesforce", marker = "extra == 'salesforce'", specifier = ">=1.12.0,<2.0.0" },
 ]
-provides-extras = ["faker", "datasets", "databricks", "kaggle", "lance", "robinhood", "salesforce", "jira", "sftp", "all"]
+provides-extras = ["faker", "datasets", "databricks", "kaggle", "lance", "robinhood", "salesforce", "jira", "sftp", "oracledb", "all"]
 
 [package.metadata.requires-dev]
 dev = [

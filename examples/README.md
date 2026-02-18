@@ -22,6 +22,7 @@ Each markdown file in this folder contains end-to-end, copy-pastable examples fo
 | robinhood | Batch | — | [robinhood.md](robinhood.md) |
 | salesforce | — | Stream | [salesforce.md](salesforce.md) |
 | sftp | Batch | Batch | [sftp.md](sftp.md) |
+| oracle | Batch | Batch | [oracle.md](oracle.md) |
 | stock | Batch | — | [stock.md](stock.md) |
 | jsonplaceholder | Batch | — | [jsonplaceholder.md](jsonplaceholder.md) |
 | weather | Stream | — | [weather.md](weather.md) |
