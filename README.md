@@ -97,7 +97,7 @@ df = spark.read.format("mycustom").load()
 
 ## Documentation
 
-- 📚 **[Data Sources Guide](docs/data-sources-guide.md)** - Detailed examples for each data source
+- 📚 **[Data Sources Guide](docs/data-sources-guide.md)** - Common patterns and troubleshooting
 - 🔧 **[Building Data Sources](docs/building-data-sources.md)** - Complete tutorial with advanced patterns
 - 📖 **[API Reference](docs/api-reference.md)** - Full API specification and method signatures
 - 💻 **[Development Guide](contributing/DEVELOPMENT.md)** - Contributing and development setup
