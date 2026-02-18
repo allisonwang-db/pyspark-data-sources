@@ -55,28 +55,6 @@ df.select("id", "title", "author").show()
 
 📚 **[See detailed examples →](docs/data-sources-guide.md)**
 
-## Example: Generate Fake Data
-
-```python
-from pyspark_datasources import FakeDataSource
-
-spark.dataSource.register(FakeDataSource)
-
-# Generate synthetic data with custom schema
-df = spark.read.format("fake") \
-    .schema("name string, email string, company string") \
-    .option("numRows", 5) \
-    .load()
-
-df.show(truncate=False)
-# +------------------+-------------------------+-----------------+
-# |name              |email                    |company          |
-# +------------------+-------------------------+-----------------+
-# |Christine Sampson |johnsonjeremy@example.com|Hernandez-Nguyen |
-# |Yolanda Brown     |williamlowe@example.net  |Miller-Hernandez |
-# +------------------+-------------------------+-----------------+
-```
-
 ## Building Your Own Data Source
 
 Here's a minimal example to get started:
