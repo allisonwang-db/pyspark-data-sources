@@ -57,6 +57,8 @@ df.select("id", "title", "author").show()
 
 ## Building Your Own Data Source
 
+**Recommendation:** Leverage AI to speed up development. If you use [Cursor](https://cursor.com), try the `create-data-source` skill (in `.cursor/skills/`) to generate a full implementation with templates and a step-by-step checklist.
+
 Here's a minimal example to get started:
 
 ```python
