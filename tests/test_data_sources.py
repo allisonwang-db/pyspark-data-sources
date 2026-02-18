@@ -5,7 +5,7 @@ import pyarrow as pa
 
 from pyspark.sql import SparkSession
 from pyspark_datasources import *
-
+from pyspark.sql.types import TimestampType, StringType, StructType, StructField
 
 @pytest.fixture
 def spark():
@@ -39,6 +39,8 @@ def test_fake_datasource_stream(spark):
     )
     spark.sql("SELECT * FROM result").show()
     assert spark.sql("SELECT * FROM result").count() == 3
+    df = spark.table("result")
+    assert len(df.columns) == 4
 
 
 def test_fake_datasource(spark):
@@ -47,6 +49,19 @@ def test_fake_datasource(spark):
     df.show()
     assert df.count() == 3
     assert len(df.columns) == 4
+
+
+def test_fake_timestamp_column(spark):
+    spark.dataSource.register(FakeDataSource)
+    schema = StructType([StructField("name", StringType(), True), StructField("zipcode", StringType(), True), StructField("state", StringType(), True), StructField("date", TimestampType(), True)])
+    df = spark.read.format("fake").schema(schema).load()
+    df_columns = [d.name for d in df.schema.fields]
+    df_datatypes = [d.dataType for d in df.schema.fields]
+    df.show()
+    assert df.count() == 3
+    assert len(df.columns) == 4
+    assert df_columns == ["name", "zipcode", "state", "date"]
+    assert df_datatypes[-1] == TimestampType()
 
 
 def test_kaggle_datasource(spark):
