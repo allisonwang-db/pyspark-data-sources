@@ -26,5 +26,6 @@ Each markdown file in this folder contains end-to-end, copy-pastable examples fo
 | stock | Batch | — | [stock.md](stock.md) |
 | jsonplaceholder | Batch | — | [jsonplaceholder.md](jsonplaceholder.md) |
 | weather | Stream | — | [weather.md](weather.md) |
+| azuregraph | Batch | — | [azuregraph.md](azuregraph.md) |
 
 These examples are designed for humans and AI agents to quickly generate working code.
