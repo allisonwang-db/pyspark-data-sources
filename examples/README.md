@@ -19,6 +19,7 @@ Each markdown file in this folder contains end-to-end, copy-pastable examples fo
 | lance | — | Batch | [lance.md](lance.md) |
 | meta_capi | — | Batch, Stream | [meta_capi.md](meta_capi.md) |
 | opensky | Stream | — | [opensky.md](opensky.md) |
+| qdrant | Batch | Batch | [qdrant.md](qdrant.md) |
 | robinhood | Batch | — | [robinhood.md](robinhood.md) |
 | salesforce | — | Stream | [salesforce.md](salesforce.md) |
 | sftp | Batch | Batch | [sftp.md](sftp.md) |

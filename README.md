@@ -47,6 +47,7 @@ df.select("id", "title", "author").show()
 | `meta_capi` | — | Batch, Stream | Write to Meta Conversions API | built-in | [→](examples/meta_capi.md) |
 | `notion` | Batch | Batch | Read and write Notion databases | `pip install pyspark-data-sources[notion]` | [→](examples/notion.md) |
 | `opensky` | Batch, Stream | — | Live flight tracking data | built-in | [→](examples/opensky.md) |
+| `qdrant` | Batch | Batch | Read and write vectors and payloads in Qdrant collections | built-in | [→](examples/qdrant.md) |
 | `robinhood` | Batch | — | Cryptocurrency market data from Robinhood API | `pip install pyspark-data-sources[robinhood]` | [→](examples/robinhood.md) |
 | `salesforce` | — | Stream | Write to Salesforce objects | `pip install pyspark-data-sources[salesforce]` | [→](examples/salesforce.md) |
 | `sftp` | Batch | Batch | Read/write files from SFTP server | `pip install pyspark-data-sources[sftp]` | [→](examples/sftp.md) |
