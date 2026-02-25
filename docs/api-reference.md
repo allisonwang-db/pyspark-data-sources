@@ -554,4 +554,4 @@ def test_performance(spark, benchmark):
 - [Apache Spark Python Data Source API](https://spark.apache.org/docs/4.0.0/api/python/tutorial/sql/python_data_source.html)
 - [Source Code](https://github.com/apache/spark/blob/master/python/pyspark/sql/datasource.py)
 - [Example Implementations](https://github.com/allisonwang-db/pyspark-data-sources)
-- [Simple Stream Reader Architecture](../contributing/simple-stream-reader-architecture.md)
+- [Simple Stream Reader Architecture](simple-stream-reader-architecture.md)

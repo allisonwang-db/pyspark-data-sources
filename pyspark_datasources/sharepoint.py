@@ -164,7 +164,7 @@ class SharepointDataSource(DataSource):
 
     Note: This is a write-only datasource, not a full bidirectional data source.
 
-    Name: `pyspark.datasource.sharepoint`
+    Name: `sharepoint`
 
     Notes
     -----
@@ -223,44 +223,44 @@ class SharepointDataSource(DataSource):
     >>>
     >>> # Write to Sharepoint List using the datasource
     >>> query = list_data.writeStream \\
-    ...     .format("pyspark.datasource.sharepoint") \\
-    ...     .option("pyspark.datasource.sharepoint.auth.client_id", "your-client-id") \\
-    ...     .option("pyspark.datasource.sharepoint.auth.client_secret", "your-client-secret") \\
-    ...     .option("pyspark.datasource.sharepoint.auth.tenant_id", "your-tenant-id") \\
-    ...     .option("pyspark.datasource.sharepoint.resource", "list") \\
-    ...     .option("pyspark.datasource.sharepoint.site_id", "your-site-id") \\
-    ...     .option("pyspark.datasource.sharepoint.list.list_id", "your-list-id") \\
-    ...     .option("pyspark.datasource.sharepoint.list.fields", json.dumps({"name": "Name", "industry": "Industry", "annual_revenue": "AnnualRevenue"})) \\
+    ...     .format("sharepoint") \\
+    ...     .option("sharepoint.auth.client_id", "your-client-id") \\
+    ...     .option("sharepoint.auth.client_secret", "your-client-secret") \\
+    ...     .option("sharepoint.auth.tenant_id", "your-tenant-id") \\
+    ...     .option("sharepoint.resource", "list") \\
+    ...     .option("sharepoint.site_id", "your-site-id") \\
+    ...     .option("sharepoint.list.list_id", "your-list-id") \\
+    ...     .option("sharepoint.list.fields", json.dumps({"name": "Name", "industry": "Industry", "annual_revenue": "AnnualRevenue"})) \\
     ...     .option("checkpointLocation", "/path/to/checkpoint") \\
     ...     .start()
 
     Write to Sharepoint List using the datasource and limited concurrency:
 
     >>> query = list_data.writeStream \\
-    ...     .format("pyspark.datasource.sharepoint") \\
-    ...     .option("pyspark.datasource.sharepoint.auth.client_id", "your-client-id") \\
-    ...     .option("pyspark.datasource.sharepoint.auth.client_secret", "your-client-secret") \\
-    ...     .option("pyspark.datasource.sharepoint.auth.tenant_id", "your-tenant-id") \\
-    ...     .option("pyspark.datasource.sharepoint.resource", "list") \\
-    ...     .option("pyspark.datasource.sharepoint.site_id", "your-site-id") \\
-    ...     .option("pyspark.datasource.sharepoint.list.list_id", "your-list-id") \\
-    ...     .option("pyspark.datasource.sharepoint.list.fields", json.dumps({"name": "Name", "industry": "Industry", "annual_revenue": "AnnualRevenue"})) \\
-    ...     .option("pyspark.datasource.sharepoint.batch_size", "50") \\
+    ...     .format("sharepoint") \\
+    ...     .option("sharepoint.auth.client_id", "your-client-id") \\
+    ...     .option("sharepoint.auth.client_secret", "your-client-secret") \\
+    ...     .option("sharepoint.auth.tenant_id", "your-tenant-id") \\
+    ...     .option("sharepoint.resource", "list") \\
+    ...     .option("sharepoint.site_id", "your-site-id") \\
+    ...     .option("sharepoint.list.list_id", "your-list-id") \\
+    ...     .option("sharepoint.list.fields", json.dumps({"name": "Name", "industry": "Industry", "annual_revenue": "AnnualRevenue"})) \\
+    ...     .option("sharepoint.batch_size", "50") \\
     ...     .option("checkpointLocation", "/path/to/checkpoint") \\
     ...     .start()
 
     Write to Sharepoint List using the datasource and fail in case of any errors:
 
     >>> query = list_data.writeStream \\
-    ...     .format("pyspark.datasource.sharepoint") \\
-    ...     .option("pyspark.datasource.sharepoint.auth.client_id", "your-client-id") \\
-    ...     .option("pyspark.datasource.sharepoint.auth.client_secret", "your-client-secret") \\
-    ...     .option("pyspark.datasource.sharepoint.auth.tenant_id", "your-tenant-id") \\
-    ...     .option("pyspark.datasource.sharepoint.resource", "list") \\
-    ...     .option("pyspark.datasource.sharepoint.site_id", "your-site-id") \\
-    ...     .option("pyspark.datasource.sharepoint.list.list_id", "your-list-id") \\
-    ...     .option("pyspark.datasource.sharepoint.list.fields", json.dumps({"name": "Name", "industry": "Industry", "annual_revenue": "AnnualRevenue"})) \\
-    ...     .option("pyspark.datasource.sharepoint.fail_fast", True) \\
+    ...     .format("sharepoint") \\
+    ...     .option("sharepoint.auth.client_id", "your-client-id") \\
+    ...     .option("sharepoint.auth.client_secret", "your-client-secret") \\
+    ...     .option("sharepoint.auth.tenant_id", "your-tenant-id") \\
+    ...     .option("sharepoint.resource", "list") \\
+    ...     .option("sharepoint.site_id", "your-site-id") \\
+    ...     .option("sharepoint.list.list_id", "your-list-id") \\
+    ...     .option("sharepoint.list.fields", json.dumps({"name": "Name", "industry": "Industry", "annual_revenue": "AnnualRevenue"})) \\
+    ...     .option("sharepoint.fail_fast", True) \\
     ...     .option("checkpointLocation", "/path/to/checkpoint") \\
     ...     .start()
 
@@ -276,7 +276,7 @@ class SharepointDataSource(DataSource):
     @classmethod
     def name(cls) -> str:
         """Return the short name for this Sharepoint datasource."""
-        return "pyspark.datasource.sharepoint"
+        return "sharepoint"
 
     def streamWriter(self, schema: StructType, overwrite: bool) -> "SharepointStreamWriter":
         """Create a stream writer for Sharepoint datasource integration."""

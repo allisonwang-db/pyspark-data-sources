@@ -156,55 +156,18 @@ uvx hatch version
 uvx hatch version 0.2.0
 ```
 
-## Documentation Releases
+## Documentation
 
-The project uses MkDocs with GitHub Pages for documentation. The documentation is automatically built and deployed via GitHub Actions.
+Documentation lives as Markdown files in the repository and is the source of truth. No separate build or deployment is needed.
 
-### Automatic Documentation Updates
+### Documentation Structure
 
-The docs workflow (`.github/workflows/docs.yml`) automatically triggers when you push changes to:
-- `docs/**` - Any documentation files
-- `mkdocs.yml` - MkDocs configuration  
-- `pyproject.toml` - Project configuration (version updates)
-- `.github/workflows/docs.yml` - The workflow itself
+- **README.md** – Installation, usage, and data source table
+- **examples/** – Copy-pastable examples for each data source
+- **docs/** – Guides (data-sources-guide.md, building-data-sources.md, api-reference.md)
 
-### Manual Documentation Deployment
+### Adding or Updating Documentation
 
-You can manually trigger documentation deployment:
-
-```bash
-# Using GitHub CLI
-gh workflow run docs.yml
-
-# Or trigger via GitHub web interface:
-# Go to Actions tab → Deploy MkDocs to GitHub Pages → Run workflow
-```
-
-### Releasing the Documentation Site
-
-Follow these steps when you want to publish documentation updates:
-
-1. Verify the docs build locally:
-   ```bash
-   poetry run mkdocs build
-   ```
-2. Commit any updated Markdown or configuration files and push to the default branch. This triggers the `docs.yml` workflow, which rebuilds and publishes the site to GitHub Pages.
-3. (Optional) If you need to deploy immediately without waiting for CI, run:
-   ```bash
-   poetry run mkdocs gh-deploy
-   ```
-   This command builds the site and pushes it to the `gh-pages` branch directly.
-
-### Documentation URLs
-
-- **Live Docs**: https://allisonwang-db.github.io/pyspark-data-sources
-- **Source**: `docs/` directory
-- **Configuration**: `mkdocs.yml`
-- **Workflow**: `.github/workflows/docs.yml`
-
-### Adding New Documentation
-
-1. Create new `.md` files in `docs/` or `docs/datasources/`
-2. Update `mkdocs.yml` navigation if needed
+1. Edit the relevant `.md` files in the repo
+2. Add new examples to `examples/` (see `examples/README.md` for the index)
 3. Push to main/master branch
-4. Documentation will auto-deploy via GitHub Actions

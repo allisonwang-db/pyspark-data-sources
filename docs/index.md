@@ -2,8 +2,9 @@
 
 Custom Spark data sources for reading and writing data in Apache Spark, using the Python Data Source API.
 
-## Installation
+## Quick Links
 
+<<<<<<< HEAD
 ```bash
 pip install pyspark-data-sources
 ```
@@ -44,3 +45,10 @@ spark.readStream.format("fake").load().writeStream.format("console").start()
 | [RobinhoodDataSource](./datasources/robinhood.md)       | `robinhood`                     | Read cryptocurrency market data from Robinhood API | `pynacl`                        |
 | [SalesforceDataSource](./datasources/salesforce.md)     | `salesforce`                    | Write streaming data to Salesforce objects         | `simple-salesforce`             |
 | [SharepointDataSource](./datasources/sharepoint.md)     | `sharepoint`                    | Write streaming data to Sharepoint Lists           | `azure-identity`, `msgraph-sdk` |
+=======
+- **[README](../README.md)** – Installation, usage, and data source table
+- **[Examples](../examples/README.md)** – Copy-pastable, end-to-end examples for each data source
+- **[Data Sources Guide](data-sources-guide.md)** – Common patterns and troubleshooting
+- **[Building Data Sources](building-data-sources.md)** – Tutorial for creating custom data sources
+- **[API Reference](api-reference.md)** – Python Data Source API specification
+>>>>>>> 8bf2620f3f28daf5de884264d1b090225dbfddb2
