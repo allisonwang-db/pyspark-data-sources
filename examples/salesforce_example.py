@@ -279,7 +279,7 @@ def example_3_checkpoint_demonstration():
             col("industry").alias("Industry"),
             col("revenue").alias("AnnualRevenue"),
         )
-        
+
         query1 = (
             account_df1.writeStream.format("pyspark.datasource.salesforce")
             .option("username", username)
