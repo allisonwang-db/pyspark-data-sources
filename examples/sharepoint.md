@@ -45,7 +45,7 @@ df = (
 )
 ```
 
-### Step 3: Write Stream to Salesforce
+### Step 3: Write Stream to Sharepoint
 
 ```python
 query = (

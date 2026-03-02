@@ -95,7 +95,8 @@ class ListResource(SharepointResource):
 
     def __init__(self, options: Dict[str, str], datasource: str):
         self.list_id = options.get(f"{datasource}.{self.name()}.list_id")
-        self.fields = json.loads(options.get(f"{datasource}.{self.name()}.fields"))
+        fields_str = options.get(f"{datasource}.{self.name()}.fields")
+        self.fields = json.loads(fields_str) if fields_str else {}
         super().__init__(options=options, datasource=datasource)
 
     @classmethod
