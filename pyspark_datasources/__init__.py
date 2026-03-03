@@ -15,4 +15,5 @@ from .sftp import SFTPDataSource
 from .jira import JiraDataSource
 from .oracle import OracleDataSource
 from .notion import NotionDataSource
+from .qdrant import QdrantDataSource
 from .sharepoint import SharepointResource, SharepointDataSource
