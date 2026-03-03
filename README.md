@@ -55,6 +55,7 @@ df.select("id", "title", "author").show()
 | `stock` | Batch | — | Fetch stock market data (Alpha Vantage) | built-in | [→](examples/stock.md) |
 | `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](examples/jsonplaceholder.md) |
 | `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](examples/weather.md) |
+| `sharepoint` | — | Stream | Write streaming data to Sharepoint Lists | `pip install pyspark-data-sources[sharepoint]` | [→](examples/sharepoint.md) |
 
 📚 **[See detailed examples →](docs/data-sources-guide.md)** · **[Copy-pastable examples →](examples/README.md)**
 
