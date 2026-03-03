@@ -171,11 +171,9 @@ class QdrantReader(DataSourceReader):
                 if offset is None:
                     break
         except requests.RequestException as exc:
-            print(f"Failed to read from Qdrant collection '{self.collection}': {exc}")
-            return iter([])
+            raise RuntimeError(f"Failed to read from Qdrant collection '{self.collection}': {exc}") from exc
         except (TypeError, ValueError) as exc:
-            print(f"Failed to parse Qdrant response for '{self.collection}': {exc}")
-            return iter([])
+            raise RuntimeError(f"Failed to parse Qdrant response for '{self.collection}': {exc}") from exc
 
     @staticmethod
     def _to_json(value: Any) -> Optional[str]:
