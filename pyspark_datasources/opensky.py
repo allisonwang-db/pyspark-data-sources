@@ -4,47 +4,12 @@ OpenSky Network Data Source for Apache Spark - Academic/Private Use Example
 This module provides a custom Spark data source for streaming real-time aircraft
 tracking data from the OpenSky Network API (https://opensky-network.org/).
 
-Fixes over the original implementation:
+Provides a streaming reader (``spark.readStream``) and a batch reader
+(``spark.read``) over the OpenSky ``/states/all`` endpoint. Authentication uses
+the OAuth2 client-credentials flow and is performed lazily at read time (never
+during query planning), and the HTTP session is fork- and pickle-safe.
 
-1. CRASH WITH client_id/client_secret (the reported bug):
-   The original reader called `_get_access_token()` (a network request) inside
-   `__init__`. Spark instantiates the reader during query planning inside a
-   *forked* `pyspark.daemon` worker. On macOS, `requests` consults the system
-   proxy configuration via the SystemConfiguration framework
-   (`urllib.request.proxy_bypass_macosx_sysconf`), which is not fork-safe and
-   segfaults the worker ("Python worker exited unexpectedly (crashed)").
-   Fix: no network I/O in `__init__` — the OAuth token is fetched lazily on
-   first read, and the HTTP session is created with `trust_env=False` so no
-   fork-unsafe system proxy lookup ever happens (explicit HTTPS_PROXY/HTTP_PROXY
-   environment variables are still honored manually).
-
-2. PICKLE / FORK SAFETY:
-   The reader is pickled between the driver and worker processes. The
-   `requests.Session` (which may hold live SSL sockets) is now excluded from
-   pickling and recreated lazily in each process.
-
-3. TOKEN REFRESH USES THE RETRYING SESSION:
-   The token request now goes through the same retry-enabled session as data
-   requests, and the token is transparently refreshed before expiry.
-
-4. CORRECT FIELD MAPPING:
-   Per the OpenSky API documentation, state[7] is *barometric* altitude,
-   state[13] is *geometric* altitude, state[16] is position_source, and the
-   aircraft `category` is only returned as state[17] when the request is made
-   with `extended=1`. The original mapped state[7]→geo_altitude,
-   state[13]→baro_altitude and state[16]→category. The schema is unchanged, but
-   the values are now correct and `extended=1` is requested.
-
-5. SAFE TIMESTAMP PARSING:
-   `time_position` (state[3]) may be null; the original crashed the whole
-   micro-batch on `datetime.fromtimestamp(None)`. Timestamps are now parsed
-   defensively.
-
-6. BATCH SUPPORT:
-   In addition to `spark.readStream`, `spark.read.format("opensky")` now works
-   and returns one snapshot of the current state vectors.
-
-Usage (unchanged from the original):
+Usage:
 
     df = spark.readStream.format("opensky").load()
 
@@ -55,9 +20,9 @@ Usage (unchanged from the original):
         .load()
 
 Rate Limits & Responsible Usage:
-    - Anonymous access: 100 API calls per day
-    - Authenticated access: 4000 API calls per day (research accounts)
-    - Minimum 5-second interval between requests
+    - Anonymous access: 400 credits/day, 10-second data resolution
+    - Authenticated access: 4000 credits/day, 5-second data resolution
+      (research accounts)
 
 Data Attribution:
     When using this data in research or publications, please cite:
@@ -153,6 +118,24 @@ class RateLimitError(TransientOpenSkyError):
     do not kill the stream."""
 
 
+class EgressBlockedError(ConfigOpenSkyError):
+    """The TCP connection to OpenSky was silently dropped (DNS resolved but no
+    SYN-ACK → ConnectTimeout). That is the signature of an egress/IP block, not
+    a transient blip that will self-heal — so this is a ConfigOpenSkyError and
+    propagates to fail the pipeline update loudly with an actionable message,
+    rather than being swallowed into silent zero rows."""
+
+
+def _egress_blocked_msg(host: str) -> str:
+    """User-facing message for a dropped TCP connect (egress/IP block signature)."""
+    return (
+        f"Cannot reach OpenSky (TCP connect to {host} timed out after 10s). "
+        "DNS resolved but the connection was silently dropped — this is typically "
+        "OpenSky blocking the request, not a Databricks issue. This workspace's "
+        "shared cloud egress IP may be on OpenSky's blocklist."
+    )
+
+
 class OpenSkyClient:
     """Fork- and pickle-safe OpenSky API client with lazy OAuth2 authentication.
 
@@ -161,16 +144,29 @@ class OpenSkyClient:
     read. The live session object is never pickled.
     """
 
-    MIN_REQUEST_INTERVAL = 5.0  # seconds between requests
+    # OpenSky's data resolution (and minimum useful poll interval) is 5s for
+    # authenticated accounts and 10s for anonymous; polling faster just burns
+    # the daily credit budget on duplicate snapshots. Chosen per-client in
+    # __init__ based on whether credentials were supplied.
+    REQUEST_INTERVAL_AUTHENTICATED = 5.0
+    REQUEST_INTERVAL_ANONYMOUS = 10.0
     MAX_RETRIES = 3
     RETRY_BACKOFF = 2
-    RETRY_STATUS_CODES = [429, 500, 502, 503, 504]
+    # 429 is intentionally NOT in this list: the retrying adapter would raise a
+    # RetryError before the response reaches our handler, so 429 is handled
+    # explicitly in fetch_states() (-> RateLimitError, transient) instead.
+    RETRY_STATUS_CODES = [500, 502, 503, 504]
     TOKEN_REFRESH_MARGIN = 60  # refresh this many seconds before expiry
 
     def __init__(self, bbox: BoundingBox, client_id: Optional[str], client_secret: Optional[str]):
         self.bbox = bbox
         self.client_id = client_id
         self.client_secret = client_secret
+        self.min_request_interval = (
+            self.REQUEST_INTERVAL_AUTHENTICATED
+            if (client_id and client_secret)
+            else self.REQUEST_INTERVAL_ANONYMOUS
+        )
         self._session: Optional[requests.Session] = None
         self._access_token: Optional[str] = None
         self._token_expires_at: float = 0.0
@@ -223,9 +219,17 @@ class OpenSkyClient:
         }
         try:
             response = self.session.post(TOKEN_URL, data=data, timeout=10)
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
-            # Reaching the token endpoint failed transiently (egress/network).
-            raise TransientOpenSkyError(f"Token request failed transiently: {e}") from e
+        except requests.exceptions.ConnectTimeout as e:
+            # No SYN-ACK within the connect timeout: the TCP connect was silently
+            # dropped — the egress/IP-block signature. Surface it loudly. Must
+            # precede Timeout/ConnectionError (ConnectTimeout subclasses both).
+            raise EgressBlockedError(_egress_blocked_msg("auth.opensky-network.org")) from e
+        except requests.exceptions.Timeout as e:
+            # ReadTimeout: a slow-but-reachable endpoint — transient, let it retry.
+            raise TransientOpenSkyError(f"Token request timed out: {e}") from e
+        except requests.exceptions.ConnectionError as e:
+            # Non-timeout connection failure (refused, DNS, SSL/proxy). Loud.
+            raise EgressBlockedError(_egress_blocked_msg("auth.opensky-network.org")) from e
         except requests.exceptions.RequestException as e:
             # Non-transient HTTP error (e.g. 400/401 for bad client credentials).
             raise ConfigOpenSkyError(f"Failed to get access token: {e}") from e
@@ -234,7 +238,7 @@ class OpenSkyClient:
         if response.status_code in (400, 401, 403):
             raise ConfigOpenSkyError(
                 f"Authentication failed (HTTP {response.status_code}): check "
-                f"client_id/client_secret"
+                "client_id/client_secret"
             )
         try:
             response.raise_for_status()
@@ -255,10 +259,10 @@ class OpenSkyClient:
         self._token_expires_at = now + expires_in - self.TOKEN_REFRESH_MARGIN
 
     def _throttle(self) -> None:
-        """Keep at least MIN_REQUEST_INTERVAL seconds between requests."""
+        """Keep at least ``min_request_interval`` seconds between requests."""
         elapsed = time.time() - self._last_request_time
-        if elapsed < self.MIN_REQUEST_INTERVAL:
-            time.sleep(self.MIN_REQUEST_INTERVAL - elapsed)
+        if elapsed < self.min_request_interval:
+            time.sleep(self.min_request_interval - elapsed)
         self._last_request_time = time.time()
 
     def fetch_states(self) -> Dict[str, Any]:
@@ -296,17 +300,39 @@ class OpenSkyClient:
                     "Authentication failed (HTTP 401) after token refresh: "
                     "check client_id/client_secret"
                 )
+            if 400 <= response.status_code < 500 and response.status_code != 429:
+                # Any other 4xx (e.g. 403 forbidden region/disabled account, 400
+                # bad request) is deterministic: it will not self-heal, so fail
+                # loudly instead of swallowing it into silent zero rows. (429 is
+                # handled by the retrying adapter / RateLimitError above; 401 is
+                # handled just above.)
+                raise ConfigOpenSkyError(
+                    f"OpenSky request rejected (HTTP {response.status_code}): "
+                    f"{response.reason}"
+                )
             response.raise_for_status()
             return response.json()
+        except requests.exceptions.ConnectTimeout as e:
+            # No SYN-ACK within the connect timeout: the data host silently
+            # dropped the TCP connect — the egress/IP-block signature. Fail
+            # loudly instead of silent zero rows. Must precede the Timeout and
+            # ConnectionError clauses: requests.ConnectTimeout is a subclass of
+            # BOTH Timeout and ConnectionError, and only a *connect* timeout is
+            # the block signature (a read timeout is a slow-but-reachable host).
+            raise EgressBlockedError(_egress_blocked_msg("opensky-network.org")) from e
         except requests.exceptions.Timeout as e:
+            # ReadTimeout: the host answered the connect but was slow to respond.
+            # Transient — let the stream retry on the next trigger.
             raise TransientOpenSkyError("API request timed out") from e
         except requests.exceptions.ConnectionError as e:
-            # Includes egress blocks (dropped SYN → ConnectTimeout): self-heals.
-            raise TransientOpenSkyError("Connection error occurred") from e
+            # A non-timeout connection failure (connection refused, DNS failure,
+            # SSL/proxy error). Deterministic enough that swallowing it into
+            # silent zero rows is wrong: fail loudly.
+            raise EgressBlockedError(_egress_blocked_msg("opensky-network.org")) from e
         except requests.exceptions.RequestException as e:
-            # Retries on 5xx/429 are exhausted here (RetryError) or a 4xx slipped
-            # through: treat as transient so a flaky endpoint doesn't kill the
-            # stream. Deterministic auth (401) is already raised above.
+            # Retries on 5xx/429 are exhausted here (RetryError) or another
+            # transient HTTP fault: treat as transient so a flaky endpoint
+            # doesn't kill the stream. Deterministic 4xx/auth are raised above.
             raise TransientOpenSkyError(f"API request failed: {e}") from e
 
 
@@ -398,13 +424,14 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
         """Read the current state vectors and advance the offset.
 
         Error policy (see the exception taxonomy in this module):
-          * TransientOpenSkyError (timeouts, connection/egress errors, 429) is
-            swallowed: we log a warning and return the offset unchanged so no
-            micro-batch is triggered, and the stream auto-recovers once the
-            upstream is reachable again.
+          * TransientOpenSkyError (request timeouts, 429) is swallowed: we log a
+            warning and return the offset unchanged so no micro-batch is
+            triggered, and the stream auto-recovers once the upstream is
+            reachable again.
           * Everything else — ConfigOpenSkyError (bad creds, malformed token),
-            and any unexpected programming error (parse bugs, etc.) — is allowed
-            to propagate. That fails the Structured Streaming micro-batch (and
+            EgressBlockedError (dropped TCP connect → IP/egress block), and any
+            unexpected programming error (parse bugs, etc.) — is allowed to
+            propagate. That fails the Structured Streaming micro-batch (and
             surfaces as a StreamingQueryException / a failed pipeline update)
             instead of silently emitting zero rows.
 
@@ -424,7 +451,12 @@ class OpenSkyStreamReader(SimpleDataSourceStreamReader):
             return ([], start)
 
     def readBetweenOffsets(self, start: Dict[str, int], end: Dict[str, int]) -> Iterator[Tuple]:
-        # The API cannot replay past data; re-fetch the latest snapshot.
+        # KNOWN LIMITATION: the OpenSky API only serves the *current* snapshot and
+        # cannot replay a historical offset range, so exact-once replay on restart
+        # is not possible. `end` is ignored and we re-fetch the latest snapshot;
+        # recovery therefore reprocesses whatever is current, not the original
+        # batch. Acceptable for a live-telemetry source where staleness, not
+        # exactness, is what matters.
         data, _ = self.read(start)
         return iter(data)
 
@@ -482,7 +514,7 @@ class OpenSkyDataSource(DataSource):
     https://opensky-network.org" and the OpenSky IPSN 2014 paper.
     """
 
-    def __init__(self, options: Dict[str, str] = None):
+    def __init__(self, options: Optional[Dict[str, str]] = None):
         super().__init__(options or {})
         self.options = options or {}
 
