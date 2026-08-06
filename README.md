@@ -70,6 +70,7 @@ from pyspark.sql.datasource import DataSource, DataSourceReader
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
 class MyCustomDataSource(DataSource):
+    @classmethod
     def name(self):
         return "mycustom"
 
