@@ -46,6 +46,7 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import requests
 from requests.adapters import HTTPAdapter
+from urllib3.exceptions import MaxRetryError, ReadTimeoutError
 from urllib3.util.retry import Retry
 
 from pyspark.sql.datasource import (
@@ -136,6 +137,22 @@ def _egress_blocked_msg(host: str) -> str:
     )
 
 
+def _wraps_read_timeout(exc: BaseException) -> bool:
+    """True if a ``requests.ConnectionError`` actually wraps an exhausted urllib3
+    *read* timeout, i.e. ``ConnectionError(MaxRetryError(reason=ReadTimeoutError))``.
+
+    requests reports an exhausted read-retry sequence as a ``ConnectionError``
+    (only a *connect* timeout surfaces as ``ConnectTimeout``), so the exception
+    type alone cannot tell a slow-but-reachable host (transient) apart from a
+    dropped TCP connect (egress block). Inspecting the wrapped cause restores
+    that distinction so a read timeout is not misclassified as an egress block.
+    """
+    return any(
+        isinstance(arg, MaxRetryError) and isinstance(arg.reason, ReadTimeoutError)
+        for arg in getattr(exc, "args", ())
+    )
+
+
 class OpenSkyClient:
     """Fork- and pickle-safe OpenSky API client with lazy OAuth2 authentication.
 
@@ -195,6 +212,19 @@ class OpenSkyClient:
                 session.proxies.update(proxies)
             retry_strategy = Retry(
                 total=self.MAX_RETRIES,
+                connect=self.MAX_RETRIES,
+                # read=False: do NOT retry read timeouts at the adapter level.
+                # Two reasons. (1) A read timeout on a self-healing per-batch
+                # stream is better failed fast and retried on the next trigger
+                # than by blocking the micro-batch through backoff sleeps.
+                # (2) An exhausted read-retry is re-raised by requests as a
+                # ConnectionError(MaxRetryError(ReadTimeoutError)), which would
+                # be misclassified as an egress block; with read=False a read
+                # timeout surfaces as requests.ReadTimeout (a Timeout subclass)
+                # and is classified transient directly. (_wraps_read_timeout
+                # still guards the wrapped case defensively.)
+                read=False,
+                status=self.MAX_RETRIES,
                 backoff_factor=self.RETRY_BACKOFF,
                 status_forcelist=self.RETRY_STATUS_CODES,
             )
@@ -228,7 +258,12 @@ class OpenSkyClient:
             # ReadTimeout: a slow-but-reachable endpoint — transient, let it retry.
             raise TransientOpenSkyError(f"Token request timed out: {e}") from e
         except requests.exceptions.ConnectionError as e:
-            # Non-timeout connection failure (refused, DNS, SSL/proxy). Loud.
+            # requests wraps an exhausted read-retry as ConnectionError; if that
+            # is what happened, the host was reachable but slow -> transient.
+            if _wraps_read_timeout(e):
+                raise TransientOpenSkyError(f"Token request timed out: {e}") from e
+            # Otherwise a non-timeout connection failure (refused, DNS,
+            # SSL/proxy) or dropped connect: the egress/IP-block signature. Loud.
             raise EgressBlockedError(_egress_blocked_msg("auth.opensky-network.org")) from e
         except requests.exceptions.RequestException as e:
             # Non-transient HTTP error (e.g. 400/401 for bad client credentials).
@@ -325,9 +360,15 @@ class OpenSkyClient:
             # Transient — let the stream retry on the next trigger.
             raise TransientOpenSkyError("API request timed out") from e
         except requests.exceptions.ConnectionError as e:
-            # A non-timeout connection failure (connection refused, DNS failure,
-            # SSL/proxy error). Deterministic enough that swallowing it into
-            # silent zero rows is wrong: fail loudly.
+            # requests re-raises an exhausted read-retry as ConnectionError
+            # (ConnectionError(MaxRetryError(ReadTimeoutError))), NOT as a
+            # ReadTimeout. That is a slow-but-reachable host -> transient: let
+            # the stream retry on the next trigger instead of killing it.
+            if _wraps_read_timeout(e):
+                raise TransientOpenSkyError("API request timed out") from e
+            # Otherwise a genuine non-timeout connection failure (connection
+            # refused, DNS failure, SSL/proxy error). Deterministic enough that
+            # swallowing it into silent zero rows is wrong: fail loudly.
             raise EgressBlockedError(_egress_blocked_msg("opensky-network.org")) from e
         except requests.exceptions.RequestException as e:
             # Retries on 5xx/429 are exhausted here (RetryError) or another
