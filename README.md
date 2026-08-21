@@ -56,6 +56,7 @@ df.select("id", "title", "author").show()
 | `jsonplaceholder` | Batch | — | Read JSON data for testing | built-in | [→](examples/jsonplaceholder.md) |
 | `weather` | Batch | — | Read current weather data (OpenWeatherMap) | built-in | [→](examples/weather.md) |
 | `sharepoint` | — | Stream | Write streaming data to Sharepoint Lists | `pip install pyspark-data-sources[sharepoint]` | [→](examples/sharepoint.md) |
+| `sharepoint_excel` | Batch | — | Read Excel files from SharePoint Online or Microsoft Teams | `pip install pyspark-data-sources[sharepoint-excel]` | [→](examples/excel_sharepoint_teams.md) |
 
 📚 **[See detailed examples →](docs/data-sources-guide.md)** · **[Copy-pastable examples →](examples/README.md)**
 

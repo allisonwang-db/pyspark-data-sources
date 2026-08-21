@@ -17,3 +17,4 @@ from .oracle import OracleDataSource
 from .notion import NotionDataSource
 from .qdrant import QdrantDataSource
 from .sharepoint import SharepointResource, SharepointDataSource
+from .excel_sharepoint_teams import SharePointExcelDataSource

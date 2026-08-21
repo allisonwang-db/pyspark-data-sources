@@ -27,5 +27,7 @@ Each markdown file in this folder contains end-to-end, copy-pastable examples fo
 | stock | Batch | — | [stock.md](stock.md) |
 | jsonplaceholder | Batch | — | [jsonplaceholder.md](jsonplaceholder.md) |
 | weather | Stream | — | [weather.md](weather.md) |
+| sharepoint | — | Stream | [sharepoint.md](sharepoint.md) |
+| sharepoint_excel | Batch | — | [excel_sharepoint_teams.md](excel_sharepoint_teams.md) |
 
 These examples are designed for humans and AI agents to quickly generate working code.
