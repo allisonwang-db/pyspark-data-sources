@@ -337,8 +337,10 @@ class SharepointStreamWriter(DataSourceStreamWriter):
                 *self.resource.validate_required_options(),
             ]
         ):
+            base_options = "\n\t".join(f"{datasource}.{ro}" for ro in self._required_options)
+            resource_options = "\n\t".join(self.resource.required_options())
             raise ValueError(
-                f"Sharepoint options \n\t{'\n\t'.join([f'{datasource}.{ro}' for ro in self._required_options])}\nand resource specific options\n\t{'\n\t'.join(self.resource.required_options())}\nare required. "
+                f"Sharepoint options \n\t{base_options}\nand resource specific options\n\t{resource_options}\nare required. "
                 "Set them using .option() / .options() method in your streaming query."
             )
 
@@ -414,7 +416,8 @@ class SharepointStreamWriter(DataSourceStreamWriter):
             flush_buffer()
 
         if total_records_failed:
-            msg = f"Failed to write {len(total_records_failed)} records to Sharepoint (batch {batch_id}):\n\t{'\n\t'.join([str(f) for f in total_records_failed])}"
+            failed_details = "\n\t".join(str(f) for f in total_records_failed)
+            msg = f"Failed to write {len(total_records_failed)} records to Sharepoint (batch {batch_id}):\n\t{failed_details}"
             if self.fail_fast:
                 raise Exception(msg)
             else:
