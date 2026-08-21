@@ -1,10 +1,24 @@
 import pytest
 import tempfile
 import os
+from unittest import mock
+
 import pyarrow as pa
+import requests
+from urllib3.connectionpool import HTTPSConnectionPool
+from urllib3.exceptions import MaxRetryError, ReadTimeoutError
 
 from pyspark.sql import SparkSession
 from pyspark_datasources import *
+from pyspark_datasources.opensky import (
+    ConfigOpenSkyError,
+    EgressBlockedError,
+    OpenSkyClient,
+    RateLimitError,
+    Region,
+    TransientOpenSkyError,
+    parse_response,
+)
 
 
 @pytest.fixture
@@ -61,6 +75,10 @@ def test_kaggle_datasource(spark):
     assert len(df.columns) == 12
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OPENSKY_LIVE_TEST"),
+    reason="hits the live OpenSky API; set OPENSKY_LIVE_TEST=1 to run",
+)
 def test_opensky_datasource_stream(spark):
     spark.dataSource.register(OpenSkyDataSource)
     (
@@ -77,6 +95,86 @@ def test_opensky_datasource_stream(spark):
     result.show()
     assert len(result.columns) == 18  # Check schema has expected number of fields
     assert result.count() > 0  # Verify we got some data
+
+
+# --- Offline OpenSky tests (no network) -------------------------------------
+# These cover the OpenSkyClient error taxonomy directly, without Spark workers
+# or the live API, so they run in CI on every Python version. Anonymous client
+# => _ensure_token() is a no-op (no token request); the mock session replaces
+# the only network call in fetch_states().
+
+
+def _anon_client_with_session(mock_session):
+    """An anonymous OpenSkyClient whose lazy session is the given mock."""
+    client = OpenSkyClient(Region.EUROPE.value, client_id=None, client_secret=None)
+    client._session = mock_session  # property returns it since it's not None
+    return client
+
+
+def _read_timeout_connection_error():
+    """The exact shape requests raises when urllib3 read retries are exhausted:
+    ConnectionError(MaxRetryError(reason=ReadTimeoutError))."""
+    pool = HTTPSConnectionPool("opensky-network.org")
+    url = "https://opensky-network.org/api/states/all"
+    reason = ReadTimeoutError(pool, url, "read timed out")
+    return requests.exceptions.ConnectionError(MaxRetryError(pool, url, reason=reason))
+
+
+def test_fetch_states_read_timeout_is_transient():
+    # Regression test for P1 #1: an exhausted read retry arrives as a
+    # ConnectionError wrapping a ReadTimeoutError. It must be TRANSIENT (stream
+    # self-heals), not EgressBlockedError (which would kill the stream).
+    session = mock.Mock()
+    session.get.side_effect = _read_timeout_connection_error()
+    client = _anon_client_with_session(session)
+    # TransientOpenSkyError is disjoint from EgressBlockedError (a
+    # ConfigOpenSkyError), so this also proves it is NOT a fatal egress block.
+    with pytest.raises(TransientOpenSkyError):
+        client.fetch_states()
+
+
+def test_fetch_states_connect_timeout_is_egress():
+    # A dropped TCP connect (no SYN-ACK) is the egress/IP-block signature: loud.
+    session = mock.Mock()
+    session.get.side_effect = requests.exceptions.ConnectTimeout("connect timed out")
+    client = _anon_client_with_session(session)
+    with pytest.raises(EgressBlockedError):
+        client.fetch_states()
+
+
+def test_fetch_states_429_is_rate_limit():
+    session = mock.Mock()
+    session.get.return_value = mock.Mock(status_code=429)
+    client = _anon_client_with_session(session)
+    with pytest.raises(RateLimitError):
+        client.fetch_states()
+
+
+def test_fetch_states_401_is_config_error():
+    # 401 with no token to refresh (anonymous) is a deterministic config fault.
+    session = mock.Mock()
+    session.get.return_value = mock.Mock(status_code=401)
+    client = _anon_client_with_session(session)
+    with pytest.raises(ConfigOpenSkyError):
+        client.fetch_states()
+
+
+def test_parse_response_field_mapping():
+    # Guards the (schema-silent) field mapping: geo_altitude<-state[13],
+    # baro_altitude<-state[7], category<-state[17] (extended=1 layout).
+    state = [
+        "abc123", "TEST    ", "Testland", 1700000000, 1700000001,
+        8.5, 50.0, 1000.0, False, 200.0, 180.0, 0.0, None, 1050.0,
+        "1000", False, 0, 2,
+    ]  # indices 0..17; [7]=baro=1000, [13]=geo=1050, [17]=category=2
+    rows = parse_response({"time": 1700000002, "states": [state]})
+    assert len(rows) == 1
+    row = rows[0]
+    # parse_state tuple positions: 8=geo_altitude, 14=baro_altitude, 17=category
+    assert row[8] == 1050.0  # geo_altitude
+    assert row[14] == 1000.0  # baro_altitude
+    assert row[8] > row[14]  # geo > baro, as OpenSky docs specify
+    assert row[17] == 2  # category from state[17]
 
 
 def test_salesforce_datasource_registration(spark):
